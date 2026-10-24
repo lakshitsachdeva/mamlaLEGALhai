@@ -23,18 +23,47 @@ review status. It is not legal advice and does not certify compliance.
 
 ## Run locally
 
-Requirements: a recent Python installation for the static server and Node.js
-20+ for tests.
+Requirements: Python 3.11+ and Node.js 20+.
 
-```bash
-npm test
-npm run serve
+Create an isolated Python environment and install the Phase 1 API:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-Then open <http://localhost:4173>.
+In a second terminal, activate the same environment and start the static
+frontend:
 
-No document is sent to an external API. The current engine runs entirely in
-the browser.
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m http.server 4173 --directory dist
+```
+
+Open <http://127.0.0.1:4173>. The top navigation reports **FastAPI connected**
+when requests are served by the backend. If the API is unavailable, the
+interface explicitly reports **Browser fallback** and uses the original
+deterministic JavaScript engine; fallback output is never labeled as a backend
+result.
+
+API documentation is available at <http://127.0.0.1:8000/api/docs> and ReDoc
+at <http://127.0.0.1:8000/api/redoc>.
+
+To use a separately deployed API, set `window.REGULATRACE_API_BASE_URL` before
+`dist/js/app.js` loads, or change the `regulatrace-api-base` meta tag in
+`dist/index.html`.
+
+### Run tests
+
+```powershell
+python -m pytest backend/tests -q
+npm test
+```
+
+See [PROJECT_STATUS.md](PROJECT_STATUS.md) for implemented, partial and
+intentionally deferred capabilities.
 
 ## Repository structure
 
@@ -46,6 +75,10 @@ dist/
   js/app.js              interaction and visualization layer
   docs/                   research proposal
 tests/engine.test.js     executable baseline tests
+backend/                 FastAPI service, typed schemas and deterministic Python engine
+backend/tests/           API and CORS tests
+requirements.txt         Python dependencies
+PROJECT_STATUS.md        milestone scope and known limitations
 .openai/hosting.json     Sites deployment manifest
 ```
 
