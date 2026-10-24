@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07111f">
   <meta name="description" content="RegulaTrace is an evidence-first research prototype that compiles regulatory language into reviewable obligations, policy gaps and change-impact signals.">
+  <meta name="regulatrace-api-base" content="http://127.0.0.1:8000">
   <title>RegulaTrace — Compliance Intelligence Lab</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307111f'/%3E%3Cpath d='M17 17h21c8 0 12 5 12 12 0 6-3 10-9 12l10 12H39L30 42h-2v11H17V17zm11 9v8h9c2 0 4-1 4-4s-2-4-4-4h-9z' fill='%235be7c4'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,6 +49,7 @@
         <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
         <div class="breadcrumb"><span>RegulaTrace</span><b>/</b><strong id="view-title">Overview</strong></div>
         <div class="top-actions">
+          <span class="runtime-status checking" id="runtime-status" role="status" aria-live="polite"><i></i><span>Checking API…</span></span>
           <button class="ghost-button" id="command-button"><span>⌘</span> Quick actions <kbd>⌘ K</kbd></button>
           <button class="primary-button compact" id="guided-demo-button"><span class="pulse-dot"></span> Run guided demo</button>
         </div>
@@ -145,7 +147,7 @@
             <input id="source-title" class="text-field" value="GDPR · Article 33 — Notification of a personal data breach">
             <label class="field-label" for="regulation-input">Paste a clause or policy</label>
             <textarea id="regulation-input" class="document-input" spellcheck="true"></textarea>
-            <div class="input-meta"><span id="source-count">0 characters</span><span>Local processing · no upload</span></div>
+            <div class="input-meta"><span id="source-count">0 characters</span><span id="processing-mode">Backend API preferred · deterministic fallback labeled</span></div>
             <button class="primary-button run-button" id="analyze-button"><span class="run-icon">▶</span><span>Compile obligations</span><kbd>Ctrl ↵</kbd></button>
             <div class="pipeline-progress" id="pipeline-progress" aria-live="polite"><div class="progress-track"><span></span></div><div class="progress-steps"><span>Structure</span><span>Classify</span><span>Extract</span><span>Validate</span></div></div>
           </div>

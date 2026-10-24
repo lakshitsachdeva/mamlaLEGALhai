@@ -7,6 +7,12 @@ import {
   ENGINE_VERSION,
 } from "./engine.js";
 
+const API_BASE_URL = (
+  window.REGULATRACE_API_BASE_URL
+  ?? document.querySelector('meta[name="regulatrace-api-base"]')?.content
+  ?? "http://127.0.0.1:8000"
+).replace(/\/$/, "");
+
 const SAMPLES = {
   gdpr: {
     title: "GDPR · Article 33 — Notification of a personal data breach",
@@ -72,6 +78,7 @@ const state = {
   changes: null,
   graphScale: 1,
   demoIndex: 0,
+  runtime: { mode: "checking", detail: "Checking FastAPI backend" },
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -79,6 +86,74 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]));
 const percentage = (value) => `${Math.round(value * 100)}%`;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function setRuntimeStatus(mode, detail) {
+  state.runtime = { mode, detail };
+  const status = $("#runtime-status");
+  if (status) {
+    status.className = `runtime-status ${mode}`;
+    const label = mode === "backend" ? "FastAPI connected" : mode === "fallback" ? "Browser fallback" : "Checking API…";
+    $("span", status).textContent = label;
+    status.title = detail;
+  }
+  const processingMode = $("#processing-mode");
+  if (processingMode) {
+    processingMode.textContent = mode === "backend"
+      ? `FastAPI · ${API_BASE_URL}`
+      : mode === "fallback"
+        ? "Browser fallback active · results are labeled"
+        : "Checking FastAPI backend…";
+  }
+}
+
+async function requestApi(path, payload, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: payload === undefined ? "GET" : "POST",
+      headers: payload === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" },
+      body: payload === undefined ? undefined : JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      const error = new Error(data?.error?.message ?? `API request failed with status ${response.status}`);
+      error.status = response.status;
+      error.details = data?.error?.details;
+      throw error;
+    }
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function checkBackendHealth() {
+  setRuntimeStatus("checking", `Checking ${API_BASE_URL}`);
+  try {
+    const health = await requestApi("/api/health", undefined, 2500);
+    setRuntimeStatus("backend", `${health.service} · ${health.engineVersion}`);
+    return true;
+  } catch (error) {
+    setRuntimeStatus("fallback", `FastAPI unavailable: ${error.message}`);
+    return false;
+  }
+}
+
+async function executeWithFallback(path, payload, fallback, operation, notifyFallback = true) {
+  if (state.runtime.mode === "fallback" && !notifyFallback) return fallback();
+  try {
+    const result = await requestApi(path, payload);
+    setRuntimeStatus("backend", `${operation} returned by FastAPI at ${API_BASE_URL}`);
+    return result;
+  } catch (error) {
+    if (error.status >= 400 && error.status < 500) throw error;
+    setRuntimeStatus("fallback", `${operation} used browser engine: ${error.message}`);
+    if (notifyFallback) toast(`${operation} used the deterministic browser engine because the API was unavailable.`, "Browser fallback");
+    return fallback();
+  }
+}
 
 function toast(message, label = "Done") {
   const region = $("#toast-region");
@@ -111,13 +186,19 @@ function bindNavigation() {
   window.addEventListener("hashchange", () => showView(location.hash.slice(1) || "overview", false));
 }
 
-function loadSample(name) {
+async function loadSample(name, notifyFallback = true) {
   state.sample = name;
   const sample = SAMPLES[name];
   $("#source-title").value = sample.title;
   $("#regulation-input").value = sample.text;
   updateCharacterCount();
-  state.analysis = analyzeDocument(sample.text, sample.meta);
+  state.analysis = await executeWithFallback(
+    "/api/analyze",
+    { text: sample.text, sourceMetadata: sample.meta },
+    () => analyzeDocument(sample.text, sample.meta),
+    "Analysis",
+    notifyFallback,
+  );
   state.selectedRecord = state.analysis.normative[0] ?? state.analysis.records[0];
   renderAnalysis();
   renderGraph();
@@ -136,19 +217,30 @@ async function runAnalysis() {
   const bar = $(".progress-track span", progress);
   button.disabled = true;
   progress.classList.add("running");
-  for (const width of [18, 42, 72, 100]) {
-    bar.style.width = `${width}%`;
-    await sleep(230);
+  try {
+    for (const width of [18, 42, 72, 100]) {
+      bar.style.width = `${width}%`;
+      await sleep(120);
+    }
+    const active = SAMPLES[state.sample];
+    const sourceMetadata = { ...active.meta, title: $("#source-title").value };
+    state.analysis = await executeWithFallback(
+      "/api/analyze",
+      { text, sourceMetadata },
+      () => analyzeDocument(text, sourceMetadata),
+      "Analysis",
+    );
+    state.selectedRecord = state.analysis.normative[0] ?? state.analysis.records[0];
+    renderAnalysis();
+    renderGraph();
+    toast(`${state.analysis.summary.obligationCount} obligations compiled with source evidence.`, "Pipeline complete");
+  } catch (error) {
+    toast(error.message, "Analysis failed");
+  } finally {
+    progress.classList.remove("running");
+    bar.style.width = "0";
+    button.disabled = false;
   }
-  const active = SAMPLES[state.sample];
-  state.analysis = analyzeDocument(text, { ...active.meta, title: $("#source-title").value });
-  state.selectedRecord = state.analysis.normative[0] ?? state.analysis.records[0];
-  renderAnalysis();
-  renderGraph();
-  progress.classList.remove("running");
-  bar.style.width = "0";
-  button.disabled = false;
-  toast(`${state.analysis.summary.obligationCount} obligations compiled with source evidence.`, "Pipeline complete");
 }
 
 function renderAnalysis() {
@@ -220,10 +312,23 @@ function renderComparison() {
   </div>`;
 }
 
-function runComparison(notify = true) {
-  state.comparison = comparePolicy($("#requirement-input").value, $("#policy-input").value);
-  renderComparison();
-  if (notify) toast(`Outcome: ${state.comparison.outcome.replaceAll("_", " ").toLowerCase()}.`, "Comparison complete");
+async function runComparison(notify = true) {
+  const regulatoryText = $("#requirement-input").value.trim();
+  const policyText = $("#policy-input").value.trim();
+  if (!regulatoryText || !policyText) return toast("Provide both regulatory and policy text before comparing.", "Input needed");
+  try {
+    state.comparison = await executeWithFallback(
+      "/api/compare",
+      { regulatoryText, policyText },
+      () => comparePolicy(regulatoryText, policyText),
+      "Policy comparison",
+      notify,
+    );
+    renderComparison();
+    if (notify) toast(`Outcome: ${state.comparison.outcome.replaceAll("_", " ").toLowerCase()}.`, "Comparison complete");
+  } catch (error) {
+    toast(error.message, "Comparison failed");
+  }
 }
 
 function renderChanges() {
@@ -239,10 +344,23 @@ function renderChanges() {
   <div class="change-list">${result.changes.map((change) => `<article class="change-item"><span class="change-kind ${change.type}">${change.type}</span><div class="change-text">${change.before ? `<del>− ${escapeHtml(change.before)}</del>` : ""}${change.after ? `<ins>+ ${escapeHtml(change.after)}</ins>` : ""}</div><span class="severity ${change.severity}">${change.severity}</span></article>`).join("")}</div>`;
 }
 
-function runDiff(notify = true) {
-  state.changes = compareVersions($("#old-version").value, $("#new-version").value);
-  renderChanges();
-  if (notify) toast(`${state.changes.changes.length} material changes routed for review.`, "Radar complete");
+async function runDiff(notify = true) {
+  const oldText = $("#old-version").value.trim();
+  const newText = $("#new-version").value.trim();
+  if (!oldText || !newText) return toast("Provide both versions before running Change Radar.", "Input needed");
+  try {
+    state.changes = await executeWithFallback(
+      "/api/versions/compare",
+      { oldText, newText },
+      () => compareVersions(oldText, newText),
+      "Version comparison",
+      notify,
+    );
+    renderChanges();
+    if (notify) toast(`${state.changes.changes.length} material changes routed for review.`, "Radar complete");
+  } catch (error) {
+    toast(error.message, "Change analysis failed");
+  }
 }
 
 function nodePosition(id, index) {
@@ -362,8 +480,8 @@ function setupDemo() {
 }
 
 function bindActions() {
-  $("#load-gdpr").addEventListener("click", () => { loadSample("gdpr"); toast("GDPR Article 33 sample loaded.", "Sample ready"); });
-  $("#load-ai-act").addEventListener("click", () => { loadSample("aiAct"); toast("EU AI Act Article 16 sample loaded.", "Sample ready"); });
+  $("#load-gdpr").addEventListener("click", async () => { await loadSample("gdpr"); toast("GDPR Article 33 sample loaded.", "Sample ready"); });
+  $("#load-ai-act").addEventListener("click", async () => { await loadSample("aiAct"); toast("EU AI Act Article 16 sample loaded.", "Sample ready"); });
   $("#regulation-input").addEventListener("input", updateCharacterCount);
   $("#analyze-button").addEventListener("click", runAnalysis);
   $("#export-analysis").addEventListener("click", () => {
@@ -388,7 +506,7 @@ function bindActions() {
   });
 }
 
-function initialize() {
+async function initialize() {
   bindNavigation();
   bindActions();
   setupPalette();
@@ -398,11 +516,15 @@ function initialize() {
   $("#policy-input").value = POLICY_SAMPLE;
   $("#old-version").value = OLD_VERSION;
   $("#new-version").value = NEW_VERSION;
-  loadSample("gdpr");
-  runComparison(false);
-  runDiff(false);
+  await checkBackendHealth();
+  await loadSample("gdpr", false);
+  await runComparison(false);
+  await runDiff(false);
   showView(location.hash.slice(1) || "overview", false);
 }
 
-initialize();
+initialize().catch((error) => {
+  setRuntimeStatus("fallback", `Initialization error: ${error.message}`);
+  toast("The interface started with the deterministic browser engine.", "Browser fallback");
+});
 
