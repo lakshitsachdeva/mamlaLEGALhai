@@ -67,7 +67,6 @@ replace or augment the baseline without changing the evidence contract.
 - Trayee Nayampalli — B084
 - Riddhi Ranjan — B097
 
-B.Tech Computer Engineering, C Division, NMIMS MPSTME Mumbai, 2026–27.
 
 ## License
 
