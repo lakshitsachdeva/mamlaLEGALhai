@@ -70,6 +70,10 @@ The challenge suite's critical miss rate is the fraction of labeled critical cas
 
 For a separately annotated document set, use `python -m research.evaluate path/to/gold.jsonl --split test`. The [held-out study protocol](research/PROTOCOL.md) defines the JSONL format, leakage checks, span matching, critical-miss denominator, and remaining research gates. No held-out study result is bundled.
 
+## Preprint draft
+
+The [RegulaTrace preprint draft](output/pdf/RegulaTrace_Preprint_Draft.pdf) describes the implemented baseline, evidence contract, evaluation protocol, and current synthetic checks. Its [LaTeX source](paper/regulatrace-preprint/main.tex) is included for revision. This is a named working draft, not an arXiv submission or a held-out evaluation result.
+
 ## API surface
 
 | Method | Endpoint | Purpose |
@@ -112,6 +116,8 @@ research/
   PROTOCOL.md            held-out annotation and evaluation rules
   evaluate.py            JSONL gold loader and document-level evaluator
   tests/                 evaluator validation tests
+paper/regulatrace-preprint/main.tex  named working preprint source
+output/pdf/RegulaTrace_Preprint_Draft.pdf  rendered preprint draft
 dist/
   index.html             application and presentation shell
   styles.css             responsive visual system
