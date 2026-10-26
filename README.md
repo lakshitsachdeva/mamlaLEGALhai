@@ -56,6 +56,8 @@ python -m uvicorn backend.main:app --reload --port 8000
 
 ## Suggested live demo
 
+For a timed research talk with exact result figures, demo cues, and likely questions, use the [presentation speaker notes](presentation/SPEAKER_NOTES.md).
+
 1. Open **Executive Brief** and select **Run the live story**.
 2. Show the three extracted obligations and their retained evidence clauses in **Obligation Lab**.
 3. Correct one field and point out the persisted before/after audit event.
