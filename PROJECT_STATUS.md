@@ -6,8 +6,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 ## Verified result
 
 - FastAPI and frontend run together at `http://127.0.0.1:8000`.
-- 11 backend integration tests passed on 2026-10-26.
-- All 5 original JavaScript engine tests passed on 2026-10-26.
+- Backend integration tests and JavaScript engine tests cover extraction, comparison, version analysis, and change explanations.
 - The executable challenge suite passed 16 of 16 transparent synthetic-adversarial cases, with 0% critical misses on that suite.
 - Browser verification completed the live story, rendered three evidence-linked obligations, persisted one analysis and one reviewer decision, restored the case history, and produced no console errors.
 
@@ -33,6 +32,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Evidence-linked obligation extraction with actor, action, modality, deadlines, conditions, exceptions, references, confidence, unresolved fields, and source spans.
 - Constraint-level policy comparison with an explicit verdict and dimension-by-dimension evidence.
 - Old/new regulatory version comparison with added, removed, and modified clause classification.
+- Change explanations that state the observed edit, a possible rationale when wording supports one, and an operational action to review. Unknown motives are labeled as such.
 - Executable 16-case transparent challenge suite covering extraction, modality, actor, deadlines, provenance, policy comparison, and versioning.
 - Persistent human review decisions: confirmed, corrected, and rejected.
 
@@ -40,7 +40,8 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 
 - One-click Windows launcher and clean shutdown script.
 - Automatic environment creation, dependency checking, server startup, health validation, and browser opening.
-- 11 backend tests, the original 5 JavaScript tests, and JavaScript syntax validation.
+- Backend tests, JavaScript tests, and JavaScript syntax validation.
+- A two-page fictional demonstration regulation in `examples/` for document upload.
 - Ignored runtime database, logs, virtual environment, test cache, and other generated state.
 
 ## Honest research and production boundaries
@@ -52,6 +53,7 @@ These boundaries do not prevent the presentation workflow from running; they def
 - The deterministic engine is an explainable baseline rather than a semantic legal-language model. Deep paraphrase, inherited headings, complex tables, and heavily nested drafting can require reviewer correction.
 - Deadline normalization does not yet resolve business-day calendars, holidays, or jurisdiction-specific counting rules.
 - Policy comparison and version alignment remain lexical and constraint-based; the interface deliberately exposes uncertainty instead of claiming legal certainty.
+- Change rationales are textual inferences, not evidence of the regulator's actual intent; official explanatory material is not ingested automatically.
 - The included benchmark is transparent and synthetic-adversarial, not an external peer-reviewed legal corpus. Paper claims should be based on a separately annotated, document-level held-out dataset with inter-annotator agreement.
 - The application supports decision review and evidence traceability but is not legal advice, a compliance certificate, or an autonomous release authority.
 

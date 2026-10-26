@@ -90,6 +90,41 @@ def test_version_compare_detects_modified_and_added_clauses() -> None:
     assert payload["criticalCount"] >= 1
 
 
+def test_change_rationale_distinguishes_observation_from_inference() -> None:
+    response = client.post(
+        "/api/versions/compare",
+        json={
+            "oldText": "The controller shall notify the authority within five days. The organization shall retain incident records for three years.",
+            "newText": "The controller shall notify the authority within 72 hours. The organization shall retain incident records for seven years. The controller must document a late notification.",
+        },
+    )
+    assert response.status_code == 200
+    changes = response.json()["changes"]
+    notification = next(change for change in changes if change["type"] == "MODIFIED" and "notify" in change["after"])
+    assert "five days to 72 hours" in notification["explanation"]["observed"]
+    assert notification["explanation"]["status"] == "INFERRED_FROM_TEXT"
+    assert notification["severity"] == "CRITICAL"
+    retention = next(change for change in changes if change["type"] == "MODIFIED" and "retain" in change["after"])
+    assert "retention period" in retention["explanation"]["observed"]
+    addition = next(change for change in changes if change["type"] == "ADDED")
+    assert addition["explanation"]["status"] == "UNDETERMINED"
+    assert "cannot be established" in addition["explanation"]["possibleRationale"]
+
+
+def test_hyphenated_retention_period_is_not_read_as_its_suffix() -> None:
+    response = client.post(
+        "/api/versions/compare",
+        json={
+            "oldText": "The security owner shall retain review evidence for twelve months.",
+            "newText": "The security owner shall retain review evidence for twenty-four months.",
+        },
+    )
+    assert response.status_code == 200
+    explanation = response.json()["changes"][0]["explanation"]
+    assert explanation["observed"] == "The retention period changed from twelve months to twenty-four months (extended)."
+    assert "preserve records for longer" in explanation["possibleRationale"]
+
+
 def test_whitespace_input_returns_structured_validation_error() -> None:
     response = client.post("/api/analyze", json={"text": "   ", "sourceMetadata": {}})
     assert response.status_code == 422

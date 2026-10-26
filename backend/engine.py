@@ -286,11 +286,97 @@ def change_severity(before: str, after: str) -> str:
     combined = f"{before} {after}"
     before_modal = classify_modality(before)["label"]
     after_modal = classify_modality(after)["label"]
-    before_deadline = deadline_number(first_match(before, DEADLINE_PATTERNS))
-    after_deadline = deadline_number(first_match(after, DEADLINE_PATTERNS))
+    before_period = time_quantity(before)
+    after_period = time_quantity(after)
+    before_deadline = deadline_number(first_match(before, DEADLINE_PATTERNS)) or (before_period[1] if before_period else None)
+    after_deadline = deadline_number(first_match(after, DEADLINE_PATTERNS)) or (after_period[1] if after_period else None)
     if before_modal != after_modal or (before_deadline and after_deadline and after_deadline < before_deadline) or SEVERITY_TERMS.search(combined):
         return "CRITICAL"
     return "MATERIAL"
+
+
+TIME_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    "twenty-four": 24,
+}
+TIME_QUANTITY_RE = re.compile(
+    r"(?<![\w-])(\d+|twenty-four|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+"
+    r"(hours?|days?|weeks?|months?|years?)\b", re.I,
+)
+TIME_HOURS = {"hour": 1, "day": 24, "week": 168, "month": 730, "year": 8760}
+RETENTION_RE = re.compile(r"\b(?:retain|retention|preserve|keep|store|archive)\b", re.I)
+
+
+def time_quantity(text: str) -> tuple[str, int] | None:
+    match = TIME_QUANTITY_RE.search(text)
+    if not match:
+        return None
+    amount = int(match.group(1)) if match.group(1).isdigit() else TIME_WORDS[match.group(1).lower()]
+    unit = match.group(2).lower().rstrip("s")
+    return match.group(0), amount * TIME_HOURS[unit]
+
+
+def explain_change(change_type: str, before: str | None, after: str | None) -> dict[str, str]:
+    """Explain observable edits; infer intent only when a concrete cue supports it."""
+    if change_type == "ADDED":
+        return {
+            "observed": "A clause appears in the new version without a close match in the old version.",
+            "possibleRationale": "The reason for adding this clause cannot be established from the two versions alone.",
+            "operationalImpact": "Assign an owner and check whether policies, controls, deadlines, and evidence need updating.",
+            "status": "UNDETERMINED",
+        }
+    if change_type == "REMOVED":
+        return {
+            "observed": "A clause in the old version has no close match in the new version.",
+            "possibleRationale": "The reason for removal is unknown; the requirement may have moved elsewhere.",
+            "operationalImpact": "Check the full new instrument before retiring any policy or control.",
+            "status": "UNDETERMINED",
+        }
+
+    previous = before or ""
+    current = after or ""
+    old_time = time_quantity(previous)
+    new_time = time_quantity(current)
+    if old_time and new_time and old_time[1] != new_time[1]:
+        retention = bool(RETENTION_RE.search(previous) and RETENTION_RE.search(current))
+        direction = "extended" if new_time[1] > old_time[1] else "shortened"
+        if retention:
+            rationale = "This may aim to preserve records for longer review or investigation." if direction == "extended" else "This may reduce the required storage period."
+            impact = "Review retention schedules, deletion rules, and evidence storage."
+            observed = f"The retention period changed from {old_time[0]} to {new_time[0]} ({direction})."
+        else:
+            rationale = "This may aim to accelerate reporting or action." if direction == "shortened" else "This may allow more time to complete the required action."
+            impact = "Review deadlines, escalation paths, owners, and monitoring controls."
+            observed = f"The stated time window changed from {old_time[0]} to {new_time[0]} ({direction})."
+        return {"observed": observed, "possibleRationale": rationale, "operationalImpact": impact, "status": "INFERRED_FROM_TEXT"}
+
+    old_modal = classify_modality(previous)["label"]
+    new_modal = classify_modality(current)["label"]
+    if old_modal != new_modal:
+        return {
+            "observed": f"The clause changed from {old_modal.lower()} to {new_modal.lower()} language.",
+            "possibleRationale": "This may change the level of discretion or the strength of the duty.",
+            "operationalImpact": "Review policy wording, decision rights, and required controls against the new modality.",
+            "status": "INFERRED_FROM_TEXT",
+        }
+
+    old_exception = bool(EXCEPTION_RE.search(previous))
+    new_exception = bool(EXCEPTION_RE.search(current))
+    if old_exception != new_exception:
+        return {
+            "observed": "An explicit exception was added." if new_exception else "An explicit exception was removed.",
+            "possibleRationale": "This may change when the duty applies.",
+            "operationalImpact": "Review exception approvals and the evidence required to apply them.",
+            "status": "INFERRED_FROM_TEXT",
+        }
+
+    return {
+        "observed": "The clause wording changed, but no supported reason was identified from the text alone.",
+        "possibleRationale": "Check official recitals, consultation records, or explanatory notes for the regulator's stated reason.",
+        "operationalImpact": "Ask a reviewer to compare the old and new duties before changing controls.",
+        "status": "UNDETERMINED",
+    }
 
 
 def compare_versions(old_text: str = "", new_text: str = "") -> dict[str, Any]:
@@ -312,12 +398,12 @@ def compare_versions(old_text: str = "", new_text: str = "") -> dict[str, Any]:
             matched_old.add(best_index)
             previous = old_clauses[best_index]
             if best_score < 0.965 or clean(previous).lower() != clean(current).lower():
-                changes.append({"id": f"CH-{stable_hash(previous + current)}", "type": "MODIFIED", "before": previous, "after": current, "similarity": best_score, "severity": change_severity(previous, current)})
+                changes.append({"id": f"CH-{stable_hash(previous + current)}", "type": "MODIFIED", "before": previous, "after": current, "similarity": best_score, "severity": change_severity(previous, current), "explanation": explain_change("MODIFIED", previous, current)})
         else:
-            changes.append({"id": f"CH-{stable_hash(current)}", "type": "ADDED", "before": None, "after": current, "similarity": 0, "severity": "CRITICAL" if SEVERITY_TERMS.search(current) else "MATERIAL"})
+            changes.append({"id": f"CH-{stable_hash(current)}", "type": "ADDED", "before": None, "after": current, "similarity": 0, "severity": "CRITICAL" if SEVERITY_TERMS.search(current) else "MATERIAL", "explanation": explain_change("ADDED", None, current)})
     for index, previous in enumerate(old_clauses):
         if index not in matched_old:
-            changes.append({"id": f"CH-{stable_hash(previous)}", "type": "REMOVED", "before": previous, "after": None, "similarity": 0, "severity": "CRITICAL"})
+            changes.append({"id": f"CH-{stable_hash(previous)}", "type": "REMOVED", "before": previous, "after": None, "similarity": 0, "severity": "CRITICAL", "explanation": explain_change("REMOVED", previous, None)})
     counts: dict[str, int] = {}
     for change in changes:
         counts[change["type"]] = counts.get(change["type"], 0) + 1

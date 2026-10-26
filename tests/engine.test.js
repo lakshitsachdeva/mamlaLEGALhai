@@ -43,6 +43,28 @@ test("detects modified and added obligations across versions", () => {
   assert.ok(result.criticalCount >= 1);
 });
 
+test("explains observable time changes and marks unknown motives", () => {
+  const before = "The controller shall notify the authority within five days. The organization shall retain records for three years.";
+  const after = "The controller shall notify the authority within 72 hours. The organization shall retain records for seven years. The controller must document delays.";
+  const changes = compareVersions(before, after).changes;
+  const notification = changes.find((change) => change.type === "MODIFIED" && change.after.includes("notify"));
+  assert.match(notification.explanation.observed, /five days to 72 hours/);
+  assert.equal(notification.explanation.status, "INFERRED_FROM_TEXT");
+  assert.equal(notification.severity, "CRITICAL");
+  const retention = changes.find((change) => change.type === "MODIFIED" && change.after.includes("retain"));
+  assert.match(retention.explanation.observed, /retention period/);
+  const addition = changes.find((change) => change.type === "ADDED");
+  assert.equal(addition.explanation.status, "UNDETERMINED");
+});
+
+test("reads hyphenated retention period as twenty-four months", () => {
+  const before = "The security owner shall retain review evidence for twelve months.";
+  const after = "The security owner shall retain review evidence for twenty-four months.";
+  const change = compareVersions(before, after).changes[0];
+  assert.equal(change.explanation.observed, "The retention period changed from twelve months to twenty-four months (extended).");
+  assert.match(change.explanation.possibleRationale, /preserve records for longer/);
+});
+
 test("builds a navigable evidence graph", () => {
   const record = analyzeDocument(gdpr).normative[0];
   const graph = evidenceGraph(record);

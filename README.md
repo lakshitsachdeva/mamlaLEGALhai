@@ -11,7 +11,7 @@ It is designed as both a strong classroom demonstration and a transparent resear
 - **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, and exact provenance.
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
 - **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
-- **Change Radar** — aligns old and new provisions and identifies additions, removals, and material modifications.
+- **Change Radar** — aligns old and new provisions, identifies additions, removals, and material modifications, and explains observable changes with clearly labeled possible reasons and actions to review.
 - **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions, and exposes an audit trail in SQLite.
 - **Evaluation Console** — executes a 16-case transparent challenge suite covering extraction, comparison, provenance, deadlines, and versioning.
 - **Browser fallback** — retains the original JavaScript engine for demonstration continuity, labels it explicitly, and never presents fallback output as a backend result.
@@ -60,6 +60,8 @@ python -m uvicorn backend.main:app --reload --port 8000
 6. Show added, removed, and modified duties in **Change Radar**.
 7. Finish with the executable benchmark in **Evaluation Console** and export the Executive Brief to PDF from the browser print dialog.
 
+The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Change Radar's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals.
+
 ## API surface
 
 | Method | Endpoint | Purpose |
@@ -83,7 +85,7 @@ python -m uvicorn backend.main:app --reload --port 8000
 npm test
 ```
 
-The verified Presentation Edition passes 11 backend tests and all 5 original JavaScript engine tests. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the exact implementation state and research boundaries.
+The Presentation Edition includes backend integration tests and the original JavaScript engine tests. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the exact implementation state and research boundaries.
 
 ## Repository structure
 
@@ -102,6 +104,7 @@ dist/
   js/engine.js           transparent browser fallback
   js/app.js              API integration and interaction layer
 tests/engine.test.js     original JavaScript engine tests
+examples/RegulaTrace_Demo_Regulation.docx  presentation upload document
 RUN_PRESENTATION.cmd     one-click Windows launcher
 start-regulatrace.ps1    environment-aware startup and health check
 stop-regulatrace.ps1     clean local shutdown

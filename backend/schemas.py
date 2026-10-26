@@ -118,6 +118,13 @@ class ComparisonResponse(APIModel):
     lexical_similarity: float = Field(alias="lexicalSimilarity")
 
 
+class ChangeExplanation(APIModel):
+    observed: str
+    possible_rationale: str = Field(alias="possibleRationale")
+    operational_impact: str = Field(alias="operationalImpact")
+    status: Literal["INFERRED_FROM_TEXT", "UNDETERMINED"]
+
+
 class VersionChange(APIModel):
     id: str
     type: Literal["MODIFIED", "ADDED", "REMOVED"]
@@ -125,6 +132,7 @@ class VersionChange(APIModel):
     after: str | None
     similarity: float
     severity: Literal["CRITICAL", "MATERIAL"]
+    explanation: ChangeExplanation
 
 
 class VersionCompareResponse(APIModel):

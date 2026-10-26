@@ -268,10 +268,82 @@ function changeSeverity(before, after) {
   const combined = `${before} ${after}`;
   const beforeModal = classifyModality(before).label;
   const afterModal = classifyModality(after).label;
-  const beforeDeadline = deadlineNumber(firstMatch(before, DEADLINE_PATTERNS));
-  const afterDeadline = deadlineNumber(firstMatch(after, DEADLINE_PATTERNS));
+  const beforeDeadline = deadlineNumber(firstMatch(before, DEADLINE_PATTERNS)) ?? timeQuantity(before)?.hours;
+  const afterDeadline = deadlineNumber(firstMatch(after, DEADLINE_PATTERNS)) ?? timeQuantity(after)?.hours;
   if (beforeModal !== afterModal || (beforeDeadline && afterDeadline && afterDeadline < beforeDeadline) || SEVERITY_TERMS.test(combined)) return "CRITICAL";
   return "MATERIAL";
+}
+
+const TIME_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, "twenty-four": 24 };
+const TIME_HOURS = { hour: 1, day: 24, week: 168, month: 730, year: 8760 };
+const TIME_QUANTITY_RE = /(?<![\w-])(\d+|twenty-four|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(hours?|days?|weeks?|months?|years?)\b/i;
+const RETENTION_RE = /\b(?:retain|retention|preserve|keep|store|archive)\b/i;
+
+function timeQuantity(text) {
+  const match = text.match(TIME_QUANTITY_RE);
+  if (!match) return null;
+  const amount = /^\d+$/.test(match[1]) ? Number(match[1]) : TIME_WORDS[match[1].toLowerCase()];
+  const unit = match[2].toLowerCase().replace(/s$/, "");
+  return { label: match[0], hours: amount * TIME_HOURS[unit] };
+}
+
+function explainChange(type, before, after) {
+  if (type === "ADDED") return {
+    observed: "A clause appears in the new version without a close match in the old version.",
+    possibleRationale: "The reason for adding this clause cannot be established from the two versions alone.",
+    operationalImpact: "Assign an owner and check whether policies, controls, deadlines, and evidence need updating.",
+    status: "UNDETERMINED",
+  };
+  if (type === "REMOVED") return {
+    observed: "A clause in the old version has no close match in the new version.",
+    possibleRationale: "The reason for removal is unknown; the requirement may have moved elsewhere.",
+    operationalImpact: "Check the full new instrument before retiring any policy or control.",
+    status: "UNDETERMINED",
+  };
+
+  const previous = before ?? "";
+  const current = after ?? "";
+  const oldTime = timeQuantity(previous);
+  const newTime = timeQuantity(current);
+  if (oldTime && newTime && oldTime.hours !== newTime.hours) {
+    const retention = RETENTION_RE.test(previous) && RETENTION_RE.test(current);
+    const direction = newTime.hours > oldTime.hours ? "extended" : "shortened";
+    const observed = retention
+      ? `The retention period changed from ${oldTime.label} to ${newTime.label} (${direction}).`
+      : `The stated time window changed from ${oldTime.label} to ${newTime.label} (${direction}).`;
+    const possibleRationale = retention
+      ? (direction === "extended" ? "This may aim to preserve records for longer review or investigation." : "This may reduce the required storage period.")
+      : (direction === "shortened" ? "This may aim to accelerate reporting or action." : "This may allow more time to complete the required action.");
+    const operationalImpact = retention
+      ? "Review retention schedules, deletion rules, and evidence storage."
+      : "Review deadlines, escalation paths, owners, and monitoring controls.";
+    return { observed, possibleRationale, operationalImpact, status: "INFERRED_FROM_TEXT" };
+  }
+
+  const oldModal = classifyModality(previous).label;
+  const newModal = classifyModality(current).label;
+  if (oldModal !== newModal) return {
+    observed: `The clause changed from ${oldModal.toLowerCase()} to ${newModal.toLowerCase()} language.`,
+    possibleRationale: "This may change the level of discretion or the strength of the duty.",
+    operationalImpact: "Review policy wording, decision rights, and required controls against the new modality.",
+    status: "INFERRED_FROM_TEXT",
+  };
+
+  const oldException = EXCEPTION_RE.test(previous);
+  const newException = EXCEPTION_RE.test(current);
+  if (oldException !== newException) return {
+    observed: newException ? "An explicit exception was added." : "An explicit exception was removed.",
+    possibleRationale: "This may change when the duty applies.",
+    operationalImpact: "Review exception approvals and the evidence required to apply them.",
+    status: "INFERRED_FROM_TEXT",
+  };
+
+  return {
+    observed: "The clause wording changed, but no supported reason was identified from the text alone.",
+    possibleRationale: "Check official recitals, consultation records, or explanatory notes for the regulator's stated reason.",
+    operationalImpact: "Ask a reviewer to compare the old and new duties before changing controls.",
+    status: "UNDETERMINED",
+  };
 }
 
 export function compareVersions(oldText = "", newText = "") {
@@ -292,15 +364,15 @@ export function compareVersions(oldText = "", newText = "") {
       matchedOld.add(bestIndex);
       const previous = oldClauses[bestIndex];
       if (bestScore < 0.965 || clean(previous).toLowerCase() !== clean(current).toLowerCase()) {
-        changes.push({ id: `CH-${hash(previous + current)}`, type: "MODIFIED", before: previous, after: current, similarity: bestScore, severity: changeSeverity(previous, current) });
+        changes.push({ id: `CH-${hash(previous + current)}`, type: "MODIFIED", before: previous, after: current, similarity: bestScore, severity: changeSeverity(previous, current), explanation: explainChange("MODIFIED", previous, current) });
       }
     } else {
-      changes.push({ id: `CH-${hash(current)}`, type: "ADDED", before: null, after: current, similarity: 0, severity: SEVERITY_TERMS.test(current) ? "CRITICAL" : "MATERIAL" });
+      changes.push({ id: `CH-${hash(current)}`, type: "ADDED", before: null, after: current, similarity: 0, severity: SEVERITY_TERMS.test(current) ? "CRITICAL" : "MATERIAL", explanation: explainChange("ADDED", null, current) });
     }
   });
 
   oldClauses.forEach((previous, index) => {
-    if (!matchedOld.has(index)) changes.push({ id: `CH-${hash(previous)}`, type: "REMOVED", before: previous, after: null, similarity: 0, severity: "CRITICAL" });
+    if (!matchedOld.has(index)) changes.push({ id: `CH-${hash(previous)}`, type: "REMOVED", before: previous, after: null, similarity: 0, severity: "CRITICAL", explanation: explainChange("REMOVED", previous, null) });
   });
 
   const counts = changes.reduce((acc, c) => { acc[c.type] = (acc[c.type] ?? 0) + 1; return acc; }, {});
