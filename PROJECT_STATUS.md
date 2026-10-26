@@ -24,12 +24,13 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Static frontend served by FastAPI so the full project uses one local server.
 - Deterministic Python implementation compatible with the existing JavaScript response structure.
 - SQLite persistence for analyses, extracted records, reviewer decisions, and audit events.
+- Reviewer field corrections store before/after values and preserve the original evidence clause.
 - Case history, case restoration, live dashboard totals, and decision-state aggregation.
 - Text extraction from text-based PDF, DOCX, TXT, and Markdown uploads, with file type, size, and extraction validation.
 
 ### Analysis and evaluation
 
-- Evidence-linked obligation extraction with actor, action, modality, deadlines, conditions, exceptions, references, confidence, unresolved fields, and source spans.
+- Evidence-linked obligation extraction with actor, action, modality, deadlines, conditions, exceptions, references, confidence, unresolved fields, and retained evidence clauses.
 - Constraint-level policy comparison with an explicit verdict and dimension-by-dimension evidence.
 - Old/new regulatory version comparison with added, removed, and modified clause classification.
 - Change explanations that state the observed edit, a possible rationale when wording supports one, and an operational action to review. Unknown motives are labeled as such.
@@ -55,6 +56,7 @@ These boundaries do not prevent the presentation workflow from running; they def
 - Policy comparison and version alignment remain lexical and constraint-based; the interface deliberately exposes uncertainty instead of claiming legal certainty.
 - Change rationales are textual inferences, not evidence of the regulator's actual intent; official explanatory material is not ingested automatically.
 - The included benchmark is transparent and synthetic-adversarial, not an external peer-reviewed legal corpus. Paper claims should be based on a separately annotated, document-level held-out dataset with inter-annotator agreement.
+- The `citationIntegrity` field checks evidence and source-ID presence; source authority and character-level offsets are not verified.
 - The application supports decision review and evidence traceability but is not legal advice, a compliance certificate, or an autonomous release authority.
 
 ## Paper-ready next study

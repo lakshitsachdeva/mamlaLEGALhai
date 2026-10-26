@@ -2,17 +2,17 @@
 
 RegulaTrace turns regulatory language into traceable, reviewable compliance work. The Presentation Edition combines an evidence-first FastAPI backend, persistent case history, document ingestion, a deterministic obligation engine, policy-gap analysis, change impact analysis, human review decisions, and an executable evaluation suite in one polished interface.
 
-It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its source span and metadata; uncertain findings stay visible; review decisions are written to an audit trail. RegulaTrace is not legal advice and does not certify compliance.
+It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its evidence clause and source metadata; uncertain findings stay visible; review decisions and field corrections are written to an audit trail. Character-level source offsets are not yet implemented. RegulaTrace is not legal advice and does not certify compliance.
 
 ## Presentation Edition capabilities
 
 - **Executive Brief** — a high-impact presentation surface with live system KPIs, a three-act product story, research-readiness indicators, and a single button that runs the complete workflow.
 - **Document ingestion** — extracts text and metadata from text-based PDF, DOCX, TXT, and Markdown files.
-- **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, and exact provenance.
+- **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, source metadata, and retained evidence clauses.
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
 - **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
 - **Change Radar** — aligns old and new provisions, identifies additions, removals, and material modifications, and explains observable changes with clearly labeled possible reasons and actions to review.
-- **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions, and exposes an audit trail in SQLite.
+- **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions and field corrections, and exposes before/after values in an SQLite audit trail.
 - **Evaluation Console** — executes a 16-case transparent challenge suite covering extraction, comparison, provenance, deadlines, and versioning.
 - **Browser fallback** — retains the original JavaScript engine for demonstration continuity, labels it explicitly, and never presents fallback output as a backend result.
 - **Presentation mode** — removes workspace chrome for a clean projector-ready story.
@@ -35,6 +35,10 @@ To stop it, double-click `stop-regulatrace.ps1` or run:
 powershell -ExecutionPolicy Bypass -File .\stop-regulatrace.ps1
 ```
 
+### macOS and Linux
+
+From the repository root, run `sh ./start-regulatrace.sh`, then open <http://127.0.0.1:8000/#executive>. The script creates `.venv`, installs the pinned Python dependencies, and runs the local server. Stop it with Ctrl-C. Set `REGULATRACE_PORT` to use another local port.
+
 ### Manual start
 
 ```powershell
@@ -53,14 +57,16 @@ python -m uvicorn backend.main:app --reload --port 8000
 ## Suggested live demo
 
 1. Open **Executive Brief** and select **Run the live story**.
-2. Show the three extracted obligations and their exact evidence spans in **Obligation Lab**.
-3. Confirm one record and point out the persisted human decision.
+2. Show the three extracted obligations and their retained evidence clauses in **Obligation Lab**.
+3. Correct one field and point out the persisted before/after audit event.
 4. Open **Evidence Graph** to explain traceability.
 5. Show the multi-dimensional gap in **Policy Comparator**.
 6. Show added, removed, and modified duties in **Change Radar**.
 7. Finish with the executable benchmark in **Evaluation Console** and export the Executive Brief to PDF from the browser print dialog.
 
-The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Change Radar's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals.
+The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Change Radar's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
+
+The challenge suite's critical miss rate is the fraction of labeled critical cases with a missed or materially misread duty, missed serious policy mismatch, or missed material version change. It is distinct from the overall case failure rate. The suite is small and synthetic; its score is not an estimate of performance on real legal documents. The analysis field named `citationIntegrity` currently checks that an evidence clause and source ID are present. It does not verify an official citation or character-level span.
 
 ## API surface
 

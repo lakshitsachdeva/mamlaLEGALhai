@@ -21,6 +21,8 @@ test("extracts an evidence-linked deadline and exception", () => {
   const record = analysis.normative[0];
   assert.equal(record.modality, "OBLIGATION");
   assert.match(record.actor, /controller/i);
+  assert.match(record.action, /^notify the personal data breach/i);
+  assert.equal(record.condition, "feasible");
   assert.match(record.deadline, /72 hours/i);
   assert.match(record.exception, /unlikely/i);
   assert.equal(record.sourceId, "eur-lex://gdpr/33");

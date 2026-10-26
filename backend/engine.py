@@ -30,7 +30,7 @@ DEADLINE_PATTERNS = [
     re.compile(r"\bbefore\s+[^,.;]+", re.I),
 ]
 
-CONDITION_RE = re.compile(r"\b(?:if|when|where|whenever|in\s+the\s+event\s+that|provided\s+that)\s+([^.;]+)", re.I)
+CONDITION_RE = re.compile(r"\b(?:if|when|where|whenever|in\s+the\s+event\s+that|provided\s+that)\s+([^,.;]+)", re.I)
 EXCEPTION_RE = re.compile(r"\b(?:unless|except(?:\s+where|\s+when|\s+for)?|save\s+where|other\s+than)\s+([^.;]+)", re.I)
 CROSS_REF_RE = re.compile(r"\b(?:Article|Section|Clause|Paragraph|Annex)\s+[A-Za-z0-9().-]+", re.I)
 SEVERITY_TERMS = re.compile(r"\b(?:breach|penalty|fine|sanction|suspend|revoke|incident|risk|harm|rights|security|safety)\b", re.I)
@@ -130,7 +130,19 @@ def derive_actor(clause: str, modality: dict[str, Any]) -> str:
 def derive_action(clause: str, modality: dict[str, Any]) -> str:
     if modality["index"] < 0:
         return strip_trailing_logic(clause)
-    after = clause[modality["index"] + len(modality["cue"]) :]
+    after = clause[modality["index"] + len(modality["cue"]) :].lstrip(" ,")
+    # Timing and feasibility qualifiers can precede the operative verb.
+    qualifiers = (
+        r"^without\s+undue\s+delay(?:\s+and)?\s*,?\s*",
+        r"^where\s+feasible\s*,\s*",
+        r"^(?:no|not)\s+later\s+than\s+\d+\s+(?:hours?|days?|weeks?|months?|years?)(?:\s+after\s+[^,.;]+)?\s*,\s*",
+    )
+    for _ in range(3):
+        previous = after
+        for pattern in qualifiers:
+            after = re.sub(pattern, "", after, count=1, flags=re.I)
+        if after == previous:
+            break
     return strip_trailing_logic(after) or "Unresolved action"
 
 

@@ -26,7 +26,7 @@ const DEADLINE_PATTERNS = [
   /\bbefore\s+[^,.;]+/i,
 ];
 
-const CONDITION_RE = /\b(?:if|when|where|whenever|in\s+the\s+event\s+that|provided\s+that)\s+([^.;]+)/i;
+const CONDITION_RE = /\b(?:if|when|where|whenever|in\s+the\s+event\s+that|provided\s+that)\s+([^,.;]+)/i;
 const EXCEPTION_RE = /\b(?:unless|except(?:\s+where|\s+when|\s+for)?|save\s+where|other\s+than)\s+([^.;]+)/i;
 const CROSS_REF_RE = /\b(?:Article|Section|Clause|Paragraph|Annex)\s+[A-Za-z0-9().-]+/gi;
 const SEVERITY_TERMS = /\b(?:breach|penalty|fine|sanction|suspend|revoke|incident|risk|harm|rights|security|safety)\b/i;
@@ -114,7 +114,17 @@ function deriveActor(clause, modality) {
 
 function deriveAction(clause, modality) {
   if (modality.index < 0) return stripTrailingLogic(clause);
-  const after = clause.slice(modality.index + modality.cue.length);
+  let after = clause.slice(modality.index + modality.cue.length).replace(/^[,\s]+/, "");
+  const qualifiers = [
+    /^without\s+undue\s+delay(?:\s+and)?\s*,?\s*/i,
+    /^where\s+feasible\s*,\s*/i,
+    /^(?:no|not)\s+later\s+than\s+\d+\s+(?:hours?|days?|weeks?|months?|years?)(?:\s+after\s+[^,.;]+)?\s*,\s*/i,
+  ];
+  for (let index = 0; index < 3; index += 1) {
+    const previous = after;
+    qualifiers.forEach((pattern) => { after = after.replace(pattern, ""); });
+    if (after === previous) break;
+  }
   return stripTrailingLogic(after) || "Unresolved action";
 }
 
