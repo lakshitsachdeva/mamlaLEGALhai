@@ -6,7 +6,7 @@
  * confidence, and failure states so it can later be compared with learned models.
  */
 
-export const ENGINE_VERSION = "0.4.0-research";
+export const ENGINE_VERSION = "0.5.0-research";
 
 const MODALITY_PATTERNS = [
   { label: "PROHIBITION", re: /\b(must\s+not|shall\s+not|may\s+not|is\s+prohibited\s+from|are\s+prohibited\s+from|is\s+forbidden\s+to)\b/i, weight: 0.98 },
@@ -60,6 +60,22 @@ export function segmentClauses(text = "") {
       const numbered = part.split(/(?=\s*\([a-z0-9ivx]+\)\s+)/i).map(clean).filter((x) => x.length >= 12);
       return numbered.length > 1 ? numbered : [part];
     });
+}
+
+function locateClauseSpans(text, clauses) {
+  let cursor = 0;
+  return clauses.map((clause) => {
+    const pattern = clause.split(/\s+/).map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+");
+    if (!pattern) return null;
+    const matcher = new RegExp(pattern, "g");
+    matcher.lastIndex = cursor;
+    const match = matcher.exec(text);
+    if (!match) return null;
+    const start = Array.from(text.slice(0, match.index)).length;
+    cursor = match.index + match[0].length;
+    const end = Array.from(text.slice(0, cursor)).length;
+    return { start, end };
+  });
 }
 
 export function classifyModality(clause = "") {
@@ -140,6 +156,7 @@ function confidenceFor(record) {
 
 export function extractObligations(text = "", meta = {}) {
   const clauses = segmentClauses(text);
+  const spans = locateClauseSpans(text, clauses);
   return clauses.map((clause, index) => {
     const modality = classifyModality(clause);
     const condition = clause.match(CONDITION_RE)?.[1]?.trim() ?? null;
@@ -168,11 +185,13 @@ export function extractObligations(text = "", meta = {}) {
       exception,
       crossReferences,
       evidence: clause,
+      sourceSpan: spans[index],
       reviewState: "UNREVIEWED",
       severity: SEVERITY_TERMS.test(clause) ? "HIGH" : deadline ? "MEDIUM" : "STANDARD",
       unresolved: [
         actor === "Unresolved actor" ? "actor" : null,
         crossReferences.length ? "cross-reference-context" : null,
+        spans[index] ? null : "source-span",
       ].filter(Boolean),
     };
     return { ...record, confidence: confidenceFor(record) };
@@ -190,7 +209,7 @@ export function analyzeDocument(text = "", meta = {}) {
     ? normative.reduce((sum, r) => sum + r.confidence, 0) / normative.length
     : 0;
   const citationIntegrity = records.length
-    ? records.filter((r) => r.sourceId && r.evidence).length / records.length
+    ? records.filter((r) => r.sourceId && r.evidence && r.sourceSpan).length / records.length
     : 0;
   return {
     engineVersion: ENGINE_VERSION,

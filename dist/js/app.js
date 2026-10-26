@@ -358,7 +358,8 @@ function renderDetail() {
   drawer.classList.add("open");
   const fields = [
     ["Actor", record.actor], ["Action", record.action], ["Deadline", record.deadline ?? "Not located"], ["Trigger / condition", record.condition ?? "Not located"],
-    ["Exception", record.exception ?? "Not located"], ["Authority", record.authority], ["Version", record.sourceVersion], ["Review state", record.reviewState],
+    ["Exception", record.exception ?? "Not located"], ["Authority", record.authority], ["Version", record.sourceVersion],
+    ["Source characters", record.sourceSpan ? `${record.sourceSpan.start + 1}–${record.sourceSpan.end}` : "Not located"], ["Review state", record.reviewState],
   ];
   drawer.innerHTML = `<div class="panel-head"><div><span class="panel-step">SELECTED RECORD</span><h2>${record.id}</h2></div><span class="modality ${record.modality}">${record.modality}</span></div>
     <div class="drawer-grid">${fields.map(([label, value]) => `<div class="drawer-field"><span>${label}</span><b>${escapeHtml(value)}</b></div>`).join("")}</div>
@@ -545,7 +546,7 @@ function renderInspector(nodeId) {
   const [type, title, copy] = map[nodeId] ?? map.obligation;
   const inspector = $("#graph-inspector");
   inspector.innerHTML = `<span class="inspector-eyebrow">${type.toUpperCase()}</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(copy)}</p>
-    <div class="inspector-stack"><div class="inspector-field"><span>Source version</span><b>${escapeHtml(record.sourceVersion)}</b></div><div class="inspector-field"><span>Evidence anchor</span><b>${escapeHtml(record.sourceId)} · ${escapeHtml(record.section)}</b></div><div class="inspector-field"><span>Validation state</span><b>${record.unresolved.length ? `Review ${record.unresolved.join(", ")}` : "Schema complete"}</b></div><div class="inspector-field"><span>Transformation</span><b>${ENGINE_VERSION}</b></div></div>
+    <div class="inspector-stack"><div class="inspector-field"><span>Source version</span><b>${escapeHtml(record.sourceVersion)}</b></div><div class="inspector-field"><span>Evidence anchor</span><b>${escapeHtml(record.sourceId)} · ${escapeHtml(record.section)}${record.sourceSpan ? ` · chars ${record.sourceSpan.start + 1}–${record.sourceSpan.end}` : " · offset unavailable"}</b></div><div class="inspector-field"><span>Validation state</span><b>${record.unresolved.length ? `Review ${record.unresolved.join(", ")}` : "Schema complete"}</b></div><div class="inspector-field"><span>Transformation</span><b>${ENGINE_VERSION}</b></div></div>
     <div class="confidence-scale"><header><span>Field confidence</span><b>${percentage(record.confidence)}</b></header><div class="track"><i style="width:${percentage(record.confidence)}"></i></div></div>`;
   $$(".graph-node").forEach((node) => node.classList.toggle("active", node.dataset.node === nodeId));
 }

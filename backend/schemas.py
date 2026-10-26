@@ -60,6 +60,11 @@ class VersionCompareRequest(APIModel):
 Modality = Literal["PROHIBITION", "OBLIGATION", "RECOMMENDATION", "PERMISSION", "INFORMATION"]
 
 
+class SourceSpan(APIModel):
+    start: int = Field(ge=0)
+    end: int = Field(ge=0)
+
+
 class ObligationRecord(APIModel):
     id: str
     source_id: str = Field(alias="sourceId")
@@ -77,6 +82,7 @@ class ObligationRecord(APIModel):
     exception: str | None
     cross_references: list[str] = Field(alias="crossReferences")
     evidence: str
+    source_span: SourceSpan | None = Field(default=None, alias="sourceSpan")
     review_state: str = Field(alias="reviewState")
     severity: Literal["HIGH", "MEDIUM", "STANDARD"]
     unresolved: list[str]

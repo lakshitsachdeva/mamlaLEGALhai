@@ -53,7 +53,8 @@ def run_benchmark() -> dict[str, Any]:
         modality_ok = bool(record and record["modality"] == modality)
         actor_ok = actor_fragment is None or bool(record and actor_fragment.lower() in record["actor"].lower())
         deadline_ok = deadline_fragment is None or bool(record and record["deadline"] and deadline_fragment.lower() in record["deadline"].lower())
-        provenance_ok = bool(record and record["evidence"] == text and record["sourceId"].startswith("benchmark://"))
+        span = record["sourceSpan"] if record else None
+        provenance_ok = bool(record and span and text[span["start"]:span["end"]] == text and record["sourceId"].startswith("benchmark://"))
         passed = modality_ok and actor_ok and deadline_ok and provenance_ok
         critical = index in CRITICAL_EXTRACTION_CASES
         extraction_results.append(

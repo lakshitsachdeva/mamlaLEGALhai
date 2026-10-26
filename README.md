@@ -2,13 +2,13 @@
 
 RegulaTrace turns regulatory language into traceable, reviewable compliance work. The Presentation Edition combines an evidence-first FastAPI backend, persistent case history, document ingestion, a deterministic obligation engine, policy-gap analysis, change impact analysis, human review decisions, and an executable evaluation suite in one polished interface.
 
-It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its evidence clause and source metadata; uncertain findings stay visible; review decisions and field corrections are written to an audit trail. Character-level source offsets are not yet implemented. RegulaTrace is not legal advice and does not certify compliance.
+It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its evidence clause, source metadata, and character offsets into the supplied or extracted text; uncertain findings stay visible; review decisions and field corrections are written to an audit trail. RegulaTrace is not legal advice and does not certify compliance.
 
 ## Presentation Edition capabilities
 
 - **Executive Brief** — a high-impact presentation surface with live system KPIs, a three-act product story, research-readiness indicators, and a single button that runs the complete workflow.
 - **Document ingestion** — extracts text and metadata from text-based PDF, DOCX, TXT, and Markdown files.
-- **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, source metadata, and retained evidence clauses.
+- **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, source metadata, and evidence clauses with source offsets.
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
 - **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
 - **Change Radar** — aligns old and new provisions, identifies additions, removals, and material modifications, and explains observable changes with clearly labeled possible reasons and actions to review.
@@ -66,7 +66,9 @@ python -m uvicorn backend.main:app --reload --port 8000
 
 The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Change Radar's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
 
-The challenge suite's critical miss rate is the fraction of labeled critical cases with a missed or materially misread duty, missed serious policy mismatch, or missed material version change. It is distinct from the overall case failure rate. The suite is small and synthetic; its score is not an estimate of performance on real legal documents. The analysis field named `citationIntegrity` currently checks that an evidence clause and source ID are present. It does not verify an official citation or character-level span.
+The challenge suite's critical miss rate is the fraction of labeled critical cases with a missed or materially misread duty, missed serious policy mismatch, or missed material version change. It is distinct from the overall case failure rate. The suite is small and synthetic; its score is not an estimate of performance on real legal documents. The analysis field named `citationIntegrity` checks that an evidence clause, source ID, and located source span are present. Offsets use Unicode code points with an exclusive end and refer to the supplied text or extracted document text. They do not verify an official citation or PDF page coordinates.
+
+For a separately annotated document set, use `python -m research.evaluate path/to/gold.jsonl --split test`. The [held-out study protocol](research/PROTOCOL.md) defines the JSONL format, leakage checks, span matching, critical-miss denominator, and remaining research gates. No held-out study result is bundled.
 
 ## API surface
 
@@ -87,9 +89,11 @@ The challenge suite's critical miss rate is the fraction of labeled critical cas
 ## Verification
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest backend\tests -q --basetemp .pytest-temp
+.\.venv\Scripts\python.exe -m pytest backend\tests research\tests -q --basetemp .pytest-temp
 npm test
 ```
+
+On macOS or Linux, use `.venv/bin/python -m pytest backend/tests research/tests -q` and `npm test`.
 
 The Presentation Edition includes backend integration tests and the original JavaScript engine tests. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the exact implementation state and research boundaries.
 
@@ -104,6 +108,10 @@ backend/
   evaluation.py          executable transparent challenge suite
   schemas.py             typed API contracts
   tests/                 backend integration tests
+research/
+  PROTOCOL.md            held-out annotation and evaluation rules
+  evaluate.py            JSONL gold loader and document-level evaluator
+  tests/                 evaluator validation tests
 dist/
   index.html             application and presentation shell
   styles.css             responsive visual system
@@ -111,6 +119,7 @@ dist/
   js/app.js              API integration and interaction layer
 tests/engine.test.js     original JavaScript engine tests
 examples/RegulaTrace_Demo_Regulation.docx  presentation upload document
+start-regulatrace.sh     macOS/Linux launcher
 RUN_PRESENTATION.cmd     one-click Windows launcher
 start-regulatrace.ps1    environment-aware startup and health check
 stop-regulatrace.ps1     clean local shutdown

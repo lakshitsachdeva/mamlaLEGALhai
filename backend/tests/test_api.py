@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from backend.engine import analyze_document
 from backend.main import app
 
 
@@ -26,7 +27,7 @@ def test_health_exposes_engine_version() -> None:
         "status": "ok",
         "service": "regulatrace-api",
         "phase": "presentation-edition",
-        "engineVersion": "0.4.0-research",
+        "engineVersion": "0.5.0-research",
     }
 
 
@@ -58,7 +59,7 @@ def test_analyze_preserves_frontend_contract_and_metadata() -> None:
     )
     assert response.status_code == 200
     payload = response.json()
-    assert payload["engineVersion"] == "0.4.0-research"
+    assert payload["engineVersion"] == "0.5.0-research"
     assert payload["source"]["sourceId"] == "eur-lex://gdpr/33"
     assert payload["summary"]["citationIntegrity"] == 1
     assert payload["normative"][0]["modality"] == "OBLIGATION"
@@ -66,6 +67,17 @@ def test_analyze_preserves_frontend_contract_and_metadata() -> None:
     assert payload["normative"][0]["condition"] == "feasible"
     assert "72 hours" in payload["normative"][0]["deadline"]
     assert "unlikely" in payload["normative"][0]["exception"]
+    span = payload["normative"][0]["sourceSpan"]
+    assert GDPR[span["start"]:span["end"]] == payload["normative"][0]["evidence"]
+
+
+def test_source_spans_are_ordered_and_use_unicode_code_points() -> None:
+    source = "🧭 Context heading.\nThe provider must retain logs.\nThe provider must retain logs."
+    records = analyze_document(source)["records"]
+    duty_spans = [record["sourceSpan"] for record in records if record["modality"] == "OBLIGATION"]
+    assert len(duty_spans) == 2
+    assert duty_spans[0]["end"] < duty_spans[1]["start"]
+    assert all(source[span["start"]:span["end"]] == "The provider must retain logs." for span in duty_spans)
 
 
 def test_compare_flags_slower_policy_deadline() -> None:
