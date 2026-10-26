@@ -9,7 +9,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Backend integration tests and JavaScript engine tests cover extraction, comparison, version analysis, and change explanations.
 - The executable challenge suite passed 16 of 16 transparent synthetic-adversarial cases, with 0% critical misses on that suite.
 - Browser verification rendered three evidence-linked obligations, persisted a field correction, restored the reviewed case, and confirmed its before/after audit event.
-- Backend and research tests passed locally (20 tests); JavaScript engine tests passed (8 tests). CI is configured but has not run on GitHub.
+- Backend and research tests passed locally (20 tests); JavaScript engine tests passed (8 tests). [CI passed on the fork branch](https://github.com/lakshitsachdeva/regulatrace-compliance-intelligence/actions/runs/40361949647); the upstream draft PR has not reported checks.
 
 ## Implemented
 
