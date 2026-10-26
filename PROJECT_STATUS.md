@@ -37,6 +37,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Change explanations that state the observed edit, a possible rationale when wording supports one, and an operational action to review. Unknown motives are labeled as such.
 - Executable 16-case transparent challenge suite covering extraction, modality, actor, deadlines, provenance, policy comparison, and versioning.
 - Held-out JSONL evaluation harness validates gold offsets and split leakage, then reports detection F1, matched modality accuracy, critical misses, provenance errors, and an error list. No held-out corpus is bundled.
+- Exploratory external sentence-classification experiments now compare the rules with TF-IDF logistic regression and SVM baselines on two independently released EU datasets. The scripts, cleaning audit, fold metrics, and figures are in `research/experiments/`; these do not measure full obligation-span extraction.
 - Persistent human review decisions: confirmed, corrected, and rejected.
 
 ### Delivery and quality

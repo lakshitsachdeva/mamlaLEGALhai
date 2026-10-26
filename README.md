@@ -72,7 +72,7 @@ For a separately annotated document set, use `python -m research.evaluate path/t
 
 ## Preprint draft
 
-The [RegulaTrace preprint draft](output/pdf/RegulaTrace_Preprint_Draft.pdf) describes the implemented baseline, evidence contract, evaluation protocol, and current synthetic checks. Its [LaTeX source](paper/regulatrace-preprint/main.tex) is included for revision. This is a named working draft, not an arXiv submission or a held-out evaluation result.
+The current [LaTeX preprint source](paper/regulatrace-preprint/main.tex) includes two external classification experiments, measured model comparisons, and result figures. The [experiment scripts and exact result JSON](research/experiments/README.md) document dataset provenance, cleaning, grouped folds, and limitations. These are sentence-level proxy tasks, not end-to-end obligation-span results. The [earlier PDF export](output/pdf/RegulaTrace_Preprint_Draft.pdf) predates these experiments; the LaTeX editor preview reflects the current source. This is a named working draft and has not been submitted to arXiv.
 
 ## API surface
 
@@ -115,9 +115,11 @@ backend/
 research/
   PROTOCOL.md            held-out annotation and evaluation rules
   evaluate.py            JSONL gold loader and document-level evaluator
+  experiments/           external classification scripts and result JSON
   tests/                 evaluator validation tests
 paper/regulatrace-preprint/main.tex  named working preprint source
-output/pdf/RegulaTrace_Preprint_Draft.pdf  rendered preprint draft
+paper/regulatrace-preprint/figures/  measured result figures
+output/pdf/RegulaTrace_Preprint_Draft.pdf  earlier PDF export
 dist/
   index.html             application and presentation shell
   styles.css             responsive visual system
