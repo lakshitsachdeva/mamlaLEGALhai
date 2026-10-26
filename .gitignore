@@ -6,6 +6,11 @@ node_modules/
 .tmp-pip/
 __pycache__/
 .pytest_cache/
+.pytest-temp/
+.regulatrace/
+*.db
+*.db-shm
+*.db-wal
 *.py[cod]
 .env
 .env.*

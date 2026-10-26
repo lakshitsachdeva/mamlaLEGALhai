@@ -72,12 +72,16 @@ const demoSteps = [
 
 const state = {
   sample: "gdpr",
+  sourceMetadata: { ...SAMPLES.gdpr.meta },
   analysis: null,
   selectedRecord: null,
   comparison: null,
   changes: null,
   graphScale: 1,
   demoIndex: 0,
+  history: [],
+  dashboard: null,
+  benchmark: null,
   runtime: { mode: "checking", detail: "Checking FastAPI backend" },
 };
 
@@ -110,10 +114,11 @@ async function requestApi(path, payload, timeoutMs = 8000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    const isForm = payload instanceof FormData;
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: payload === undefined ? "GET" : "POST",
-      headers: payload === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" },
-      body: payload === undefined ? undefined : JSON.stringify(payload),
+      headers: payload === undefined || isForm ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" },
+      body: payload === undefined ? undefined : isForm ? payload : JSON.stringify(payload),
       signal: controller.signal,
     });
     const data = await response.json().catch(() => null);
@@ -189,12 +194,13 @@ function bindNavigation() {
 async function loadSample(name, notifyFallback = true) {
   state.sample = name;
   const sample = SAMPLES[name];
+  state.sourceMetadata = { ...sample.meta };
   $("#source-title").value = sample.title;
   $("#regulation-input").value = sample.text;
   updateCharacterCount();
   state.analysis = await executeWithFallback(
     "/api/analyze",
-    { text: sample.text, sourceMetadata: sample.meta },
+    { text: sample.text, sourceMetadata: sample.meta, persist: false },
     () => analyzeDocument(sample.text, sample.meta),
     "Analysis",
     notifyFallback,
@@ -207,6 +213,76 @@ async function loadSample(name, notifyFallback = true) {
 function updateCharacterCount() {
   const value = $("#regulation-input").value;
   $("#source-count").textContent = `${value.length.toLocaleString()} characters · ${value.trim().split(/\s+/).filter(Boolean).length} words`;
+}
+
+async function ingestDocument(file) {
+  if (!file) return;
+  const zone = $("#upload-zone");
+  zone.classList.add("dragging");
+  try {
+    if (state.runtime.mode !== "backend") throw new Error("Start the FastAPI Presentation Edition to ingest PDF and DOCX files.");
+    const form = new FormData();
+    form.append("file", file);
+    const result = await requestApi("/api/documents/ingest", form, 20000);
+    state.sample = "upload";
+    state.sourceMetadata = {
+      authority: "Uploaded source",
+      jurisdiction: "Unspecified",
+      sourceId: `upload://${result.filename}`,
+      version: new Date().toISOString().slice(0, 10),
+      section: "Uploaded document",
+    };
+    $("#source-title").value = result.filename;
+    $("#regulation-input").value = result.text;
+    updateCharacterCount();
+    toast(`${result.format} extracted: ${result.pages} page(s), ${result.words.toLocaleString()} words.`, "Document ready");
+  } catch (error) {
+    toast(error.message, "Ingestion failed");
+  } finally {
+    zone.classList.remove("dragging");
+    $("#document-upload").value = "";
+  }
+}
+
+function renderHistory() {
+  const container = $("#history-list");
+  if (!container) return;
+  if (!state.history.length) {
+    container.innerHTML = `<div class="empty-history">Run an analysis with FastAPI connected to create a persistent, reviewable case.</div>`;
+    return;
+  }
+  container.innerHTML = state.history.map((item) => `<article class="history-row">
+    <div><h3>${escapeHtml(item.sourceTitle)}</h3><p>${escapeHtml(item.analysisId)} · ${escapeHtml(item.authority)} · ${new Date(item.createdAt).toLocaleString()}</p></div>
+    <div class="history-stat"><span>records</span><b>${item.recordCount}</b></div>
+    <div class="history-stat"><span>reviewed</span><b>${item.reviewedCount}</b></div>
+    <div class="history-stat"><span>unresolved</span><b>${item.unresolvedCount}</b></div>
+    <button class="secondary-button small" data-load-analysis="${item.analysisId}">Open</button>
+  </article>`).join("");
+  $$('[data-load-analysis]', container).forEach((button) => button.addEventListener("click", async () => {
+    try {
+      state.analysis = await requestApi(`/api/analyses/${button.dataset.loadAnalysis}`);
+      state.selectedRecord = state.analysis.normative[0] ?? state.analysis.records[0];
+      renderAnalysis();
+      renderGraph();
+      showView("obligation-lab");
+      toast(`Loaded ${state.analysis.analysisId}.`, "Case restored");
+    } catch (error) { toast(error.message, "Load failed"); }
+  }));
+}
+
+async function refreshHistory() {
+  if (state.runtime.mode !== "backend") { state.history = []; renderHistory(); return; }
+  try { state.history = await requestApi("/api/analyses?limit=8"); renderHistory(); } catch { state.history = []; renderHistory(); }
+}
+
+async function refreshDashboard() {
+  if (state.runtime.mode !== "backend") return;
+  try {
+    state.dashboard = await requestApi("/api/dashboard");
+    $("#kpi-analyses").textContent = state.dashboard.analyses.toLocaleString();
+    $("#kpi-records").textContent = state.dashboard.records.toLocaleString();
+    $("#kpi-reviewed").textContent = state.dashboard.reviewed.toLocaleString();
+  } catch { /* Executive KPIs remain safely neutral while the API reconnects. */ }
 }
 
 async function runAnalysis() {
@@ -222,17 +298,18 @@ async function runAnalysis() {
       bar.style.width = `${width}%`;
       await sleep(120);
     }
-    const active = SAMPLES[state.sample];
-    const sourceMetadata = { ...active.meta, title: $("#source-title").value };
+    const sourceMetadata = { ...state.sourceMetadata, title: $("#source-title").value };
     state.analysis = await executeWithFallback(
       "/api/analyze",
-      { text, sourceMetadata },
+      { text, sourceMetadata, persist: true },
       () => analyzeDocument(text, sourceMetadata),
       "Analysis",
     );
     state.selectedRecord = state.analysis.normative[0] ?? state.analysis.records[0];
     renderAnalysis();
     renderGraph();
+    await refreshHistory();
+    await refreshDashboard();
     toast(`${state.analysis.summary.obligationCount} obligations compiled with source evidence.`, "Pipeline complete");
   } catch (error) {
     toast(error.message, "Analysis failed");
@@ -293,10 +370,24 @@ function renderDetail() {
     <div class="drawer-grid">${fields.map(([label, value]) => `<div class="drawer-field"><span>${label}</span><b>${escapeHtml(value)}</b></div>`).join("")}</div>
     <blockquote class="evidence-quote">“${escapeHtml(record.evidence)}”</blockquote>
     <div class="drawer-actions"><button class="primary-button small" data-review="CONFIRMED">Confirm record</button><button class="secondary-button small" data-review="CORRECTED">Mark corrected</button><button class="secondary-button small" data-review="REJECTED">Reject</button><button class="text-button" id="open-record-graph">Trace in graph →</button></div>`;
-  $$('[data-review]', drawer).forEach((button) => button.addEventListener("click", () => {
-    record.reviewState = button.dataset.review;
-    renderDetail();
-    toast(`Record marked ${record.reviewState.toLowerCase()}. Decision retained in the audit trail.`, "Review saved");
+  $$('[data-review]', drawer).forEach((button) => button.addEventListener("click", async () => {
+    const decision = button.dataset.review;
+    button.disabled = true;
+    try {
+      if (state.analysis.analysisId && state.runtime.mode === "backend") {
+        await requestApi("/api/reviews", { analysisId: state.analysis.analysisId, recordId: record.id, decision, reviewer: "Presentation reviewer" });
+        await refreshHistory();
+        await refreshDashboard();
+      }
+      record.reviewState = decision;
+      state.analysis.normative.filter((item) => item.id === record.id).forEach((item) => { item.reviewState = decision; });
+      renderDetail();
+      renderGraph();
+      toast(state.analysis.analysisId ? `Decision persisted for ${record.id}.` : "Decision retained in this browser session; run a saved backend analysis for persistence.", "Review saved");
+    } catch (error) {
+      button.disabled = false;
+      toast(error.message, "Review failed");
+    }
   }));
   $("#open-record-graph")?.addEventListener("click", () => showView("evidence-graph"));
 }
@@ -434,6 +525,71 @@ function renderEvaluation() {
   $("#roadmap").innerHTML = roadmap.map(([week, title, detail, color]) => `<article class="roadmap-phase" style="--accent:${color}"><span>WEEK ${week}</span><b>${title}</b><small>${detail}</small></article>`).join("");
 }
 
+function renderBenchmark() {
+  if (!state.benchmark) return;
+  const result = state.benchmark;
+  const pass = Math.round(result.passRate * 100);
+  const miss = Math.round(result.metrics.criticalMissRate * 100);
+  const provenance = Math.round(result.metrics.provenanceIntegrity * 100);
+  $("#metric-pass-rate").textContent = `${pass}%`;
+  $("#metric-miss-rate").textContent = `${miss}%`;
+  $("#metric-provenance").textContent = `${provenance}%`;
+  $("#metric-cases").textContent = result.executedCases;
+  $("#metric-pass-bar").style.setProperty("--value", `${pass}%`);
+  $("#metric-miss-bar").style.setProperty("--value", `${miss}%`);
+  $("#metric-provenance-bar").style.setProperty("--value", `${provenance}%`);
+  $("#metric-cases-bar").style.setProperty("--value", "100%");
+  $("#benchmark-status").textContent = `${result.passedCases}/${result.executedCases} passed`;
+  $("#kpi-benchmark").textContent = `${pass}%`;
+  const cases = [...result.suites.extraction, ...result.suites.comparison, ...result.suites.versioning];
+  $("#challenge-list").innerHTML = cases.map((item) => `<div class="challenge-row ${item.passed ? "pass" : "fail"}"><span>${item.id} · ${escapeHtml(item.observed ?? `${item.observedChanges} changes`)}</span><i>${item.passed ? "PASS" : "REVIEW"}</i></div>`).join("");
+}
+
+async function runBenchmark(notify = true) {
+  if (state.runtime.mode !== "backend") {
+    if (notify) toast("The executable benchmark requires the FastAPI Presentation Edition.", "Backend required");
+    return;
+  }
+  const button = $("#run-benchmark");
+  button.disabled = true;
+  button.textContent = "Executing challenge suite…";
+  try {
+    state.benchmark = await requestApi("/api/evaluate", undefined, 15000);
+    renderBenchmark();
+    if (notify) toast(`${state.benchmark.passedCases}/${state.benchmark.executedCases} transparent cases passed.`, "Benchmark complete");
+  } catch (error) {
+    if (notify) toast(error.message, "Benchmark failed");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Execute live benchmark";
+  }
+}
+
+function setupPresentation() {
+  $("#presentation-mode").addEventListener("click", () => {
+    document.body.classList.toggle("presentation-active");
+    $("#presentation-mode").innerHTML = document.body.classList.contains("presentation-active") ? "<span>×</span> Exit presentation" : "<span>▣</span> Present";
+  });
+  $("#print-brief").addEventListener("click", () => window.print());
+  $("#run-stage-demo").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.innerHTML = "Running full story…";
+    try {
+      await loadSample("gdpr", false);
+      await runAnalysis();
+      await runComparison(false);
+      await runDiff(false);
+      await runBenchmark(false);
+      showView("executive");
+      toast("Analysis, policy gap, change impact, evidence graph, persistence, and evaluation are ready to present.", "Live story ready");
+    } finally {
+      button.disabled = false;
+      button.innerHTML = "Run the live story <span>→</span>";
+    }
+  });
+}
+
 function setupPalette() {
   const palette = $("#command-palette");
   const input = $("#palette-input");
@@ -483,6 +639,13 @@ function bindActions() {
   $("#load-gdpr").addEventListener("click", async () => { await loadSample("gdpr"); toast("GDPR Article 33 sample loaded.", "Sample ready"); });
   $("#load-ai-act").addEventListener("click", async () => { await loadSample("aiAct"); toast("EU AI Act Article 16 sample loaded.", "Sample ready"); });
   $("#regulation-input").addEventListener("input", updateCharacterCount);
+  $("#upload-document-button").addEventListener("click", (event) => { event.stopPropagation(); $("#document-upload").click(); });
+  $("#upload-zone").addEventListener("click", () => $("#document-upload").click());
+  $("#upload-zone").addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); $("#document-upload").click(); } });
+  $("#document-upload").addEventListener("change", (event) => ingestDocument(event.target.files[0]));
+  ["dragenter", "dragover"].forEach((type) => $("#upload-zone").addEventListener(type, (event) => { event.preventDefault(); $("#upload-zone").classList.add("dragging"); }));
+  ["dragleave", "drop"].forEach((type) => $("#upload-zone").addEventListener(type, (event) => { event.preventDefault(); $("#upload-zone").classList.remove("dragging"); }));
+  $("#upload-zone").addEventListener("drop", (event) => ingestDocument(event.dataTransfer.files[0]));
   $("#analyze-button").addEventListener("click", runAnalysis);
   $("#export-analysis").addEventListener("click", () => {
     if (!state.analysis) return toast("Run an analysis before exporting.", "Nothing to export");
@@ -491,19 +654,10 @@ function bindActions() {
   });
   $("#compare-button").addEventListener("click", () => runComparison(true));
   $("#diff-button").addEventListener("click", () => runDiff(true));
+  $("#refresh-history").addEventListener("click", refreshHistory);
   $("#graph-zoom-in").addEventListener("click", () => { state.graphScale = Math.min(1.35, state.graphScale + .1); $("#graph-zoom-label").textContent = `${Math.round(state.graphScale * 100)}%`; renderGraph(); });
   $("#graph-zoom-out").addEventListener("click", () => { state.graphScale = Math.max(.75, state.graphScale - .1); $("#graph-zoom-label").textContent = `${Math.round(state.graphScale * 100)}%`; renderGraph(); });
-  $("#run-benchmark").addEventListener("click", async (event) => {
-    const button = event.currentTarget;
-    button.disabled = true;
-    button.textContent = "Running 30 cases…";
-    $$(".bar-track i").forEach((bar) => { bar.style.width = "0"; });
-    await sleep(700);
-    $$(".bar-track i").forEach((bar) => { bar.style.width = bar.style.getPropertyValue("--value"); });
-    button.disabled = false;
-    button.textContent = "Run baseline benchmark";
-    toast("Baseline replayed on the retained 30-sentence synthetic fixture. Values are clearly labeled—not real-world legal performance.", "Benchmark complete");
-  });
+  $("#run-benchmark").addEventListener("click", () => runBenchmark(true));
 }
 
 async function initialize() {
@@ -511,6 +665,7 @@ async function initialize() {
   bindActions();
   setupPalette();
   setupDemo();
+  setupPresentation();
   renderEvaluation();
   $("#requirement-input").value = SAMPLES.gdpr.text.split("\n")[0];
   $("#policy-input").value = POLICY_SAMPLE;
@@ -520,6 +675,9 @@ async function initialize() {
   await loadSample("gdpr", false);
   await runComparison(false);
   await runDiff(false);
+  await refreshHistory();
+  await refreshDashboard();
+  if (state.runtime.mode === "backend") await runBenchmark(false);
   showView(location.hash.slice(1) || "overview", false);
 }
 

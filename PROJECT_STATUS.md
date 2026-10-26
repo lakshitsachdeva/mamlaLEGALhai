@@ -1,51 +1,64 @@
 # RegulaTrace Project Status
 
-Status date: 2026-10-24  
-Current milestone: Phase 1 — Python backend integration
+Status date: 2026-10-26
+Current milestone: Presentation Edition — integrated full-stack research demonstrator
 
-## Verification
+## Verified result
 
-- Backend API: 7 tests passed on 2026-10-24.
-- Existing JavaScript engine: 5 tests passed on 2026-10-24.
-- Browser integration: health, analysis, policy comparison and version comparison all returned HTTP 200; the UI rendered 3 obligations, a `POTENTIAL_MISMATCH`, 4 version changes and a 7-node Evidence Graph with no console errors.
+- FastAPI and frontend run together at `http://127.0.0.1:8000`.
+- 11 backend integration tests passed on 2026-10-26.
+- All 5 original JavaScript engine tests passed on 2026-10-26.
+- The executable challenge suite passed 16 of 16 transparent synthetic-adversarial cases, with 0% critical misses on that suite.
+- Browser verification completed the live story, rendered three evidence-linked obligations, persisted one analysis and one reviewer decision, restored the case history, and produced no console errors.
 
 ## Implemented
 
-- FastAPI service with interactive OpenAPI documentation.
-- Typed Pydantic request and response models.
-- `GET /api/health`.
-- `POST /api/analyze` with source metadata and evidence-linked obligation output.
-- `POST /api/compare` with constraint-level policy comparison.
-- `POST /api/versions/compare` with deterministic change classification.
-- Python port of the existing JavaScript rule engine, preserving its response structure and intended semantics.
-- Explicit structured validation and server error responses.
-- Configurable CORS for the local frontend.
-- Frontend API integration for all three analysis operations.
-- Clearly labeled browser fallback when the API is unavailable; fallback output is never presented as a backend result.
-- Existing Obligation Lab, Policy Comparator, Change Radar, Evidence Graph, Evaluation Console, guided demo, navigation and visual design.
-- Backend API tests and the original five JavaScript engine tests.
+### Complete application experience
 
-## Partial
+- Executive Brief with live KPIs, research-readiness indicators, a presentation narrative, printable briefing, and one-click end-to-end demo.
+- Obligation Lab, Evidence Graph, Policy Comparator, Change Radar, Evaluation Console, guided examples, keyboard command palette, responsive navigation, and presentation mode.
+- Clear backend connection status and an explicitly labeled browser-engine fallback.
 
-- The Python and JavaScript deterministic engines are intentionally duplicated for offline fallback. Phase 1 validates representative parity cases, but a larger generated parity corpus would strengthen drift detection.
-- The backend accepts plain text and source metadata only. Source authenticity and document retrieval remain manual.
-- Review state changes remain browser-session state and are not persisted.
-- Evaluation Console values remain clearly labeled research fixtures rather than results from an annotated legal corpus.
+### Backend and data layer
 
-## Not implemented in Phase 1
+- FastAPI service with typed Pydantic request and response contracts, structured errors, CORS configuration, OpenAPI, and ReDoc.
+- Static frontend served by FastAPI so the full project uses one local server.
+- Deterministic Python implementation compatible with the existing JavaScript response structure.
+- SQLite persistence for analyses, extracted records, reviewer decisions, and audit events.
+- Case history, case restoration, live dashboard totals, and decision-state aggregation.
+- Text extraction from text-based PDF, DOCX, TXT, and Markdown uploads, with file type, size, and extraction validation.
 
-- PDF or document ingestion.
-- Database persistence, authentication or multi-user review workflows.
-- Semantic embeddings, vector search or retrieval-augmented generation.
-- Legal-BERT, transformer models or other learned extraction models.
-- Production deployment, rate limiting, audit-log persistence or background jobs.
-- Legal advice, compliance certification or autonomous release decisions.
+### Analysis and evaluation
 
-## Known limitations
+- Evidence-linked obligation extraction with actor, action, modality, deadlines, conditions, exceptions, references, confidence, unresolved fields, and source spans.
+- Constraint-level policy comparison with an explicit verdict and dimension-by-dimension evidence.
+- Old/new regulatory version comparison with added, removed, and modified clause classification.
+- Executable 16-case transparent challenge suite covering extraction, modality, actor, deadlines, provenance, policy comparison, and versioning.
+- Persistent human review decisions: confirmed, corrected, and rejected.
 
-- Rule-based clause segmentation and actor/action extraction can fail on deeply nested provisions, inherited headings, tables, quotations and unusual drafting styles.
-- Deadline normalization supports the deterministic units and patterns present in the original engine; it does not resolve calendars, business days or jurisdiction-specific computation rules.
-- Policy comparison uses lexical overlap and explicit constraint checks, not semantic equivalence.
-- Version alignment is greedy and lexical; extensive reordering or paraphrase can appear as removals and additions.
-- The static hosted demo cannot host the Python process. Run the FastAPI service locally, or deploy it separately and set `window.REGULATRACE_API_BASE_URL` before loading `app.js`.
+### Delivery and quality
 
+- One-click Windows launcher and clean shutdown script.
+- Automatic environment creation, dependency checking, server startup, health validation, and browser opening.
+- 11 backend tests, the original 5 JavaScript tests, and JavaScript syntax validation.
+- Ignored runtime database, logs, virtual environment, test cache, and other generated state.
+
+## Honest research and production boundaries
+
+These boundaries do not prevent the presentation workflow from running; they define the next credible research and production milestones.
+
+- Scanned/image-only PDFs require OCR before ingestion. Current PDF support extracts embedded text.
+- The persistent store is local, single-user SQLite. A deployed multi-user edition would add identity, role-based access, concurrent workflows, encryption policy, backups, and retention controls.
+- The deterministic engine is an explainable baseline rather than a semantic legal-language model. Deep paraphrase, inherited headings, complex tables, and heavily nested drafting can require reviewer correction.
+- Deadline normalization does not yet resolve business-day calendars, holidays, or jurisdiction-specific counting rules.
+- Policy comparison and version alignment remain lexical and constraint-based; the interface deliberately exposes uncertainty instead of claiming legal certainty.
+- The included benchmark is transparent and synthetic-adversarial, not an external peer-reviewed legal corpus. Paper claims should be based on a separately annotated, document-level held-out dataset with inter-annotator agreement.
+- The application supports decision review and evidence traceability but is not legal advice, a compliance certificate, or an autonomous release authority.
+
+## Paper-ready next study
+
+1. Build an expert-annotated, jurisdiction-balanced corpus with document-level train/dev/test splits.
+2. Measure field-level span F1, critical-miss rate, provenance validity, calibration, comparison macro F1, change-impact recall, and reviewer-time reduction.
+3. Compare this deterministic baseline with n-gram, legal-domain encoder, and constrained language-model systems.
+4. Run blinded reviewer studies and report error taxonomies, confidence intervals, ablations, and cross-jurisdiction generalization.
+5. Preserve the existing evidence contract so every learned result remains attributable and reviewable.

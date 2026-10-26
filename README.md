@@ -1,31 +1,47 @@
 # RegulaTrace Compliance Intelligence Lab
 
-RegulaTrace is an evidence-first research prototype for compiling regulatory
-language into atomic obligations, comparing those obligations with internal
-policy evidence, and tracing the impact of regulatory revisions.
+RegulaTrace turns regulatory language into traceable, reviewable compliance work. The Presentation Edition combines an evidence-first FastAPI backend, persistent case history, document ingestion, a deterministic obligation engine, policy-gap analysis, change impact analysis, human review decisions, and an executable evaluation suite in one polished interface.
 
-The prototype is intentionally transparent: it exposes source spans,
-intermediate fields, confidence, unresolved states, version identity and human
-review status. It is not legal advice and does not certify compliance.
+It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its source span and metadata; uncertain findings stay visible; review decisions are written to an audit trail. RegulaTrace is not legal advice and does not certify compliance.
 
-## Live capabilities
+## Presentation Edition capabilities
 
-- **Obligation Lab** — parses source text into actor, action, modality, timing,
-  conditions, exceptions and cross-references.
-- **Policy Comparator** — evaluates actor, action, polarity, timing, exception
-  scope and evidence sufficiency separately.
-- **Change Radar** — aligns old and new provisions and identifies added,
-  removed and materially modified clauses.
-- **Evidence Graph** — visualizes the path from authoritative source through
-  normalized obligation to reviewer decision.
-- **Evaluation Console** — presents baselines, challenge cases, safety metrics
-  and a reproducible study design.
+- **Executive Brief** — a high-impact presentation surface with live system KPIs, a three-act product story, research-readiness indicators, and a single button that runs the complete workflow.
+- **Document ingestion** — extracts text and metadata from text-based PDF, DOCX, TXT, and Markdown files.
+- **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, and exact provenance.
+- **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
+- **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
+- **Change Radar** — aligns old and new provisions and identifies additions, removals, and material modifications.
+- **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions, and exposes an audit trail in SQLite.
+- **Evaluation Console** — executes a 16-case transparent challenge suite covering extraction, comparison, provenance, deadlines, and versioning.
+- **Browser fallback** — retains the original JavaScript engine for demonstration continuity, labels it explicitly, and never presents fallback output as a backend result.
+- **Presentation mode** — removes workspace chrome for a clean projector-ready story.
 
-## Run locally
+## Run the presentation
 
-Requirements: Python 3.11+ and Node.js 20+.
+### One-click on Windows
 
-Create an isolated Python environment and install the Phase 1 API:
+Double-click `RUN_PRESENTATION.cmd`.
+
+The launcher creates or reuses `.venv`, installs the required packages when needed, starts the complete application, checks backend health, and opens:
+
+<http://127.0.0.1:8000/#executive>
+
+Only one server is required—the FastAPI app serves both the API and the frontend. Interactive API documentation is available at <http://127.0.0.1:8000/api/docs>.
+
+To stop it, double-click `stop-regulatrace.ps1` or run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\stop-regulatrace.ps1
+```
+
+### Manual start
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start-regulatrace.ps1
+```
+
+For development with reload enabled:
 
 ```powershell
 python -m venv .venv
@@ -34,64 +50,69 @@ python -m pip install -r requirements.txt
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-In a second terminal, activate the same environment and start the static
-frontend:
+## Suggested live demo
+
+1. Open **Executive Brief** and select **Run the live story**.
+2. Show the three extracted obligations and their exact evidence spans in **Obligation Lab**.
+3. Confirm one record and point out the persisted human decision.
+4. Open **Evidence Graph** to explain traceability.
+5. Show the multi-dimensional gap in **Policy Comparator**.
+6. Show added, removed, and modified duties in **Change Radar**.
+7. Finish with the executable benchmark in **Evaluation Console** and export the Executive Brief to PDF from the browser print dialog.
+
+## API surface
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Runtime readiness |
+| `POST` | `/api/analyze` | Evidence-linked obligation extraction |
+| `POST` | `/api/compare` | Regulatory-to-policy comparison |
+| `POST` | `/api/versions/compare` | Regulatory change analysis |
+| `POST` | `/api/documents/ingest` | PDF, DOCX, TXT, or Markdown text extraction |
+| `GET` | `/api/analyses` | Persistent case history |
+| `GET` | `/api/analyses/{analysis_id}` | Restore an analysis |
+| `POST` | `/api/reviews` | Persist a reviewer decision |
+| `GET` | `/api/analyses/{analysis_id}/audit` | Retrieve the case audit trail |
+| `GET` | `/api/dashboard` | Live operational KPIs |
+| `GET` | `/api/evaluate` | Execute the challenge suite |
+
+## Verification
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
-python -m http.server 4173 --directory dist
-```
-
-Open <http://127.0.0.1:4173>. The top navigation reports **FastAPI connected**
-when requests are served by the backend. If the API is unavailable, the
-interface explicitly reports **Browser fallback** and uses the original
-deterministic JavaScript engine; fallback output is never labeled as a backend
-result.
-
-API documentation is available at <http://127.0.0.1:8000/api/docs> and ReDoc
-at <http://127.0.0.1:8000/api/redoc>.
-
-To use a separately deployed API, set `window.REGULATRACE_API_BASE_URL` before
-`dist/js/app.js` loads, or change the `regulatrace-api-base` meta tag in
-`dist/index.html`.
-
-### Run tests
-
-```powershell
-python -m pytest backend/tests -q
+.\.venv\Scripts\python.exe -m pytest backend\tests -q --basetemp .pytest-temp
 npm test
 ```
 
-See [PROJECT_STATUS.md](PROJECT_STATUS.md) for implemented, partial and
-intentionally deferred capabilities.
+The verified Presentation Edition passes 11 backend tests and all 5 original JavaScript engine tests. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the exact implementation state and research boundaries.
 
 ## Repository structure
 
 ```text
+backend/
+  main.py                FastAPI application and routes
+  engine.py              deterministic Python analysis engine
+  ingestion.py           document text extraction
+  storage.py             SQLite cases, reviews, and audit trail
+  evaluation.py          executable transparent challenge suite
+  schemas.py             typed API contracts
+  tests/                 backend integration tests
 dist/
-  index.html             application shell
+  index.html             application and presentation shell
   styles.css             responsive visual system
-  js/engine.js           transparent NLP and comparison engine
-  js/app.js              interaction and visualization layer
-  docs/                   research proposal
-tests/engine.test.js     executable baseline tests
-backend/                 FastAPI service, typed schemas and deterministic Python engine
-backend/tests/           API and CORS tests
-requirements.txt         Python dependencies
-PROJECT_STATUS.md        milestone scope and known limitations
-.openai/hosting.json     Sites deployment manifest
+  js/engine.js           transparent browser fallback
+  js/app.js              API integration and interaction layer
+tests/engine.test.js     original JavaScript engine tests
+RUN_PRESENTATION.cmd     one-click Windows launcher
+start-regulatrace.ps1    environment-aware startup and health check
+stop-regulatrace.ps1     clean local shutdown
+PROJECT_STATUS.md        verified scope and known research boundaries
 ```
 
 ## Research path
 
-The lexical engine is a reproducible lower bound. A paper-oriented study can
-compare it with character n-gram, legal-domain encoder and constrained language
-model variants on document-level splits. The primary safety metric should be
-critical-miss rate; supporting metrics include field-level span F1, provenance
-integrity, policy-comparison macro F1, change-impact recall and reviewer time.
+The deterministic engine is a reproducible and inspectable lower bound. A paper-oriented evaluation can compare it against character n-gram, legal-domain encoder, and constrained language-model variants using document-level splits. The recommended primary safety metric is critical-miss rate, supported by field-level span F1, provenance integrity, comparison macro F1, change-impact recall, calibration, and reviewer time.
 
-The interface already reflects that experimental design so learned models can
-replace or augment the baseline without changing the evidence contract.
+The UI, typed API contracts, stored provenance, audit model, and executable benchmark already provide the scaffolding for that study without hiding the baseline behind unverifiable claims.
 
 ## Team
 
@@ -100,8 +121,6 @@ replace or augment the baseline without changing the evidence contract.
 - Trayee Nayampalli — B084
 - Riddhi Ranjan — B097
 
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
-

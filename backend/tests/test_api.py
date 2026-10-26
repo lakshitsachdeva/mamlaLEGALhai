@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from backend.main import app
@@ -13,13 +14,18 @@ GDPR = (
 )
 
 
+@pytest.fixture(autouse=True)
+def isolated_database(tmp_path, monkeypatch):
+    monkeypatch.setenv("REGULATRACE_DB_PATH", str(tmp_path / "regulatrace-test.db"))
+
+
 def test_health_exposes_engine_version() -> None:
     response = client.get("/api/health")
     assert response.status_code == 200
     assert response.json() == {
         "status": "ok",
         "service": "regulatrace-api",
-        "phase": "phase-1-deterministic",
+        "phase": "presentation-edition",
         "engineVersion": "0.4.0-research",
     }
 
@@ -30,7 +36,10 @@ def test_openapi_documentation_exposes_all_phase_one_routes() -> None:
     assert docs_response.status_code == 200
     assert schema_response.status_code == 200
     paths = schema_response.json()["paths"]
-    assert {"/api/health", "/api/analyze", "/api/compare", "/api/versions/compare"}.issubset(paths)
+    assert {
+        "/api/health", "/api/analyze", "/api/compare", "/api/versions/compare",
+        "/api/documents/ingest", "/api/analyses", "/api/reviews", "/api/evaluate",
+    }.issubset(paths)
 
 
 def test_analyze_preserves_frontend_contract_and_metadata() -> None:
@@ -98,4 +107,59 @@ def test_local_frontend_origin_is_allowed_by_cors() -> None:
     )
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:4173"
+
+
+def test_text_document_ingestion_returns_document_statistics() -> None:
+    response = client.post(
+        "/api/documents/ingest",
+        files={"file": ("rule.txt", b"The provider must retain logs for seven years.", "text/plain")},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["filename"] == "rule.txt"
+    assert payload["format"] == "TXT"
+    assert payload["words"] == 8
+    assert "retain logs" in payload["text"]
+
+
+def test_persisted_analysis_can_be_reviewed_and_restored() -> None:
+    created = client.post(
+        "/api/analyze",
+        json={"text": GDPR, "persist": True, "sourceMetadata": {"title": "GDPR Article 33", "sourceId": "eur-lex://gdpr/33"}},
+    )
+    assert created.status_code == 200
+    analysis = created.json()
+    assert analysis["analysisId"].startswith("AN-")
+    record_id = analysis["records"][0]["id"]
+
+    reviewed = client.post(
+        "/api/reviews",
+        json={"analysisId": analysis["analysisId"], "recordId": record_id, "decision": "CONFIRMED", "reviewer": "Test reviewer"},
+    )
+    assert reviewed.status_code == 200
+    assert reviewed.json()["decision"] == "CONFIRMED"
+
+    restored = client.get(f"/api/analyses/{analysis['analysisId']}")
+    history = client.get("/api/analyses")
+    audit = client.get(f"/api/analyses/{analysis['analysisId']}/audit")
+    assert restored.json()["records"][0]["reviewState"] == "CONFIRMED"
+    assert history.json()[0]["reviewedCount"] == 1
+    assert audit.json()[0]["reviewer"] == "Test reviewer"
+
+
+def test_executable_evaluation_reports_transparent_case_results() -> None:
+    response = client.get("/api/evaluate")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["datasetType"] == "synthetic-adversarial"
+    assert payload["executedCases"] == 16
+    assert payload["passedCases"] <= payload["executedCases"]
+    assert 0 <= payload["metrics"]["criticalMissRate"] <= 1
+
+
+def test_fastapi_serves_the_presentation_frontend() -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "RegulaTrace" in response.text
+    assert "Executive Brief" in response.text
 

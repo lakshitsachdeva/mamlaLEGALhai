@@ -23,6 +23,7 @@ class SourceMetadata(APIModel):
 class AnalyzeRequest(APIModel):
     text: str = Field(min_length=1, max_length=250_000)
     source_metadata: SourceMetadata = Field(default_factory=SourceMetadata, alias="sourceMetadata")
+    persist: bool = False
 
     @field_validator("text")
     @classmethod
@@ -92,6 +93,7 @@ class AnalysisSummary(APIModel):
 
 
 class AnalysisResponse(APIModel):
+    analysis_id: str | None = Field(default=None, alias="analysisId")
     engine_version: str = Field(alias="engineVersion")
     analyzed_at: str = Field(alias="analyzedAt")
     source: SourceMetadata
@@ -138,6 +140,71 @@ class HealthResponse(APIModel):
     service: str
     phase: str
     engine_version: str = Field(alias="engineVersion")
+
+
+class IngestResponse(APIModel):
+    filename: str
+    format: str
+    text: str
+    characters: int
+    words: int
+    pages: int
+
+
+class ReviewRequest(APIModel):
+    analysis_id: str = Field(alias="analysisId", min_length=3, max_length=64)
+    record_id: str = Field(alias="recordId", min_length=3, max_length=128)
+    decision: Literal["CONFIRMED", "CORRECTED", "REJECTED"]
+    note: str | None = Field(default=None, max_length=2_000)
+    reviewer: str = Field(default="Presentation reviewer", min_length=2, max_length=120)
+
+
+class ReviewResponse(APIModel):
+    analysis_id: str = Field(alias="analysisId")
+    record_id: str = Field(alias="recordId")
+    decision: str
+    reviewer: str
+    note: str | None
+    created_at: str = Field(alias="createdAt")
+    reviewed_count: int = Field(alias="reviewedCount")
+
+
+class AnalysisHistoryItem(APIModel):
+    analysis_id: str = Field(alias="analysisId")
+    created_at: str = Field(alias="createdAt")
+    source_title: str = Field(alias="sourceTitle")
+    authority: str
+    jurisdiction: str
+    record_count: int = Field(alias="recordCount")
+    unresolved_count: int = Field(alias="unresolvedCount")
+    reviewed_count: int = Field(alias="reviewedCount")
+
+
+class AuditEvent(APIModel):
+    record_id: str = Field(alias="recordId")
+    decision: str
+    note: str | None
+    reviewer: str
+    created_at: str = Field(alias="createdAt")
+
+
+class DashboardResponse(APIModel):
+    analyses: int
+    records: int
+    unresolved: int
+    reviewed: int
+    decisions: dict[str, int]
+    database: str
+
+
+class BenchmarkResponse(APIModel):
+    benchmark: str
+    dataset_type: str = Field(alias="datasetType")
+    executed_cases: int = Field(alias="executedCases")
+    passed_cases: int = Field(alias="passedCases")
+    pass_rate: float = Field(alias="passRate")
+    metrics: dict[str, float]
+    suites: dict[str, list[dict[str, Any]]]
 
 
 class ErrorBody(APIModel):
