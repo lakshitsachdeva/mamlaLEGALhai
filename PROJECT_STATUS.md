@@ -11,6 +11,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Browser verification rendered three evidence-linked obligations, persisted a field correction, restored the reviewed case, and confirmed its before/after audit event.
 - Backend and research tests passed locally (30 tests after the optional neural API was added); JavaScript engine tests passed (8 tests). CI on the new commit must be checked after pushing.
 - The pinned InLegalBERT checkpoint loaded locally and produced a quote cosine; a live browser run returned the neural signal and a separate Z3 unsatisfiable core for the fictional opposed-rule example. This is a functional smoke test, not a model evaluation.
+- The current paper PDF and implementation report are linked on the Presentation and Research notes screens. They separate external sentence-label results from unmeasured end-to-end behavior.
 
 ## Implemented
 

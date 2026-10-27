@@ -75,7 +75,7 @@ For a separately annotated document set, use `python -m research.evaluate path/t
 
 ## Preprint draft
 
-The current [LaTeX preprint source](paper/regulatrace-preprint/main.tex) includes two external classification experiments, measured model comparisons, and result figures. The [experiment scripts and exact result JSON](research/experiments/README.md) document dataset provenance, cleaning, grouped folds, and limitations. These are sentence-level proxy tasks, not end-to-end obligation-span results. The [earlier PDF export](output/pdf/RegulaTrace_Preprint_Draft.pdf) predates these experiments; the LaTeX editor preview reflects the current source. This is a named working draft and has not been submitted to arXiv.
+The current [preprint PDF](dist/docs/RegulaTrace_Preprint.pdf) and [LaTeX source](paper/regulatrace-preprint/main.tex) include two external classification experiments, measured model comparisons, and result figures. The [current project report](dist/docs/RegulaTrace_Project_Report.pdf) summarizes the implementation and limits. The [experiment scripts and exact result JSON](research/experiments/README.md) document dataset provenance, cleaning, grouped folds, and limitations. These are sentence-level proxy tasks, not end-to-end obligation-span results. The website links to browser-readable views of the paper and report under **Research notes**, each with a PDF download. To rebuild the report and web views, install `requirements-report.txt`, run `python report/build_report.py`, then `python report/build_web_viewers.py` (the latter also requires `pdftoppm` on PATH). The paper is a named working draft and has not been submitted to arXiv.
 
 ## API surface
 
@@ -125,7 +125,10 @@ research/
   tests/                 evaluator validation tests
 paper/regulatrace-preprint/main.tex  named working preprint source
 paper/regulatrace-preprint/figures/  measured result figures
-output/pdf/RegulaTrace_Preprint_Draft.pdf  earlier PDF export
+dist/docs/RegulaTrace_Preprint.pdf  current preprint PDF linked from the website
+dist/docs/RegulaTrace_Project_Report.pdf  current implementation and research report
+report/build_report.py  reproducible report source
+report/build_web_viewers.py  browser-readable PDF page-view generator
 dist/
   index.html             application and presentation shell
   styles.css             responsive visual system

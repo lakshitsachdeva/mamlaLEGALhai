@@ -7,7 +7,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 1. From the repository folder, run `sh ./start-regulatrace.sh`.
 2. Open `http://127.0.0.1:8000/#executive` and check that the API is connected.
 3. Click **Load demo data** and wait for the success message. This prepares the example analysis, comparison, version changes, and synthetic checks.
-4. Keep the [modality score figure](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png) and [regulatory-function score figure](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png) ready.
+4. Open **Research notes** in the left menu and click **Read current paper**. Click **Jump to measured results** in the paper view; the charts start on page 8. Use **Download PDF** if you want an offline copy. Keep the [project report](../dist/docs/RegulaTrace_Project_Report.pdf) as a backup handout.
 5. You can click **Present** to make the app cleaner on a projector. Version compare and Contradiction Lab use fictional examples.
 6. If demonstrating InLegalBERT, install `requirements-neural.txt` and run the neural check once before presenting; the first use downloads model weights. Keep **Run Z3 only** as a reliable fallback.
 
@@ -45,7 +45,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 ## 5:00–7:30 — The research result
 
-**Show:** The [modality figure](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png), then the [regulatory-function figure](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png).
+**Click:** **Research notes** in the left menu → **Read current paper** → **Jump to measured results**. In the paper, show the five-class modality chart, then the regulatory-function chart. Click **← RegulaTrace research notes** at the top to return. You can also open the paper from the Presentation screen.
 
 **Say:** “We tested the rules on two different published sentence-label datasets. The first asks whether wording expresses an obligation, permission, prohibition, right, or power. Our rules scored 92.2% accuracy. But the dataset contains many obligations, and the macro F1 was only 0.543. Macro F1 checks performance across the different labels instead of letting the largest class dominate.”
 
@@ -88,4 +88,4 @@ Stop there. Leave **Obligation Lab** or **Presentation** visible for questions.
 | Five-class modality | 566 distinct texts; 3 similarity-grouped folds | 92.2% accuracy; 0.543 macro F1 | Word TF-IDF logistic regression: 0.499 macro F1 |
 | Regulatory versus constitutive | 5,831 distinct sentences from 379 acts; 3 act-grouped folds | 41.9% mean accuracy; 0.588 regulatory F1 | Word TF-IDF linear SVM: 85.2% mean accuracy; 0.810 regulatory F1 |
 
-The 41.9% is the mean of three fold accuracies; pooling predictions gives 42.8%. The [paper source](../paper/regulatrace-preprint/main.tex) and [experiment README](../research/experiments/README.md) give the full method. The PDF in `output/pdf/` is an older export; use the current paper source/editor preview for these results.
+The 41.9% is the mean of three fold accuracies; pooling predictions gives 42.8%. The [current paper PDF](../dist/docs/RegulaTrace_Preprint.pdf), [paper source](../paper/regulatrace-preprint/main.tex), and [experiment README](../research/experiments/README.md) give the full method.

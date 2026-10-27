@@ -42,7 +42,7 @@
 
       <div class="sidebar-footer">
         <div class="assurance-chip"><span class="shield">R</span><span><b>Research prototype</b><small>Source text · review · audit</small></span></div>
-        <a href="./docs/RegulaTrace_Project_Report.pdf" target="_blank" rel="noreferrer">Open full project report <span>↗</span></a>
+        <a href="./docs/RegulaTrace_Project_Report_view.html">Read full project report <span>↗</span></a>
       </div>
     </aside>
 
@@ -224,7 +224,7 @@
 
       <section class="view" id="executive" data-title="Presentation">
         <div class="executive-hero">
-          <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><button class="secondary-button" id="print-brief">Print this page</button></div></div>
+        <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><a class="secondary-button" href="./docs/RegulaTrace_Preprint_view.html">Read current paper ↗</a><button class="secondary-button" id="print-brief">Print this page</button></div></div>
           <div class="readiness-orbit" aria-label="System readiness"><div class="orbit-core"><strong id="readiness-score">100</strong><span>DEMO READY</span></div><i></i><i></i><i></i></div>
         </div>
         <div class="route-guide">
@@ -272,13 +272,14 @@
         <div class="paper-hero">
           <span class="mono-kicker">RESEARCH RECORD</span>
           <h1>What we tested<br><em>and what remains</em></h1>
-          <p>The preprint reports two external sentence-classification probes of the rule baseline. The app also includes source-offset checks and a conditional Z3 prototype. Neither is an end-to-end legal contradiction benchmark.</p>
+          <p>The current preprint reports two external sentence-classification probes of the rule baseline. The optional InLegalBERT quote signal and conditional Z3 check are separate prototypes; neither has end-to-end contradiction accuracy.</p>
+          <div class="hero-actions"><a class="primary-button" href="./docs/RegulaTrace_Preprint_view.html">Read current paper ↗</a><a class="secondary-button" href="./docs/RegulaTrace_Project_Report_view.html">Read project report ↗</a></div>
         </div>
         <div class="paper-grid">
           <article class="paper-card featured"><span class="paper-label">CURRENT QUESTION</span><h2>How far can explicit modality cues take us before legal function and context break the rule baseline?</h2><div class="hypothesis-row"><span>Five-class deontic proxy</span><span>Regulatory-function proxy</span><span>Failure audit</span></div></article>
           <article class="paper-card"><span class="paper-label">IMPLEMENTED</span><h3>Evidence-linked records</h3><p>Clause-level modality and fields with exact offsets into supplied text, plus human review events.</p></article>
           <article class="paper-card"><span class="paper-label">MEASURED</span><h3>External classification</h3><p>Two released EU datasets, grouped folds, simple learned baselines, and explicit task boundaries.</p></article>
-          <article class="paper-card"><span class="paper-label">PROTOTYPE</span><h3>Rule feasibility</h3><p>Z3 checks two manually normalized rules and returns a witness or unsatisfiable core.</p></article>
+          <article class="paper-card"><span class="paper-label">PROTOTYPE</span><h3>Neural signal and rule feasibility</h3><p>InLegalBERT scores quote relatedness; Z3 separately checks two manually normalized rules.</p></article>
         </div>
         <div class="experiment-roadmap">
           <div class="section-heading"><div><span class="section-index">02</span><h2>Next study gates</h2></div><p>Planned work; no held-out obligation corpus is bundled.</p></div>
