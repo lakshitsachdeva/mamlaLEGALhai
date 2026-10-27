@@ -76,7 +76,7 @@
 3. **Correction and audit** (~35 seconds): Correct one visible field, save, reopen the case, and show the before/after audit entry. Say: “A human correction stays visible alongside the original evidence.”
 4. **Evidence Graph** (`#evidence-graph`, ~20 seconds): Show the source-to-record-to-review chain. Say: “The graph makes provenance inspectable; it does not certify legal correctness.”
 
-**If time remains:** Open Policy Comparator (`#comparator`) or Change Radar (`#change-radar`) and describe its output as a triage signal. The Evaluation page (`#evaluation`) runs the 16-case synthetic suite; it is not the external cross-validation experiment.
+**If time remains:** Open Policy Comparator (`#comparator`) or Version compare (`#change-radar`) and describe its output as a triage signal. The Evaluation page (`#evaluation`) runs the 16-case synthetic suite; it is not the external cross-validation experiment.
 
 **Optional symbolic proof demo:** Open Contradiction Lab (`#contradiction-lab`) and load the fictional example. Show the two reviewed tuples, overlapping date interval, `UNSAT` result, and two-rule proof core. Say: “Z3 proves that no Boolean action satisfies these two manually supplied propositions under the displayed assumptions. It does not authenticate the source or decide that actual laws conflict.” Change Rule B's actor to show abstention, or its modality to obligation to show a satisfying witness. Do not present the Indian-law clauses in the concept image as verified statutory text or claim measured contradiction accuracy.
 

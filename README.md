@@ -12,7 +12,7 @@ It is designed as both a strong classroom demonstration and a transparent resear
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
 - **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
 - **Contradiction Lab** — checks whether two manually normalized, source-offset-validated rules can be jointly satisfied under explicit assumptions; Z3 returns an unsatisfiable core or witness.
-- **Change Radar** — aligns old and new provisions, identifies additions, removals, and material modifications, and explains observable changes with clearly labeled possible reasons and actions to review.
+- **Version compare** — aligns old and new provisions, flags additions, removals, and modifications, and separates observed edits from possible reasons and review actions.
 - **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions and field corrections, and exposes before/after values in an SQLite audit trail.
 - **Evaluation Console** — executes a 16-case transparent challenge suite covering extraction, comparison, provenance, deadlines, and versioning.
 - **Browser fallback** — retains the original JavaScript engine for demonstration continuity, labels it explicitly, and never presents fallback output as a backend result.
@@ -64,10 +64,10 @@ For a timed research talk with exact result figures, demo cues, and likely quest
 3. Correct one field and point out the persisted before/after audit event.
 4. Open **Evidence Graph** to explain traceability.
 5. Show the multi-dimensional gap in **Policy Comparator**.
-6. Show added, removed, and modified duties in **Change Radar**.
+6. Show added, removed, and modified clauses in **Version compare**.
 7. Finish with the executable benchmark in **Evaluation Console** and export the Executive Brief to PDF from the browser print dialog.
 
-The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Change Radar's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
+The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Version compare's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
 
 The challenge suite's critical miss rate is the fraction of labeled critical cases with a missed or materially misread duty, missed serious policy mismatch, or missed material version change. It is distinct from the overall case failure rate. The suite is small and synthetic; its score is not an estimate of performance on real legal documents. The analysis field named `citationIntegrity` checks that an evidence clause, source ID, and located source span are present. Offsets use Unicode code points with an exclusive end and refer to the supplied text or extracted document text. They do not verify an official citation or PDF page coordinates.
 

@@ -62,7 +62,7 @@ const roadmap = [
 const demoSteps = [
   { view: "obligation-lab", icon: "⌁", title: "Compile an obligation", copy: "Start with a source clause. RegulaTrace preserves the words, identifies the duty and creates a reviewable atomic record." },
   { view: "comparator", icon: "⇄", title: "Challenge the policy", copy: "Topic similarity is only the first layer. The comparator separately tests polarity, timing, actor, scope and exception compatibility." },
-  { view: "change-radar", icon: "◌", title: "Trace a legal revision", copy: "A 90-day review becoming 60 days is not a cosmetic edit. The radar identifies material changes and the downstream work they create." },
+  { view: "change-radar", icon: "◌", title: "Compare versions", copy: "The app aligns the supplied clauses and flags changed wording. Review the text before drawing an impact conclusion." },
   { view: "evidence-graph", icon: "⌘", title: "Trace the record", copy: "Each record retains its evidence clause, source metadata, heuristic score, and review state. The graph shows that path." },
 ];
 
@@ -498,19 +498,18 @@ function renderChanges() {
   if (!state.changes) { output.innerHTML = ""; return; }
   const result = state.changes;
   output.innerHTML = `<div class="change-summary">
-    <article class="impact-card primary"><span>Materiality score</span><b>${result.materialityScore}<small>/100</small></b><small>triage signal, not legal impact</small></article>
-    <article class="impact-card"><span>Material changes</span><b>${result.changes.length}</b><small>${result.counts.MODIFIED ?? 0} modified clauses</small></article>
-    <article class="impact-card"><span>Critical changes</span><b>${result.criticalCount}</b><small>review before effective date</small></article>
-    <article class="impact-card"><span>Existing clauses affected</span><b>${result.affectedObligations}</b><small>modified or removed clauses</small></article>
+    <article class="impact-card"><span>Flagged edits</span><b>${result.changes.length}</b><small>added, removed or modified</small></article>
+    <article class="impact-card"><span>High-priority flags</span><b>${result.criticalCount}</b><small>heuristic severity</small></article>
+    <article class="impact-card"><span>Modified or removed</span><b>${result.affectedObligations}</b><small>earlier clauses affected</small></article>
   </div>
-  <p class="change-interpretation">Possible reasons are inferred from the wording. Confirm the regulator's intent with official explanatory material.</p>
-  <div class="change-list">${result.changes.length ? result.changes.map((change) => `<article class="change-item"><span class="change-kind ${change.type}">${change.type}</span><div class="change-text">${change.before ? `<del>− ${escapeHtml(change.before)}</del>` : ""}${change.after ? `<ins>+ ${escapeHtml(change.after)}</ins>` : ""}${change.explanation ? `<div class="change-explanation"><div class="change-explanation-head"><b>Why this may have changed</b><span class="rationale-status ${change.explanation.status}">${change.explanation.status === "INFERRED_FROM_TEXT" ? "TEXTUAL INFERENCE" : "REASON UNKNOWN"}</span></div><dl><div><dt>Observed</dt><dd>${escapeHtml(change.explanation.observed)}</dd></div><div><dt>Possible rationale</dt><dd>${escapeHtml(change.explanation.possibleRationale)}</dd></div><div><dt>Action to review</dt><dd>${escapeHtml(change.explanation.operationalImpact)}</dd></div></dl></div>` : ""}</div><span class="severity ${change.severity}">${change.severity}</span></article>`).join("") : `<p class="change-empty">No changed clauses were detected between these versions.</p>`}</div>`;
+  <p class="change-interpretation">These flags come from the supplied wording. Confirm legal effect and intent with the source instrument and explanatory material.</p>
+  <div class="change-list">${result.changes.length ? result.changes.map((change) => `<article class="change-item"><span class="change-kind ${change.type}">${change.type}</span><div class="change-text">${change.before ? `<del>− ${escapeHtml(change.before)}</del>` : ""}${change.after ? `<ins>+ ${escapeHtml(change.after)}</ins>` : ""}${change.explanation ? `<div class="change-explanation"><div class="change-explanation-head"><b>Text-based interpretation</b><span class="rationale-status ${change.explanation.status}">${change.explanation.status === "INFERRED_FROM_TEXT" ? "INFERRED" : "UNKNOWN"}</span></div><dl><div><dt>Observed edit</dt><dd>${escapeHtml(change.explanation.observed)}</dd></div><div><dt>Possible reason</dt><dd>${escapeHtml(change.explanation.possibleRationale)}</dd></div><div><dt>Review action</dt><dd>${escapeHtml(change.explanation.operationalImpact)}</dd></div></dl></div>` : ""}</div><span class="severity ${change.severity}">${change.severity === "CRITICAL" ? "HIGH PRIORITY" : "REVIEW"}</span></article>`).join("") : `<p class="change-empty">No changed clauses were detected between these versions.</p>`}</div>`;
 }
 
 async function runDiff(notify = true) {
   const oldText = $("#old-version").value.trim();
   const newText = $("#new-version").value.trim();
-  if (!oldText || !newText) return toast("Provide both versions before running Change Radar.", "Input needed");
+  if (!oldText || !newText) return toast("Provide both versions before comparing.", "Input needed");
   try {
     state.changes = await executeWithFallback(
       "/api/versions/compare",
@@ -520,7 +519,7 @@ async function runDiff(notify = true) {
       notify,
     );
     renderChanges();
-    if (notify) toast(`${state.changes.changes.length} material changes routed for review.`, "Radar complete");
+    if (notify) toast(`${state.changes.changes.length} edits flagged for review.`, "Comparison complete");
   } catch (error) {
     toast(error.message, "Change analysis failed");
   }

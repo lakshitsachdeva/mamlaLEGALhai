@@ -32,7 +32,7 @@
         <a class="nav-item" href="#obligation-lab" data-nav="obligation-lab"><span class="nav-icon">⌁</span><span>Obligation Lab</span><kbd>1</kbd></a>
         <a class="nav-item" href="#comparator" data-nav="comparator"><span class="nav-icon">⇄</span><span>Policy Comparator</span><kbd>2</kbd></a>
         <a class="nav-item" href="#contradiction-lab" data-nav="contradiction-lab"><span class="nav-icon">⊥</span><span>Contradiction Lab</span></a>
-        <a class="nav-item" href="#change-radar" data-nav="change-radar"><span class="nav-icon">◌</span><span>Change Radar</span><kbd>3</kbd></a>
+        <a class="nav-item" href="#change-radar" data-nav="change-radar"><span class="nav-icon">◌</span><span>Version compare</span><kbd>3</kbd></a>
         <a class="nav-item" href="#evidence-graph" data-nav="evidence-graph"><span class="nav-icon">⌘</span><span>Evidence Graph</span><kbd>4</kbd></a>
 
         <p class="nav-label">Research</p>
@@ -201,13 +201,12 @@
         <div id="proof-output" class="proof-output" aria-live="polite"><p>Result appears here after you run the check.</p></div>
       </section>
 
-      <section class="view" id="change-radar" data-title="Change Radar">
+      <section class="view" id="change-radar" data-title="Version compare">
         <div class="workspace-heading">
-          <div><span class="mono-kicker">03 / REGULATORY CHANGE INTELLIGENCE</span><h1>Know what changed.<br><em>Know what breaks.</em></h1></div>
-          <div class="radar-mini" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
+          <div><span class="mono-kicker">VERSION COMPARISON</span><h1>Compare two versions</h1></div>
         </div>
-        <div class="version-bar"><div><span class="version-dot old"></span><b>Version A</b><small>Previous wording</small></div><span class="version-connector"></span><div><span class="version-dot new"></span><b>Version B</b><small>Current wording</small></div><button class="primary-button small" id="diff-button">Detect material changes</button></div>
-        <div class="diff-inputs"><div><label for="old-version">PREVIOUS TEXT</label><textarea id="old-version"></textarea></div><div><label for="new-version">CURRENT TEXT</label><textarea id="new-version"></textarea></div></div>
+        <div class="version-toolbar"><p>Paste the earlier and current wording. The system aligns clauses by text overlap and flags edits for review.</p><button class="primary-button small" id="diff-button">Compare versions</button></div>
+        <div class="diff-inputs"><div><label for="old-version">Earlier text</label><textarea id="old-version"></textarea></div><div><label for="new-version">Current text</label><textarea id="new-version"></textarea></div></div>
         <div class="change-dashboard" id="change-output"></div>
       </section>
 
@@ -297,7 +296,7 @@
       <div class="palette-results">
         <button data-palette-jump="obligation-lab"><span>⌁</span><div><b>Compile regulatory text</b><small>Open the Obligation Lab</small></div><kbd>1</kbd></button>
         <button data-palette-jump="comparator"><span>⇄</span><div><b>Compare a policy</b><small>Inspect constraint alignment</small></div><kbd>2</kbd></button>
-        <button data-palette-jump="change-radar"><span>◌</span><div><b>Detect regulatory change</b><small>Run material-change analysis</small></div><kbd>3</kbd></button>
+        <button data-palette-jump="change-radar"><span>◌</span><div><b>Compare versions</b><small>Review changes in supplied text</small></div><kbd>3</kbd></button>
         <button data-palette-jump="evidence-graph"><span>⌘</span><div><b>Trace an obligation</b><small>Open the evidence graph</small></div><kbd>4</kbd></button>
         <button data-palette-jump="executive"><span>◆</span><div><b>Open executive brief</b><small>Present the complete system story</small></div></button>
       </div>
