@@ -6,7 +6,7 @@ It is designed as both a strong classroom demonstration and a transparent resear
 
 ## Presentation Edition capabilities
 
-- **Executive Brief** — a high-impact presentation surface with live system KPIs, a three-act product story, research-readiness indicators, and a single button that runs the complete workflow.
+- **Presentation** — a guided demo surface with live workspace counts, research boundaries, and a button that loads the example workflow.
 - **Document ingestion** — extracts text and metadata from text-based PDF, DOCX, TXT, and Markdown files.
 - **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, source metadata, and evidence clauses with source offsets.
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
@@ -57,9 +57,9 @@ python -m uvicorn backend.main:app --reload --port 8000
 
 ## Suggested live demo
 
-For a timed research talk with exact result figures, demo cues, and likely questions, use the [presentation speaker notes](presentation/SPEAKER_NOTES.md).
+For a talk you can read aloud, use the [five-minute script](presentation/QUICK_PRESENTATION_GUIDE.md) or [10-minute speaker notes](presentation/SPEAKER_NOTES.md).
 
-1. Open **Executive Brief** and select **Run the live story**.
+1. Open **Presentation** and select **Load demo data**.
 2. Show the three extracted obligations and their retained evidence clauses in **Obligation Lab**.
 3. Correct one field and point out the persisted before/after audit event.
 4. Open **Evidence Graph** to explain traceability.

@@ -1,127 +1,90 @@
-# RegulaTrace research presentation — speaker notes
+# RegulaTrace: what to say and what to click
 
-**Length:** 10 minutes, including a two-minute live demo. These notes map a proposed slide order to the current paper figures and application; they are not a slide deck. Use the current [LaTeX source](../paper/regulatrace-preprint/main.tex) and its editor preview for the manuscript. The PDF in `output/pdf/` is an earlier export and does not contain the external experiment results.
+This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understand** lines are for you; you do not need to read them to the audience. For a shorter talk, use [the five-minute script](QUICK_PRESENTATION_GUIDE.md).
 
-## Run of show
+## Before people arrive
 
-| Time | Slide / screen | Visual |
-| --- | --- | --- |
-| 0:00–0:35 | 1. Title and hook | RegulaTrace title; one sourced obligation record |
-| 0:35–1:30 | 2. The research problem | Text → duty → evidence span |
-| 1:30–2:25 | 3. What the system does | App workflow / evidence graph |
-| 2:25–3:25 | 4. Evaluation design | Two datasets, grouped folds, metrics |
-| 3:25–4:25 | 5. Deontic modality result | [Five-class score plot](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png) |
-| 4:25–5:35 | 6. Regulatory-function result | [Binary score plot](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png) |
-| 5:35–6:35 | 7. What went wrong | [Binary confusion plots](../paper/regulatrace-preprint/figures/regulatory_binary_confusion.png) |
-| 6:35–8:35 | 8. Live demo | Local app: Executive Brief → Obligation Lab → correction → Evidence Graph |
-| 8:35–9:30 | 9. Limits and next experiment | [Per-class F1 plot](../paper/regulatrace-preprint/figures/deontic_proxy_per_class.png) |
-| 9:30–10:00 | 10. Takeaway | Three claims, one open question |
+1. From the repository folder, run `sh ./start-regulatrace.sh`.
+2. Open `http://127.0.0.1:8000/#executive` and check that the API is connected.
+3. Click **Load demo data** and wait for the success message. This prepares the example analysis, comparison, version changes, and synthetic checks.
+4. Keep the [modality score figure](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png) and [regulatory-function score figure](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png) ready.
+5. You can click **Present** to make the app cleaner on a projector. Version compare and Contradiction Lab use fictional examples.
 
-## Slide-by-slide talk track
+## 0:00–1:00 — The problem
 
-### 1. Title and hook (0:00–0:35)
+**Show:** The **Presentation** screen.
 
-**Say:** “RegulaTrace studies a narrow but important problem: can we turn regulatory language into a duty record that a reviewer can trace back to the exact text? A plausible-looking paraphrase is not enough if we cannot locate the source or if we miss who must act.”
+**Say:** “Regulations often specify who must do something, what they must do, and when. If software gives us only a confident summary, we cannot easily check whether it got those details right. RegulaTrace starts with a simpler goal: propose a duty, then keep the exact source text beside it so a person can verify it.”
 
-**Transition:** “That gives us two separate questions: is the language classified correctly, and is the extracted record actually reviewable?”
+**Understand:** A duty record is a small form with fields such as actor, action, deadline, and source quote. The quote can be found in the supplied document. That does not prove that the document is official or that every proposed field is correct.
 
-### 2. The research problem (0:35–1:30)
+## 1:00–3:00 — One proposed duty
 
-**Show:** A short fictional example: “The provider must retain logs and notify the authority within 24 hours.” Highlight that this contains two acts but the current engine stores one action field.
+**Click:** **Obligation Lab** → open one record. Point to the source quote, then the proposed actor, action, and timing. If comfortable, click **Correct fields**, change one field, save it, and show the review history. You can open **Evidence Graph** to show the source-to-record-to-review path.
 
-**Say:** “The system records modality, actor, action, timing, conditions, exceptions, and an exact Unicode source interval. The interval lets us check what text generated a record. It does not prove that the action and exceptions were interpreted correctly. In this example the evidence span is valid, but the one-record-per-clause design merges two responsibilities.”
+**Say:** “Here is the text we supplied. The app splits it into clauses and uses explicit wording, such as ‘must’ or ‘shall,’ to propose a record. We can see who it thinks must act, what action it found, and the exact words behind that suggestion. If I correct a field, the app keeps a record of the change. A human still needs to interpret the rule.”
 
-### 3. What the system does (1:30–2:25)
+**Understand:** Live extraction is mainly rule based. The paper's SVM and logistic regression models do not fill these fields. The Evidence Graph is a visual audit path, not a Neo4j database.
 
-**Show:** The local app or a screenshot of Obligation Lab and Evidence Graph.
+## 3:00–4:00 — A changed policy
 
-**Say:** “This is an implemented deterministic baseline. It ingests text-based PDF, DOCX, TXT, and Markdown; segments clauses; applies ordered modal-cue rules; extracts heuristic fields; and stores reviewer corrections with before-and-after audit entries. Policy comparison and version change are review signals. The numerical confidence is a heuristic, not a calibrated probability.”
+**Click:** **Version compare**. Read one old/new pair.
 
-**Transition:** “We then asked whether the rules hold up outside our own examples.”
+**Say:** “This is a fictional policy revision. Account reviews change from every 90 days to every 60 days. Evidence retention changes from 12 to 24 months. The app flags those edits so a reviewer knows where to look. It does not automatically know why the policy changed or what a regulator intended.”
 
-### 4. Evaluation design (2:25–3:25)
+**Understand:** This view compares wording and proposes review signals. Any explanation of the reason for a change is an inference, not verified legislative intent.
 
-**Show:** Two dataset cards; keep the task names distinct.
+## 4:00–5:00 — A conditional conflict
 
-**Say:** “The 16-case built-in suite is only a development smoke test. For measured comparisons, we used two independently released EU datasets. The first has 566 distinct, five-class deontic examples from one annotator; because it lacks document IDs, we grouped highly similar texts across three folds. The second has 5,831 distinct regulatory-or-constitutive sentences from 379 CELEX acts; all sentences from an act stay in one fold. We compare the existing rules with majority class, word TF-IDF logistic regression, and word and character TF-IDF SVMs. Reported bars are fold means; whiskers are one fold standard deviation, not confidence intervals.”
+**Click:** **Contradiction Lab** → **Load example** → **Run check**. Point to the two entered rules and `UNSAT`.
 
-**Important wording:** These are **sentence-classification proxy tasks**. Neither dataset labels the full obligation span or every actor/action field.
+**Say:** “In this fictional example, the same records team is required to delete a test record and forbidden to delete it during the same period. We first put both statements into structured fields. Given those fields, the solver says the two requirements cannot both hold. A person must still check that the fields accurately represent the source text.”
 
-### 5. Deontic modality result (3:25–4:25)
+**Understand:** `UNSAT` is a mathematical result about these manually structured inputs. It is not a legal ruling and it is not measured contradiction-detection accuracy.
 
-**Show:** `deontic_proxy_scores.png`.
+## 5:00–7:30 — The research result
 
-**Say:** “On the five-class proxy, RegulaTrace rules reach 92.2% accuracy and 0.543 macro F1. The best learned macro F1 among these fixed baselines is 0.499 from word TF-IDF logistic regression. The high accuracy needs context: 444 of 566 examples are obligations. A majority predictor already gets 78.4% accuracy but only 0.176 macro F1. Our rules recognize explicit obligation, permission, and prohibition cues, yet have no output classes for power or right.”
+**Show:** The [modality figure](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png), then the [regulatory-function figure](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png).
 
-**Transition:** “That looks encouraging until we change the question.”
+**Say:** “We tested the rules on two different published sentence-label datasets. The first asks whether wording expresses an obligation, permission, prohibition, right, or power. Our rules scored 92.2% accuracy. But the dataset contains many obligations, and the macro F1 was only 0.543. Macro F1 checks performance across the different labels instead of letting the largest class dominate.”
 
-### 6. Regulatory-function result (4:25–5:35)
+**Say:** “The second dataset asks a harder, different question: does a sentence actually place a regulatory duty on someone, or does it describe how a legal system works? Words such as ‘shall’ appear in both kinds of sentence. Our rules scored only 41.9% mean accuracy. A simple word-based SVM scored 85.2% on this same second task. So spotting obligation-sounding words is not enough to understand what a legal sentence is doing.”
 
-**Show:** `regulatory_binary_scores.png`.
+**Understand:** These percentages are **not** scores for the whole app or for extracting complete duties. Do not compare the 92.2% and 85.2% as if they came from the same exam. The SVM is a separate paper experiment, not the engine behind the live extraction.
 
-**Say:** “In the second dataset, the question is whether a sentence imposes a regulatory obligation on an agent or is constitutive. Almost every retained sentence contains ‘shall,’ so detecting that word is not enough. Here the same RegulaTrace rules fall to 41.9% mean accuracy and 0.588 regulatory-class F1. A word TF-IDF linear SVM reaches 85.2% accuracy and 0.810 regulatory F1. The difference is not a cross-dataset ranking; it exposes how much the task definition changes what counts as success.”
+## 7:30–9:00 — What is missing
 
-### 7. What went wrong (5:35–6:35)
+**Say:** “The clear failure is useful. Rules based on words like ‘shall’ can find candidate duties, but they also flag statements that do not assign an actionable duty. The current app can merge two actions from one clause, and it can miss meaning that depends on another section. Showing the source text makes those mistakes easier to inspect.”
 
-**Show:** `regulatory_binary_confusion.png`.
+**Say:** “The next study needs experts to mark the exact duty passages and fields in documents we have not used for development. Then we can test whether reviewers using RegulaTrace are faster or more accurate than reviewers without it. We have not measured that yet.”
 
-**Say:** “The rule baseline finds all 2,494 labeled regulatory sentences, but falsely flags 3,336 of 3,337 constitutive sentences. Its positive recall is 100%, yet its precision is only 42.8%. The SVM cuts false positives to 298, but misses 570 regulatory sentences. We should discuss both sides of that trade-off rather than celebrate one accuracy number. A commencement provision that says a decision ‘shall enter into force’ illustrates why a modal cue does not automatically mean an actionable duty for our target actor.”
+**Understand:** The in-app **16/16** challenge suite contains examples we wrote. It checks that those cases run; it does not estimate performance on unseen laws. The external datasets label sentences, not every duty field or reviewer outcome.
 
-### 8. Live demo (6:35–8:35)
+## 9:00–10:00 — Finish
 
-**Before presenting:** Run `sh ./start-regulatrace.sh` from the repository root and confirm `http://127.0.0.1:8000/#executive` loads. Keep the fictional `examples/RegulaTrace_Demo_Regulation.docx` available as a backup input. The example's authority and jurisdiction are fictional.
+**Say:** “RegulaTrace is a research prototype for reviewable regulatory analysis. It proposes duties, preserves their source text, records corrections, and can check a carefully stated rule conflict. Our experiments show where simple rules work and where they fail. The aim is to make each result easy to question and the next research claim measurable.”
 
-1. **Executive Brief** (`#executive`, ~20 seconds): Select **Run the live story**. Say: “This runs the local application, not a scripted screenshot.”
-2. **Obligation Lab** (`#obligation-lab`, ~45 seconds): Open an extracted record. Point to its evidence clause, source ID, and offsets. Say: “These offsets recover text in the supplied or extracted document; they are not official PDF page coordinates.”
-3. **Correction and audit** (~35 seconds): Correct one visible field, save, reopen the case, and show the before/after audit entry. Say: “A human correction stays visible alongside the original evidence.”
-4. **Evidence Graph** (`#evidence-graph`, ~20 seconds): Show the source-to-record-to-review chain. Say: “The graph makes provenance inspectable; it does not certify legal correctness.”
+Stop there. Leave **Obligation Lab** or **Presentation** visible for questions.
 
-**If time remains:** Open Policy Comparator (`#comparator`) or Version compare (`#change-radar`) and describe its output as a triage signal. The Evaluation page (`#evaluation`) runs the 16-case synthetic suite; it is not the external cross-validation experiment.
+## Likely questions — short answers
 
-**Optional symbolic proof demo:** Open Contradiction Lab (`#contradiction-lab`) and load the fictional example. Show the two reviewed tuples, overlapping date interval, `UNSAT` result, and two-rule proof core. Say: “Z3 proves that no Boolean action satisfies these two manually supplied propositions under the displayed assumptions. It does not authenticate the source or decide that actual laws conflict.” Change Rule B's actor to show abstention, or its modality to obligation to show a satisfying witness. Do not present the Indian-law clauses in the concept image as verified statutory text or claim measured contradiction accuracy.
+**Is 92.2% the accuracy of the product?** No. It is accuracy on one sentence-label task. We have not measured end-to-end extraction accuracy on independently annotated documents.
 
-### 9. Limits and next experiment (8:35–9:30)
+**Why is 41.9% low?** The rules called almost every sentence regulatory because modal words appeared in both classes. That is a documented failure.
 
-**Show:** `deontic_proxy_per_class.png`.
+**What is macro F1?** A score that balances precision and recall for each label, then averages across labels. It helps reveal weak minority classes.
 
-**Say:** “The per-class plot exposes a blind spot: the rule engine has zero F1 for power and right because it cannot emit those classes. The external datasets do not annotate obligation spans, linked exceptions, or field-level source evidence. The next experiment is a source-disjoint, independently annotated document set with span and field labels, then a blinded reviewer comparison. Until then, our measured claims are about these classification tasks and our software checks.”
+**Does Z3 prove real laws contradict?** No. It checks whether the two structured rules we entered can coexist under their stated assumptions.
 
-### 10. Takeaway (9:30–10:00)
+**Are InLegalBERT, DSPy, or Neo4j in this build?** No. The live build uses rules, a reviewable app, and an optional Z3 check. The paper separately tests simple text classifiers.
 
-**Say:** “Three takeaways. First, provenance should be part of the output contract. Second, explicit cue recognition can score well on deontic labels and still fail to distinguish a regulatory duty from constitutive text. Third, the next serious claim requires end-to-end annotations and reviewer outcomes. RegulaTrace gives us a reproducible baseline and a clear failure to improve.”
+**Does the app certify compliance?** No. It helps a qualified reviewer inspect possible duties and their evidence.
 
-## Numbers to keep straight
+## Backup numbers — use only if asked
 
-| Measure | Value | Meaning |
-| --- | ---: | --- |
-| Deontic sample | 566 texts, 551 similarity groups | One annotator; five classes; no act IDs |
-| Deontic rules | 92.2% accuracy; 0.543 macro F1 | Three-fold mean; not end-to-end extraction |
-| Deontic word logistic regression | 86.6% accuracy; 0.499 macro F1 | Best learned macro F1 among tested models |
-| Binary sample | 5,831 sentences, 379 CELEX acts | 2,494 regulatory; 3,337 constitutive |
-| Binary rules | 41.9% accuracy; 0.588 regulatory F1 | Three-fold mean; very high false-positive rate |
-| Binary word SVM | 85.2% accuracy; 0.810 regulatory F1 | Best tested binary classifier |
-| Rule binary confusion | 2,494 TP; 3,336 FP; 0 FN; 1 TN | Pooled out-of-fold counts |
-| SVM binary confusion | 1,924 TP; 298 FP; 570 FN; 3,039 TN | Pooled out-of-fold counts |
-| Built-in challenge suite | 16/16 synthetic cases | Development check only |
+| Experiment | Data | Rules | Other result |
+| --- | --- | --- | --- |
+| Five-class modality | 566 distinct texts; 3 similarity-grouped folds | 92.2% accuracy; 0.543 macro F1 | Word TF-IDF logistic regression: 0.499 macro F1 |
+| Regulatory versus constitutive | 5,831 distinct sentences from 379 acts; 3 act-grouped folds | 41.9% mean accuracy; 0.588 regulatory F1 | Word TF-IDF linear SVM: 85.2% mean accuracy; 0.810 regulatory F1 |
 
-The binary pooled accuracy for the rules is 42.8%, while the table and talk use the **unweighted mean of three uneven fold accuracies, 41.9%**. Both are correct but answer slightly different aggregation questions.
-
-## Likely questions
-
-**“Why not just report the 92.2%?”** It is provision-level modality classification on an imbalanced, preprocessed dataset. The 0.543 macro F1 and zero score on power/right show what accuracy hides. The second task tests a different legal-function distinction and reveals extreme false positives.
-
-**“Did you evaluate obligation extraction?”** We evaluated two external sentence-level proxy tasks and a synthetic software suite. The span-and-field evaluator is implemented, but there is no independently annotated end-to-end obligation-record test set yet.
-
-**“Why no transformer result?”** We established transparent majority, logistic-regression, and SVM baselines first. A general and legal-domain encoder comparison belongs on a common, frozen split with the same output contract; none has been run for this draft.
-
-**“Does this certify compliance?”** No. Source offsets verify only that evidence text can be recovered from the supplied input. Legal interpretation, source authority, and compliance decisions remain with qualified reviewers.
-
-**“Can we compare these scores with the source papers?”** No direct comparison: dataset filtering, label mappings, folds, and model setup differ. The scripts and JSON record the exact protocol used here.
-
-## Source files for last-minute checks
-
-- Current manuscript: [`paper/regulatrace-preprint/main.tex`](../paper/regulatrace-preprint/main.tex)
-- Experiment methods and reproduction: [`research/experiments/README.md`](../research/experiments/README.md)
-- Exact deontic fold results: [`deontic_proxy_results.json`](../research/experiments/results/deontic_proxy_results.json)
-- Exact binary fold results: [`regulatory_binary_results.json`](../research/experiments/results/regulatory_binary_results.json)
-- End-to-end annotation design: [`research/PROTOCOL.md`](../research/PROTOCOL.md)
+The 41.9% is the mean of three fold accuracies; pooling predictions gives 42.8%. The [paper source](../paper/regulatrace-preprint/main.tex) and [experiment README](../research/experiments/README.md) give the full method. The PDF in `output/pdf/` is an older export; use the current paper source/editor preview for these results.
