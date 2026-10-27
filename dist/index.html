@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07111f">
-  <meta name="description" content="RegulaTrace is an evidence-first research prototype that compiles regulatory language into reviewable obligations, policy gaps and change-impact signals.">
+  <meta name="description" content="RegulaTrace is a local research workbench for reviewing extracted obligations, policy comparisons, revisions, and conditional rule checks.">
   <meta name="regulatrace-api-base" content="http://127.0.0.1:8000">
-  <title>RegulaTrace — Compliance Intelligence Lab</title>
+  <title>RegulaTrace — Regulatory Research Workbench</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307111f'/%3E%3Cpath d='M17 17h21c8 0 12 5 12 12 0 6-3 10-9 12l10 12H39L30 42h-2v11H17V17zm11 9v8h9c2 0 4-1 4-4s-2-4-4-4h-9z' fill='%235be7c4'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -20,15 +20,15 @@
     <aside class="sidebar" aria-label="Primary navigation">
       <a class="brand" href="#overview" data-nav="overview" aria-label="RegulaTrace home">
         <span class="brand-mark" aria-hidden="true">R</span>
-        <span><strong>RegulaTrace</strong><small>Intelligence Lab</small></span>
+        <span><strong>RegulaTrace</strong><small>Regulatory research</small></span>
       </a>
 
-      <div class="environment-pill"><span></span> Presentation Edition</div>
+      <div class="environment-pill"><span></span> Local research build</div>
 
       <nav class="side-nav">
-        <p class="nav-label">Command center</p>
+        <p class="nav-label">Workspace</p>
         <a class="nav-item active" href="#overview" data-nav="overview"><span class="nav-icon">⌂</span><span>Overview</span></a>
-        <a class="nav-item" href="#executive" data-nav="executive"><span class="nav-icon">◆</span><span>Executive Brief</span></a>
+        <a class="nav-item" href="#executive" data-nav="executive"><span class="nav-icon">◆</span><span>Presentation</span></a>
         <a class="nav-item" href="#obligation-lab" data-nav="obligation-lab"><span class="nav-icon">⌁</span><span>Obligation Lab</span><kbd>1</kbd></a>
         <a class="nav-item" href="#comparator" data-nav="comparator"><span class="nav-icon">⇄</span><span>Policy Comparator</span><kbd>2</kbd></a>
         <a class="nav-item" href="#contradiction-lab" data-nav="contradiction-lab"><span class="nav-icon">⊥</span><span>Contradiction Lab</span></a>
@@ -37,11 +37,11 @@
 
         <p class="nav-label">Research</p>
         <a class="nav-item" href="#evaluation" data-nav="evaluation"><span class="nav-icon">∿</span><span>Evaluation</span></a>
-        <a class="nav-item" href="#research" data-nav="research"><span class="nav-icon">§</span><span>Paper Blueprint</span></a>
+        <a class="nav-item" href="#research" data-nav="research"><span class="nav-icon">§</span><span>Research notes</span></a>
       </nav>
 
       <div class="sidebar-footer">
-        <div class="assurance-chip"><span class="shield">✓</span><span><b>Assurance rail</b><small>Evidence · version · review</small></span></div>
+        <div class="assurance-chip"><span class="shield">R</span><span><b>Research prototype</b><small>Source text · review · audit</small></span></div>
         <a href="./docs/RegulaTrace_Project_Report.pdf" target="_blank" rel="noreferrer">Open full project report <span>↗</span></a>
       </div>
     </aside>
@@ -54,29 +54,24 @@
           <span class="runtime-status checking" id="runtime-status" role="status" aria-live="polite"><i></i><span>Checking API…</span></span>
           <button class="ghost-button" id="presentation-mode"><span>▣</span> Present</button>
           <button class="ghost-button" id="command-button"><span>⌘</span> Quick actions <kbd>⌘ K</kbd></button>
-          <button class="primary-button compact" id="guided-demo-button"><span class="pulse-dot"></span> Run guided demo</button>
+          <button class="primary-button compact" id="guided-demo-button">Walkthrough</button>
         </div>
       </header>
 
       <section class="view active" id="overview" data-title="Overview">
         <div class="hero-grid">
           <div class="hero-copy">
-            <div class="eyebrow"><span class="eyebrow-line"></span> Evidence-first compliance engineering</div>
-            <h1>Turn regulation into<br><em>defensible action.</em></h1>
-            <p>RegulaTrace compiles dense legal text into atomic, source-linked obligations—then shows which policies, controls and owners are affected when the rules change.</p>
+            <div class="eyebrow"><span class="eyebrow-line"></span> Regulatory text analysis</div>
+            <h1>Read the rule.<br><em>Check the record.</em></h1>
+            <p>Inspect extracted duties against their source text, compare policy wording, and review changes. Each result keeps the evidence needed to question it.</p>
             <div class="hero-actions">
-              <button class="primary-button" data-jump="obligation-lab">Analyze a regulation <span>→</span></button>
-              <button class="secondary-button" data-jump="change-radar">See change impact</button>
-            </div>
-            <div class="hero-proof">
-              <div><strong>100%</strong><span>evidence target</span></div>
-              <div><strong>5</strong><span>modality states</span></div>
-              <div><strong>0</strong><span>silent guesses</span></div>
+              <button class="primary-button" data-jump="obligation-lab">Open obligation lab <span>→</span></button>
+              <button class="secondary-button" data-jump="contradiction-lab">Check two rules</button>
             </div>
           </div>
 
           <div class="hero-visual" aria-label="Interactive compliance pipeline preview">
-            <div class="visual-topline"><span>Illustrative workflow</span><span class="status-live">● DEMO</span></div>
+            <div class="visual-topline"><span>Worked example</span><span class="status-live">Illustrative</span></div>
             <div class="source-snippet"><span class="line-number">33.1</span><p>In the case of a personal data breach, the controller shall without undue delay and, where feasible, not later than <mark>72 hours</mark>…</p></div>
             <div class="compile-line"><span></span><b>compiles to</b><span></span></div>
             <div class="obligation-spec">
@@ -93,47 +88,42 @@
           </div>
         </div>
 
-        <div class="signal-strip">
-          <span class="signal-label">SYSTEM SIGNAL</span>
-          <div class="ticker"><span>Source clauses retained</span><span>Constraint-aware comparison</span><span>Revision graph active</span><span>Human review recorded</span></div>
-        </div>
-
         <div class="section-heading">
-          <div><span class="section-index">01</span><h2>One system. Four proof points.</h2></div>
-          <p>The project is designed as a research instrument: every claim can be inspected, measured and challenged.</p>
+          <div><span class="section-index">01</span><h2>Work with the evidence</h2></div>
+          <p>Each tool exposes its inputs, output, and limits.</p>
         </div>
 
         <div class="capability-grid">
           <article class="capability-card mint" data-jump="obligation-lab">
             <span class="card-number">01</span><div class="card-symbol">⌁</div>
-            <h3>Obligation compiler</h3><p>Decomposes clauses into actor, action, trigger, deadline, condition, exception and source evidence.</p>
-            <span class="card-link">Open the lab →</span>
+            <h3>Extract obligations</h3><p>Review proposed actor, action, modality, timing, and the exact source clause.</p>
+            <span class="card-link">Open lab →</span>
           </article>
           <article class="capability-card blue" data-jump="comparator">
             <span class="card-number">02</span><div class="card-symbol">⇄</div>
-            <h3>Policy comparator</h3><p>Separates topic similarity from real constraint alignment—polarity, timing, scope and exceptions.</p>
-            <span class="card-link">Compare evidence →</span>
+            <h3>Compare policy text</h3><p>See where policy wording differs in actor, action, polarity, or timing.</p>
+            <span class="card-link">Compare text →</span>
           </article>
           <article class="capability-card amber" data-jump="change-radar">
             <span class="card-number">03</span><div class="card-symbol">◌</div>
-            <h3>Change radar</h3><p>Detects material regulatory edits and traces the downstream obligations, controls and owners at risk.</p>
-            <span class="card-link">Inspect a revision →</span>
+            <h3>Inspect revisions</h3><p>Line up old and new provisions and review material wording changes.</p>
+            <span class="card-link">Compare versions →</span>
           </article>
           <article class="capability-card violet" data-jump="evidence-graph">
             <span class="card-number">04</span><div class="card-symbol">⌘</div>
-            <h3>Evidence graph</h3><p>Makes every transformation navigable, reviewable and exportable instead of hiding reasoning in a prompt.</p>
-            <span class="card-link">Trace a decision →</span>
+            <h3>Trace a record</h3><p>Follow a source clause into its extracted record and review event.</p>
+            <span class="card-link">View graph →</span>
           </article>
         </div>
 
         <div class="architecture-panel">
-          <div class="architecture-copy"><span class="mono-kicker">SYSTEM ARCHITECTURE</span><h2>A compliance compiler,<br>not a confident chatbot.</h2><p>Deterministic components preserve provenance and structure. Statistical models find patterns. Schema gates reject incomplete claims. Reviewers control release.</p><button class="text-button" data-jump="research">Explore the research design →</button></div>
+          <div class="architecture-copy"><span class="mono-kicker">METHOD</span><h2>From clause to<br>reviewable record</h2><p>The local engine proposes fields and keeps source offsets. A reviewer can correct the record; comparison and solver results remain conditional on those fields.</p><button class="text-button" data-jump="research">Read the research notes →</button></div>
           <div class="pipeline" aria-label="RegulaTrace processing stages">
-            <div class="pipeline-stage"><span>01</span><b>Acquire</b><small>Official source + version</small></div><i>→</i>
-            <div class="pipeline-stage"><span>02</span><b>Understand</b><small>Hierarchy + candidate clauses</small></div><i>→</i>
-            <div class="pipeline-stage"><span>03</span><b>Compile</b><small>Atomic obligation records</small></div><i>→</i>
-            <div class="pipeline-stage"><span>04</span><b>Reason</b><small>Policy + change impact</small></div><i>→</i>
-            <div class="pipeline-stage"><span>05</span><b>Review</b><small>Evidence-linked decision</small></div>
+            <div class="pipeline-stage"><span>01</span><b>Load</b><small>Supplied text + metadata</small></div><i>→</i>
+            <div class="pipeline-stage"><span>02</span><b>Segment</b><small>Candidate clauses</small></div><i>→</i>
+            <div class="pipeline-stage"><span>03</span><b>Extract</b><small>Proposed rule fields</small></div><i>→</i>
+            <div class="pipeline-stage"><span>04</span><b>Compare</b><small>Policy, change, feasibility</small></div><i>→</i>
+            <div class="pipeline-stage"><span>05</span><b>Review</b><small>Human correction + audit</small></div>
           </div>
         </div>
       </section>
@@ -184,13 +174,12 @@
 
       <section class="view" id="contradiction-lab" data-title="Contradiction Lab">
         <div class="workspace-heading">
-          <div><span class="mono-kicker">REVIEWED RULES / SYMBOLIC PROOF</span><h1>Can both rules<br><em>be followed?</em></h1></div>
-          <div class="research-badge"><b>CONDITIONAL RESULT</b><span>Z3 checks only the fields you review. A solver result is not a legal ruling.</span></div>
+          <div><span class="mono-kicker">RULE FEASIBILITY / Z3</span><h1>Check two rules</h1></div>
         </div>
-        <p class="proof-intro">Start with the fictional example or replace every field with your own source clauses. The exact evidence quote and offsets are checked before the proof runs. Source authority, meaning, exceptions, and legal priority require human review.</p>
-        <div class="proof-actions"><button class="secondary-button" id="proof-sample">Load fictional example</button><button class="primary-button" id="proof-check">Check feasibility with Z3 <span>→</span></button></div>
+        <p class="proof-intro">Compare two source passages after reviewing the rule fields below. The solver checks whether both normalized rules can be followed during the same period. It does not verify legal authority or resolve priority between laws.</p>
+        <div class="proof-actions"><button class="secondary-button" id="proof-sample">Load example</button><button class="primary-button" id="proof-check">Run check <span>→</span></button><span class="proof-example-note">Fictional example · edit any field</span></div>
         <div class="proof-grid">
-          <form class="proof-rule" data-rule="left"><h2>Rule A</h2><div class="proof-fields">
+          <form class="proof-rule" data-rule="left"><div class="proof-rule-head"><span>A</span><h2>First rule</h2></div><div class="proof-fields">
             <label>Source ID<input name="sourceId" required></label><label>Modality<select name="modality"><option>OBLIGATION</option><option>PROHIBITION</option><option>PERMISSION</option></select></label>
             <label class="wide">Source passage<textarea name="sourceText" required></textarea></label><label class="wide">Exact evidence quote<textarea name="evidence" required></textarea></label>
             <label>Actor<input name="actor" required></label><label>Action<input name="action" required></label>
@@ -199,7 +188,7 @@
             <label>Exception<input name="exception" required></label><label>Valid from<input name="validFrom" type="date" required></label>
             <label>Valid until<input name="validUntil" type="date" required></label>
           </div></form>
-          <form class="proof-rule" data-rule="right"><h2>Rule B</h2><div class="proof-fields">
+          <form class="proof-rule" data-rule="right"><div class="proof-rule-head"><span>B</span><h2>Second rule</h2></div><div class="proof-fields">
             <label>Source ID<input name="sourceId" required></label><label>Modality<select name="modality"><option>OBLIGATION</option><option>PROHIBITION</option><option>PERMISSION</option></select></label>
             <label class="wide">Source passage<textarea name="sourceText" required></textarea></label><label class="wide">Exact evidence quote<textarea name="evidence" required></textarea></label>
             <label>Actor<input name="actor" required></label><label>Action<input name="action" required></label>
@@ -209,7 +198,7 @@
             <label>Valid until<input name="validUntil" type="date" required></label>
           </div></form>
         </div>
-        <div id="proof-output" class="proof-output" aria-live="polite"><p>Review both rules, then run the solver.</p></div>
+        <div id="proof-output" class="proof-output" aria-live="polite"><p>Result appears here after you run the check.</p></div>
       </section>
 
       <section class="view" id="change-radar" data-title="Change Radar">
@@ -233,32 +222,32 @@
         </div>
       </section>
 
-      <section class="view" id="executive" data-title="Executive Brief">
+      <section class="view" id="executive" data-title="Presentation">
         <div class="executive-hero">
-          <div><span class="mono-kicker">PRESENTATION CONTROL ROOM</span><h1>From legal text to<br><em>board-level action.</em></h1><p>This is the five-minute story: ingest a real document, compile evidence-linked duties, expose policy gaps, trace regulatory change, and preserve every human decision.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Run the live story <span>→</span></button><button class="secondary-button" id="print-brief">Export briefing</button></div></div>
+          <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><button class="secondary-button" id="print-brief">Print this page</button></div></div>
           <div class="readiness-orbit" aria-label="System readiness"><div class="orbit-core"><strong id="readiness-score">100</strong><span>DEMO READY</span></div><i></i><i></i><i></i></div>
         </div>
         <div class="executive-kpis" id="executive-kpis">
           <article><span>Persisted analyses</span><strong id="kpi-analyses">0</strong><small>SQLite case workspace</small></article>
           <article><span>Atomic records</span><strong id="kpi-records">0</strong><small>source-linked obligations</small></article>
-          <article><span>Human decisions</span><strong id="kpi-reviewed">0</strong><small>auditable release gates</small></article>
-          <article><span>Live benchmark</span><strong id="kpi-benchmark">—</strong><small>executed, not hard-coded</small></article>
+          <article><span>Review events</span><strong id="kpi-reviewed">0</strong><small>saved corrections and decisions</small></article>
+          <article><span>Synthetic suite</span><strong id="kpi-benchmark">—</strong><small>known authored cases passed</small></article>
         </div>
         <div class="story-grid">
-          <article class="story-card"><span>01 / ACQUIRE</span><h2>Bring your own regulation</h2><p>Upload PDF, DOCX, TXT, or Markdown. RegulaTrace extracts selectable text locally and reports document statistics before analysis.</p><button class="text-button" data-jump="obligation-lab">Open ingestion →</button></article>
-          <article class="story-card"><span>02 / COMPILE</span><h2>Make every duty inspectable</h2><p>Each obligation carries an actor, action, modality, deadline, condition, exception, source identity, version, evidence clause, confidence, and review state.</p><button class="text-button" data-jump="evidence-graph">Trace evidence →</button></article>
-          <article class="story-card"><span>03 / DECIDE</span><h2>Turn change into work</h2><p>Constraint-aware policy comparison catches deadline and polarity failures. Change Radar converts legal edits into a prioritized impact queue.</p><button class="text-button" data-jump="change-radar">Inspect impact →</button></article>
+          <article class="story-card"><span>01 / INPUT</span><h2>Load a document</h2><p>Upload text-based PDF, DOCX, TXT, or Markdown. The app extracts text locally before analysis.</p><button class="text-button" data-jump="obligation-lab">Open document lab →</button></article>
+          <article class="story-card"><span>02 / RECORD</span><h2>Inspect a duty</h2><p>Open its source span, proposed fields, unresolved items, and review history.</p><button class="text-button" data-jump="evidence-graph">Open evidence graph →</button></article>
+          <article class="story-card"><span>03 / CHECK</span><h2>Test a conflict</h2><p>Review two normalized rules, then inspect the solver assumptions and proof core.</p><button class="text-button" data-jump="contradiction-lab">Open rule check →</button></article>
         </div>
         <div class="assurance-board">
-          <div><span class="mono-kicker">WHY THIS IS PAPER-WORTHY</span><h2>A falsifiable system, not a scripted prototype.</h2></div>
-          <ul><li><b>Executable evaluation</b><span>Every metric is produced by a transparent challenge suite.</span></li><li><b>Human-centered evidence</b><span>Decisions persist with reviewer, timestamp, record, and note.</span></li><li><b>Reproducible baseline</b><span>The deterministic engine is a measurable lower bound for future Legal-BERT or LLM experiments.</span></li><li><b>One-server reliability</b><span>FastAPI serves the interface, API documentation, storage, and analysis together.</span></li></ul>
+          <div><span class="mono-kicker">RESEARCH STATUS</span><h2>What these results support</h2></div>
+          <ul><li><b>Synthetic checks</b><span>The in-app challenge suite tests known examples; it does not estimate field performance on new laws.</span></li><li><b>Source offsets</b><span>Evidence spans can be checked against supplied text; source authority is separate.</span></li><li><b>Exploratory models</b><span>The paper reports two external sentence-classification tasks, not end-to-end extraction.</span></li><li><b>Conditional proof</b><span>Z3 checks manually normalized rules under stated assumptions.</span></li></ul>
         </div>
       </section>
 
       <section class="view" id="evaluation" data-title="Evaluation">
         <div class="workspace-heading">
-          <div><span class="mono-kicker">RESEARCH / EVALUATION CONSOLE</span><h1>Measure usefulness,<br><em>not just accuracy.</em></h1></div>
-          <button class="primary-button small" id="run-benchmark">Execute live benchmark</button>
+          <div><span class="mono-kicker">EVALUATION</span><h1>Synthetic checks</h1></div>
+          <button class="primary-button small" id="run-benchmark">Run challenge suite</button>
         </div>
         <div class="metric-grid" id="metric-grid">
           <article class="metric-card"><span>Suite pass rate</span><strong id="metric-pass-rate">—</strong><div class="metric-bar"><i id="metric-pass-bar" style="--value:0%"></i></div><small>live executable cases</small></article>
@@ -273,33 +262,31 @@
         <div class="evaluation-matrix"><div class="panel-head"><div><span class="panel-step">MEASUREMENT PLAN</span><h2>End-to-end evaluation matrix</h2></div><span class="status-chip">reproducible</span></div><div class="table-wrap"><table><thead><tr><th>Task</th><th>Primary metric</th><th>Safety / diagnostic metric</th><th>Why it matters</th></tr></thead><tbody><tr><td>Candidate detection</td><td>Recall, precision</td><td>Critical miss by severity</td><td>A missed duty is invisible downstream</td></tr><tr><td>Field extraction</td><td>Exact + relaxed span F1</td><td>Unsupported-field rate</td><td>Every populated field must have evidence</td></tr><tr><td>Temporal reasoning</td><td>Value + anchor accuracy</td><td>Deadline without trigger</td><td>A duration without its start event is unsafe</td></tr><tr><td>Policy comparison</td><td>Macro F1 by outcome</td><td>Serious mismatch count</td><td>Similarity must not hide incompatibility</td></tr><tr><td>Change impact</td><td>Material-change F1</td><td>Downstream impact recall</td><td>Changes matter only through affected work</td></tr><tr><td>Human use</td><td>Median review time</td><td>Correction count + trust calibration</td><td>The tool succeeds only if it helps reviewers</td></tr></tbody></table></div></div>
       </section>
 
-      <section class="view" id="research" data-title="Paper Blueprint">
+      <section class="view" id="research" data-title="Research notes">
         <div class="paper-hero">
-          <span class="mono-kicker">FROM CAPSTONE TO PUBLICATION</span>
-          <h1>A paper-shaped project<br>from <em>day one.</em></h1>
-          <p>RegulaTrace is organized around falsifiable claims, baselines, ablations, held-out documents and a human-centered evaluation—not a one-off demo.</p>
+          <span class="mono-kicker">RESEARCH RECORD</span>
+          <h1>What we tested<br><em>and what remains</em></h1>
+          <p>The preprint reports two external sentence-classification probes of the rule baseline. The app also includes source-offset checks and a conditional Z3 prototype. Neither is an end-to-end legal contradiction benchmark.</p>
         </div>
         <div class="paper-grid">
-          <article class="paper-card featured"><span class="paper-label">PRIMARY RESEARCH QUESTION</span><h2>Can an evidence-first hybrid pipeline produce more complete, reviewable and change-aware obligation records than lexical rules or an unconstrained language model—while reducing analyst effort without increasing critical misses?</h2><div class="hypothesis-row"><span>H1 · higher field F1</span><span>H2 · lower critical misses</span><span>H3 · faster review</span></div></article>
-          <article class="paper-card"><span class="paper-label">CONTRIBUTION 01</span><h3>Atomic obligation representation</h3><p>A typed intermediate representation combining normative meaning, temporal anchors, exceptions, provenance and review state.</p></article>
-          <article class="paper-card"><span class="paper-label">CONTRIBUTION 02</span><h3>Constraint-aware policy alignment</h3><p>A staged method that retrieves broadly but compares actor, action, polarity, timing, scope and exceptions separately.</p></article>
-          <article class="paper-card"><span class="paper-label">CONTRIBUTION 03</span><h3>Graph-based revision impact</h3><p>A structure-aware change detector that turns legal edits into a queue of affected obligations, controls and owners.</p></article>
+          <article class="paper-card featured"><span class="paper-label">CURRENT QUESTION</span><h2>How far can explicit modality cues take us before legal function and context break the rule baseline?</h2><div class="hypothesis-row"><span>Five-class deontic proxy</span><span>Regulatory-function proxy</span><span>Failure audit</span></div></article>
+          <article class="paper-card"><span class="paper-label">IMPLEMENTED</span><h3>Evidence-linked records</h3><p>Clause-level modality and fields with exact offsets into supplied text, plus human review events.</p></article>
+          <article class="paper-card"><span class="paper-label">MEASURED</span><h3>External classification</h3><p>Two released EU datasets, grouped folds, simple learned baselines, and explicit task boundaries.</p></article>
+          <article class="paper-card"><span class="paper-label">PROTOTYPE</span><h3>Rule feasibility</h3><p>Z3 checks two manually normalized rules and returns a witness or unsatisfiable core.</p></article>
         </div>
         <div class="experiment-roadmap">
-          <div class="section-heading"><div><span class="section-index">14</span><h2>Weeks to a defensible result</h2></div><p>Each gate ends with evidence—not an assertion.</p></div>
+          <div class="section-heading"><div><span class="section-index">02</span><h2>Next study gates</h2></div><p>Planned work; no held-out obligation corpus is bundled.</p></div>
           <div class="roadmap" id="roadmap"></div>
         </div>
-        <div class="repro-panel"><div><div class="mono-kicker">REPRODUCIBILITY MANIFEST</div><h2>Everything needed to reproduce the claim.</h2><p>Frozen dataset versions, document-level splits, annotation guide, configuration, commit hash, environment, evaluation output, model card and failure catalogue.</p></div><pre><code>{
-  "engine": "regulatrace/0.4.0-research",
-  "split_strategy": "by_source_document",
-  "random_seed": 20261023,
-  "primary_metric": "critical_miss_rate",
-  "provenance_gate": "required",
-  "human_release_gate": true
+        <div class="repro-panel"><div><div class="mono-kicker">SCOPE OF EVIDENCE</div><h2>Keep the tasks separate</h2><p>The external scores measure sentence labels. The synthetic suite checks software behavior. Obligation spans, reviewer benefit, and real-law contradiction accuracy still need independent gold data.</p></div><pre><code>{
+  "deontic_proxy": "566 texts; 3 grouped folds",
+  "function_proxy": "5831 sentences; 379 acts",
+  "held_out_span_corpus": null,
+  "contradiction_gold_corpus": null
 }</code></pre></div>
       </section>
 
-      <footer class="site-footer"><div><b>RegulaTrace Presentation Edition</b><span>Evidence-linked document analysis, persistent human review, executable evaluation, and change-impact intelligence.</span></div><div>Designed for NMIMS MPSTME · 2026–27</div></footer>
+      <footer class="site-footer"><div><b>RegulaTrace</b><span>Local research prototype · results require human review.</span></div><div>NMIMS MPSTME · 2026–27</div></footer>
     </main>
   </div>
 

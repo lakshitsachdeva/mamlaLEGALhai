@@ -53,20 +53,17 @@ const challenges = [
 ];
 
 const roadmap = [
-  ["01–02", "Foundation", "Schema, sources, reproducible baseline", "#5be7c4"],
-  ["03–04", "Corpus", "Guide, pilot annotation, adjudication", "#43bfe8"],
-  ["05–06", "Extraction", "Rules, linear model, legal encoder", "#426df5"],
-  ["07–08", "Evidence graph", "Provenance gates and review state", "#a78bfa"],
-  ["09–10", "Policy match", "Retrieval plus constraint comparison", "#f5bd61"],
-  ["11–12", "Change radar", "Revision alignment and reviewer UI", "#ed8b61"],
-  ["13–14", "Evaluation", "Ablations, red team, human study", "#ed6b63"],
+  ["01", "Annotate", "Independent source and span labels", "#789188"],
+  ["02", "Normalize", "Adjudicate actor, act, scope and exceptions", "#789188"],
+  ["03", "Evaluate", "Compare models on frozen source splits", "#789188"],
+  ["04", "Review", "Measure correction time and missed duties", "#789188"],
 ];
 
 const demoSteps = [
   { view: "obligation-lab", icon: "⌁", title: "Compile an obligation", copy: "Start with a source clause. RegulaTrace preserves the words, identifies the duty and creates a reviewable atomic record." },
   { view: "comparator", icon: "⇄", title: "Challenge the policy", copy: "Topic similarity is only the first layer. The comparator separately tests polarity, timing, actor, scope and exception compatibility." },
   { view: "change-radar", icon: "◌", title: "Trace a legal revision", copy: "A 90-day review becoming 60 days is not a cosmetic edit. The radar identifies material changes and the downstream work they create." },
-  { view: "evidence-graph", icon: "⌘", title: "Make the decision defensible", copy: "Each record retains its evidence clause, source metadata, confidence and review state. The graph shows that review path." },
+  { view: "evidence-graph", icon: "⌘", title: "Trace the record", copy: "Each record retains its evidence clause, source metadata, heuristic score, and review state. The graph shows that path." },
 ];
 
 const state = {
@@ -173,7 +170,7 @@ function loadProofSample() {
     const form = $(`[data-rule="${side}"]`);
     for (const [name, value] of Object.entries(values)) form.elements.namedItem(name).value = value;
   }
-  $("#proof-output").innerHTML = "<p>Fictional rules loaded. Review their fields, then run the solver.</p>";
+  $("#proof-output").innerHTML = "<p>Example loaded. Review the two rules, then run the check.</p>";
 }
 
 function proofRule(side) {
@@ -193,12 +190,14 @@ async function runProof() {
   button.disabled = true;
   try {
     const result = await requestApi("/api/contradictions/check", { left: proofRule("left"), right: proofRule("right") }, 6000);
-    const labels = { INFEASIBLE_TO_SATISFY: "Infeasible under these assumptions", SATISFIABLE_UNDER_ENCODING: "Satisfiable under this encoding", NOT_COMPARABLE: "Rules not comparable", REVIEW_REQUIRED: "Human review required" };
-    const alignment = Object.entries(result.alignment).map(([field, match]) => `<span class="proof-chip ${match ? "pass" : "fail"}">${escapeHtml(field)} ${match ? "✓" : "×"}</span>`).join("");
-    $("#proof-output").innerHTML = `<div class="proof-result ${escapeHtml(result.solverStatus)}"><span class="mono-kicker">Z3 ${escapeHtml(result.solverStatus.toUpperCase())}</span><h2>${escapeHtml(labels[result.verdict])}</h2><p>${escapeHtml(result.explanation)}</p></div><div class="proof-chips">${alignment}</div><p><b>Shared interval:</b> ${result.sharedInterval ? `${escapeHtml(result.sharedInterval.start)} to ${escapeHtml(result.sharedInterval.end)}` : "none"}</p><p><b>Proof core:</b> ${result.proofCore.length ? result.proofCore.map(escapeHtml).join(" + ") : "none"}</p><p><b>Action witness:</b> ${result.witness ? (result.witness.performAct ? "perform" : "do not perform") : "none"}</p><details><summary>Encoding assumptions</summary><ul>${result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>`;
+    const labels = { INFEASIBLE_TO_SATISFY: "Cannot satisfy both rules", SATISFIABLE_UNDER_ENCODING: "A satisfying action exists", NOT_COMPARABLE: "Rules do not align", REVIEW_REQUIRED: "Review needed" };
+    const alignment = Object.entries(result.alignment).map(([field, match]) => `<div><dt>${escapeHtml(field)}</dt><dd class="${match ? "pass" : "fail"}">${match ? "Aligned" : "Different"}</dd></div>`).join("");
+    $("#proof-output").innerHTML = `<div class="proof-result ${escapeHtml(result.solverStatus)}"><span class="proof-status">${escapeHtml(result.solverStatus.toUpperCase().replace("NOT_RUN", "NOT RUN"))}</span><div><h2>${escapeHtml(labels[result.verdict])}</h2><p>${escapeHtml(result.explanation)}</p></div></div><dl class="proof-facts"><div><dt>Shared dates</dt><dd>${result.sharedInterval ? `${escapeHtml(result.sharedInterval.start)} to ${escapeHtml(result.sharedInterval.end)}` : "No overlap"}</dd></div><div><dt>Proof core</dt><dd>${result.proofCore.length ? result.proofCore.map(escapeHtml).join(" + ") : "—"}</dd></div><div><dt>Action witness</dt><dd>${result.witness ? (result.witness.performAct ? "Perform the act" : "Do not perform the act") : "—"}</dd></div></dl><div class="proof-alignment"><h3>Field alignment</h3><dl>${alignment}</dl></div><details class="proof-assumptions"><summary>Assumptions used in this check</summary><ul>${result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>`;
     setRuntimeStatus("backend", "Z3 feasibility check returned by FastAPI");
+    $("#proof-output").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     $("#proof-output").innerHTML = `<p class="proof-error">${escapeHtml(error.message)} The contradiction lab requires the FastAPI backend.</p>`;
+    $("#proof-output").scrollIntoView({ behavior: "smooth", block: "start" });
   } finally {
     button.disabled = false;
   }
@@ -345,7 +344,7 @@ async function runAnalysis() {
     renderGraph();
     await refreshHistory();
     await refreshDashboard();
-    toast(`${state.analysis.summary.obligationCount} obligations compiled with source evidence.`, "Pipeline complete");
+    toast(`${state.analysis.summary.obligationCount} proposed obligations include source evidence.`, "Analysis complete");
   } catch (error) {
     toast(error.message, "Analysis failed");
   } finally {
@@ -367,8 +366,8 @@ function renderAnalysis() {
   summary.innerHTML = [
     [data.obligationCount, "obligations"],
     [data.clauseCount, "source clauses"],
-    [percentage(data.avgConfidence), "mean confidence"],
-    [percentage(data.citationIntegrity), "evidence retained"],
+    [percentage(data.avgConfidence), "mean heuristic score"],
+    [percentage(data.citationIntegrity), "located source spans"],
   ].map(([value, label]) => `<div class="summary-stat"><b>${escapeHtml(value)}</b><span>${label}</span></div>`).join("");
 
   container.innerHTML = state.analysis.records.map((record) => `
@@ -376,7 +375,7 @@ function renderAnalysis() {
       <div class="obligation-top"><span class="obligation-id">${record.id}</span><span class="modality ${record.modality}">${record.modality}</span></div>
       <h3>${escapeHtml(record.actor)} → ${escapeHtml(record.action)}</h3>
       <p>${escapeHtml(record.evidence.slice(0, 165))}${record.evidence.length > 165 ? "…" : ""}</p>
-      <div class="obligation-footer"><span>${escapeHtml(record.deadline ?? "No explicit deadline")}</span><span class="confidence">${percentage(record.confidence)} confidence</span></div>
+      <div class="obligation-footer"><span>${escapeHtml(record.deadline ?? "No explicit deadline")}</span><span class="confidence">heuristic ${percentage(record.confidence)}</span></div>
     </article>`).join("");
 
   $$(".obligation-item", container).forEach((item) => {
@@ -582,20 +581,20 @@ function renderInspector(nodeId) {
     action: ["Required action", record.action, "Action and object proposed from the normative predicate."],
     deadline: ["Temporal constraint", record.deadline ?? "Not located", "A deadline is useful only when its trigger or anchor is preserved."],
     exception: ["Exception scope", record.exception ?? "Not located", "Exceptions constrain an obligation; they do not become standalone duties."],
-    review: ["Human release gate", record.reviewState, "No automated output becomes a compliance conclusion without confirmation."],
+    review: ["Review state", record.reviewState, "A reviewer must interpret the source before any compliance decision."],
   };
   const [type, title, copy] = map[nodeId] ?? map.obligation;
   const inspector = $("#graph-inspector");
   inspector.innerHTML = `<span class="inspector-eyebrow">${type.toUpperCase()}</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(copy)}</p>
     <div class="inspector-stack"><div class="inspector-field"><span>Source version</span><b>${escapeHtml(record.sourceVersion)}</b></div><div class="inspector-field"><span>Evidence anchor</span><b>${escapeHtml(record.sourceId)} · ${escapeHtml(record.section)}${record.sourceSpan ? ` · chars ${record.sourceSpan.start + 1}–${record.sourceSpan.end}` : " · offset unavailable"}</b></div><div class="inspector-field"><span>Validation state</span><b>${record.unresolved.length ? `Review ${record.unresolved.join(", ")}` : "Schema complete"}</b></div><div class="inspector-field"><span>Transformation</span><b>${ENGINE_VERSION}</b></div></div>
-    <div class="confidence-scale"><header><span>Field confidence</span><b>${percentage(record.confidence)}</b></header><div class="track"><i style="width:${percentage(record.confidence)}"></i></div></div>`;
+    <div class="confidence-scale"><header><span>Heuristic score</span><b>${percentage(record.confidence)}</b></header><div class="track"><i style="width:${percentage(record.confidence)}"></i></div></div>`;
   $$(".graph-node").forEach((node) => node.classList.toggle("active", node.dataset.node === nodeId));
 }
 
 function renderEvaluation() {
   $("#baseline-chart").innerHTML = `<p class="baseline-note">Planned baselines. Scores require a held-out annotated corpus; none are claimed here.</p>${baselineData.map((label) => `<div class="challenge-row"><span>${label}</span><i>PLANNED</i></div>`).join("")}`;
   $("#challenge-list").innerHTML = challenges.map(([name, behavior]) => `<div class="challenge-row"><span>${name}</span><i>${behavior}</i></div>`).join("");
-  $("#roadmap").innerHTML = roadmap.map(([week, title, detail, color]) => `<article class="roadmap-phase" style="--accent:${color}"><span>WEEK ${week}</span><b>${title}</b><small>${detail}</small></article>`).join("");
+  $("#roadmap").innerHTML = roadmap.map(([step, title, detail, color]) => `<article class="roadmap-phase" style="--accent:${color}"><span>STEP ${step}</span><b>${title}</b><small>${detail}</small></article>`).join("");
 }
 
 function renderBenchmark() {
@@ -613,7 +612,7 @@ function renderBenchmark() {
   $("#metric-provenance-bar").style.setProperty("--value", `${provenance}%`);
   $("#metric-cases-bar").style.setProperty("--value", "100%");
   $("#benchmark-status").textContent = `${result.passedCases}/${result.executedCases} passed`;
-  $("#kpi-benchmark").textContent = `${pass}%`;
+  $("#kpi-benchmark").textContent = `${result.passedCases}/${result.executedCases}`;
   const cases = [...result.suites.extraction, ...result.suites.comparison, ...result.suites.versioning];
   $("#challenge-list").innerHTML = cases.map((item) => `<div class="challenge-row ${item.passed ? "pass" : "fail"}"><span>${item.id} · ${escapeHtml(item.observed ?? `${item.observedChanges} changes`)}</span><i>${item.passed ? "PASS" : "REVIEW"}</i></div>`).join("");
 }
@@ -647,7 +646,7 @@ function setupPresentation() {
   $("#run-stage-demo").addEventListener("click", async (event) => {
     const button = event.currentTarget;
     button.disabled = true;
-    button.innerHTML = "Running full story…";
+    button.innerHTML = "Loading demo data…";
     try {
       await loadSample("gdpr", false);
       await runAnalysis();
@@ -658,7 +657,7 @@ function setupPresentation() {
       toast("Analysis, policy gap, change impact, evidence graph, persistence, and evaluation are ready to present.", "Live story ready");
     } finally {
       button.disabled = false;
-      button.innerHTML = "Run the live story <span>→</span>";
+      button.innerHTML = "Load demo data <span>→</span>";
     }
   });
 }
