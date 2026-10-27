@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.engine import ENGINE_VERSION, analyze_document, compare_policy, compare_versions
+from backend.contradictions import check_contradiction
 from backend.evaluation import run_benchmark
 from backend.ingestion import IngestionError, extract_document
 from backend.storage import audit_trail, dashboard, get_analysis, list_analyses, record_review, save_analysis
@@ -24,6 +25,8 @@ from backend.schemas import (
     AuditEvent,
     BenchmarkResponse,
     CompareRequest,
+    ContradictionRequest,
+    ContradictionResponse,
     ComparisonResponse,
     DashboardResponse,
     ErrorResponse,
@@ -116,6 +119,11 @@ def analyze(request: AnalyzeRequest) -> dict[str, Any]:
 @app.post("/api/compare", response_model=ComparisonResponse, responses=ERROR_RESPONSES, tags=["Analysis"])
 def compare(request: CompareRequest) -> dict[str, Any]:
     return compare_policy(request.regulatory_text, request.policy_text)
+
+
+@app.post("/api/contradictions/check", response_model=ContradictionResponse, responses=ERROR_RESPONSES, tags=["Analysis"])
+def contradictions_check(request: ContradictionRequest) -> dict[str, Any]:
+    return check_contradiction(request)
 
 
 @app.post("/api/versions/compare", response_model=VersionCompareResponse, responses=ERROR_RESPONSES, tags=["Analysis"])

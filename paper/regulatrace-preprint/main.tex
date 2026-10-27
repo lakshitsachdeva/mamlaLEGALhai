@@ -75,7 +75,7 @@ The baseline's unit is one record per segmented clause. The proposed evaluation 
 $\downarrow$ clause segmentation and source-offset location\\[0.35em]
 \textbf{Modality and heuristic field extraction}\\[0.35em]
 $\downarrow$ typed obligation record with evidence and unresolved flags\\[0.35em]
-\textbf{Policy and version triage}\quad $\longrightarrow$\quad \textbf{Reviewer decision and audit event}
+\textbf{Policy, version, and feasibility triage}\quad $\longrightarrow$\quad \textbf{Reviewer decision and audit event}
 \end{minipage}}
 \caption{Implemented local pipeline. The policy and version branches provide review signals; they do not issue legal compliance determinations.}
 \label{fig:pipeline}
@@ -98,6 +98,11 @@ Version triage greedily aligns old and new clauses by token overlap. It reports 
 The application stores analyses and review events in local SQLite. A reviewer can confirm, reject, or correct selected fields. A correction updates the saved record and records before/after values, reviewer, note, and timestamp while retaining the original evidence clause. The UI can reopen a saved case and show its current review state. This is a single-user local workflow without identity management or role-based access.
 
 The review log preserves the distinction between a model proposal and a human correction. It does not establish that a correction is legally correct; that would require an adjudication procedure and an authoritative source. Nor is the number of corrections a performance metric without a controlled review design: reviewers may focus on visibly uncertain records and ignore silent omissions.
+
+\subsection{Conditional symbolic feasibility check}
+An optional prototype accepts \emph{two manually normalized rules}, each with an exact evidence quote and source interval, actor, action, object, scope, jurisdiction, condition, exception, modality, and inclusive validity dates. It verifies that each interval reconstructs the quote. It compares normalized fields by case and whitespace only; different actors or conditions, non-overlapping periods, permissions, and nonempty exceptions do not receive a contradiction proof. The source identifier is a user-supplied label, not independent authentication of legal authority.
+
+For otherwise aligned rules with a shared time interval, let $p$ mean that the specified actor performs the specified act on the specified object at an instant in that interval. The Z3 encoding adds $p$ for an obligation and $\neg p$ for a prohibition. If their conjunction is unsatisfiable, the response includes the tracked rule IDs as an unsatisfiable core. If satisfiable, it includes a Boolean witness. This proves a \emph{conditional compliance-feasibility statement about the supplied formalization}, not that two laws are legally contradictory: definitions, priority, exceptions, and source validity may change the conclusion. A fictional opposed-rule fixture exercises the proof path; no real Indian-law conflict or contradiction-detection accuracy is claimed. The extraction classifiers evaluated below do not generate or validate these formal fields.
 
 \section{Evaluation Design}
 \subsection{Synthetic development checks}
@@ -147,7 +152,7 @@ Critical subset & 9 & 9 & Zero misses on selected synthetic cases\\
 
 \section{Observed Checks and Diagnostic Failure Audit}\label{sec:diagnostic}
 \subsection{What the development suite establishes}
-Table~\ref{tab:checks} reports the executable suite at the code snapshot used for this draft. All 16 cases pass, including nine marked critical by the suite authors. Most extraction cases are single, explicit modal sentences. They test whether the code recognizes those cues, selected actor and timing fragments, and an exact evidence span. The critical subset is not a randomly sampled set of high-consequence duties. A fictional demonstration DOCX produced 30 segmented records with 30 located source intervals, and local verification passed 20 Python and eight JavaScript tests. These observations establish that the program runs on the listed fixtures and that its evidence and review contracts are testable. They do not estimate precision, recall, or analyst benefit on real regulations.
+Table~\ref{tab:checks} reports the executable suite at the code snapshot used for this draft. All 16 cases pass, including nine marked critical by the suite authors. Most extraction cases are single, explicit modal sentences. They test whether the code recognizes those cues, selected actor and timing fragments, and an exact evidence span. The critical subset is not a randomly sampled set of high-consequence duties. A fictional demonstration DOCX produced 30 segmented records with 30 located source intervals, and local verification passed 27 Python and eight JavaScript tests. Seven of the Python tests exercise the conditional solver, including an unsatisfiable core, aligned obligations, actor mismatch, disjoint dates, exception and permission review, and invalid or Unicode-prefixed evidence offsets. These observations establish that the program runs on the listed fixtures and that its evidence and review contracts are testable. They do not estimate precision, recall, or analyst benefit on real regulations.
 
 \subsection{Five-class deontic modality proxy}
 Table~\ref{tab:deontic-results} and Figure~\ref{fig:deontic-scores} report measured cross-validation results. The rule baseline has the highest mean accuracy ($0.922$) and macro F1 ($0.543$) among these fixed comparators. The strongest learned macro F1 is $0.499$ for word TF-IDF with logistic regression. This is evidence that the released sample's explicit cues are well matched to the rules, not evidence that the full structured obligation record is correct. The majority classifier's $0.784$ accuracy and $0.176$ macro F1 show why accuracy alone is weak under the class imbalance.

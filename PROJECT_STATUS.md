@@ -1,6 +1,6 @@
 # RegulaTrace Project Status
 
-Status date: 2026-10-26
+Status date: 2026-10-27
 Current milestone: Presentation Edition — integrated full-stack research demonstrator
 
 ## Verified result
@@ -9,7 +9,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Backend integration tests and JavaScript engine tests cover extraction, comparison, version analysis, and change explanations.
 - The executable challenge suite passed 16 of 16 transparent synthetic-adversarial cases, with 0% critical misses on that suite.
 - Browser verification rendered three evidence-linked obligations, persisted a field correction, restored the reviewed case, and confirmed its before/after audit event.
-- Backend and research tests passed locally (20 tests); JavaScript engine tests passed (8 tests). [CI passed on the fork branch](https://github.com/lakshitsachdeva/regulatrace-compliance-intelligence/actions/runs/40361949647); the upstream draft PR has not reported checks.
+- Backend and research tests passed locally (27 tests); JavaScript engine tests passed (8 tests). The prior [CI run](https://github.com/lakshitsachdeva/regulatrace-compliance-intelligence/actions/runs/40361949647) passed before the conditional solver was added; new CI status must be checked after pushing.
 
 ## Implemented
 
@@ -39,6 +39,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Held-out JSONL evaluation harness validates gold offsets and split leakage, then reports detection F1, matched modality accuracy, critical misses, provenance errors, and an error list. No held-out corpus is bundled.
 - Exploratory external sentence-classification experiments now compare the rules with TF-IDF logistic regression and SVM baselines on two independently released EU datasets. The scripts, cleaning audit, fold metrics, and figures are in `research/experiments/`; these do not measure full obligation-span extraction.
 - Persistent human review decisions: confirmed, corrected, and rejected.
+- Conditional Z3 feasibility check for two manually normalized, evidence-offset-validated rules, with unsatisfiable core, witness, and explicit abstention paths.
 
 ### Delivery and quality
 
@@ -63,6 +64,7 @@ These boundaries do not prevent the presentation workflow from running; they def
 - The held-out evaluator and annotation protocol are implemented, but there is no annotated document corpus or inter-annotator agreement result yet.
 - The `citationIntegrity` field checks evidence, source-ID, and located source-span presence; source authority and PDF page coordinates are not verified.
 - The application supports decision review and evidence traceability but is not legal advice, a compliance certificate, or an autonomous release authority.
+- The contradiction check cannot establish that two real laws conflict: source authority, scope identity, legal priority, exceptions, and semantic normalization are not automatically verified. InLegalBERT, DSPy, and Neo4j from the supplied concept image are not implemented. No contradiction-detection accuracy is reported.
 
 ## Paper-ready next study
 

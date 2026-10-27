@@ -65,6 +65,67 @@ class SourceSpan(APIModel):
     end: int = Field(ge=0)
 
 
+class FormalRule(APIModel):
+    id: str = Field(min_length=1, max_length=80)
+    source_id: str = Field(alias="sourceId", min_length=1, max_length=500)
+    source_text: str = Field(alias="sourceText", min_length=1, max_length=20_000)
+    evidence: str = Field(min_length=1, max_length=10_000)
+    source_span: SourceSpan = Field(alias="sourceSpan")
+    actor: str = Field(min_length=1, max_length=300)
+    action: str = Field(min_length=1, max_length=300)
+    object: str = Field(min_length=1, max_length=300)
+    scope: str = Field(min_length=1, max_length=300)
+    jurisdiction: str = Field(min_length=1, max_length=120)
+    condition: str = Field(min_length=1, max_length=300)
+    exception: str = Field(min_length=1, max_length=300)
+    valid_from: str = Field(alias="validFrom")
+    valid_until: str = Field(alias="validUntil")
+    modality: Literal["OBLIGATION", "PROHIBITION", "PERMISSION"]
+
+    @model_validator(mode="after")
+    def validate_grounding(self) -> "FormalRule":
+        span = self.source_span
+        if span.end <= span.start or self.source_text[span.start:span.end] != self.evidence:
+            raise ValueError("sourceSpan must recover evidence exactly from sourceText")
+        for name in ("actor", "action", "object", "scope", "jurisdiction", "condition", "exception"):
+            if not getattr(self, name).strip():
+                raise ValueError(f"{name} must contain non-whitespace content")
+        from datetime import date
+        import re
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", self.valid_from) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", self.valid_until):
+            raise ValueError("validFrom and validUntil must be ISO dates (YYYY-MM-DD)")
+        try:
+            start = date.fromisoformat(self.valid_from)
+            end = date.fromisoformat(self.valid_until)
+        except ValueError as exc:
+            raise ValueError("validFrom and validUntil must be ISO dates (YYYY-MM-DD)") from exc
+        if start > end:
+            raise ValueError("validFrom must be on or before validUntil")
+        return self
+
+
+class ContradictionRequest(APIModel):
+    left: FormalRule
+    right: FormalRule
+
+    @model_validator(mode="after")
+    def distinct_ids(self) -> "ContradictionRequest":
+        if self.left.id == self.right.id:
+            raise ValueError("rule IDs must be distinct")
+        return self
+
+
+class ContradictionResponse(APIModel):
+    verdict: Literal["INFEASIBLE_TO_SATISFY", "SATISFIABLE_UNDER_ENCODING", "NOT_COMPARABLE", "REVIEW_REQUIRED"]
+    solver_status: Literal["unsat", "sat", "not_run", "unknown"] = Field(alias="solverStatus")
+    explanation: str
+    shared_interval: dict[str, str] | None = Field(alias="sharedInterval")
+    alignment: dict[str, bool]
+    proof_core: list[str] = Field(alias="proofCore")
+    witness: dict[str, bool] | None
+    assumptions: list[str]
+
+
 class ObligationRecord(APIModel):
     id: str
     source_id: str = Field(alias="sourceId")

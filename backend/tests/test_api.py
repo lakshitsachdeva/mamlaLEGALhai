@@ -38,7 +38,7 @@ def test_openapi_documentation_exposes_all_phase_one_routes() -> None:
     assert schema_response.status_code == 200
     paths = schema_response.json()["paths"]
     assert {
-        "/api/health", "/api/analyze", "/api/compare", "/api/versions/compare",
+        "/api/health", "/api/analyze", "/api/compare", "/api/contradictions/check", "/api/versions/compare",
         "/api/documents/ingest", "/api/analyses", "/api/reviews", "/api/evaluate",
     }.issubset(paths)
 

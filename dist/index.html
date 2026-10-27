@@ -31,6 +31,7 @@
         <a class="nav-item" href="#executive" data-nav="executive"><span class="nav-icon">◆</span><span>Executive Brief</span></a>
         <a class="nav-item" href="#obligation-lab" data-nav="obligation-lab"><span class="nav-icon">⌁</span><span>Obligation Lab</span><kbd>1</kbd></a>
         <a class="nav-item" href="#comparator" data-nav="comparator"><span class="nav-icon">⇄</span><span>Policy Comparator</span><kbd>2</kbd></a>
+        <a class="nav-item" href="#contradiction-lab" data-nav="contradiction-lab"><span class="nav-icon">⊥</span><span>Contradiction Lab</span></a>
         <a class="nav-item" href="#change-radar" data-nav="change-radar"><span class="nav-icon">◌</span><span>Change Radar</span><kbd>3</kbd></a>
         <a class="nav-item" href="#evidence-graph" data-nav="evidence-graph"><span class="nav-icon">⌘</span><span>Evidence Graph</span><kbd>4</kbd></a>
 
@@ -179,6 +180,36 @@
         </div>
         <div class="compare-action"><button class="primary-button" id="compare-button">Run constraint comparison <span>→</span></button></div>
         <div class="comparison-output" id="comparison-output"></div>
+      </section>
+
+      <section class="view" id="contradiction-lab" data-title="Contradiction Lab">
+        <div class="workspace-heading">
+          <div><span class="mono-kicker">REVIEWED RULES / SYMBOLIC PROOF</span><h1>Can both rules<br><em>be followed?</em></h1></div>
+          <div class="research-badge"><b>CONDITIONAL RESULT</b><span>Z3 checks only the fields you review. A solver result is not a legal ruling.</span></div>
+        </div>
+        <p class="proof-intro">Start with the fictional example or replace every field with your own source clauses. The exact evidence quote and offsets are checked before the proof runs. Source authority, meaning, exceptions, and legal priority require human review.</p>
+        <div class="proof-actions"><button class="secondary-button" id="proof-sample">Load fictional example</button><button class="primary-button" id="proof-check">Check feasibility with Z3 <span>→</span></button></div>
+        <div class="proof-grid">
+          <form class="proof-rule" data-rule="left"><h2>Rule A</h2><div class="proof-fields">
+            <label>Source ID<input name="sourceId" required></label><label>Modality<select name="modality"><option>OBLIGATION</option><option>PROHIBITION</option><option>PERMISSION</option></select></label>
+            <label class="wide">Source passage<textarea name="sourceText" required></textarea></label><label class="wide">Exact evidence quote<textarea name="evidence" required></textarea></label>
+            <label>Actor<input name="actor" required></label><label>Action<input name="action" required></label>
+            <label>Object<input name="object" required></label><label>Scope<input name="scope" required></label>
+            <label>Jurisdiction<input name="jurisdiction" required></label><label>Condition<input name="condition" required></label>
+            <label>Exception<input name="exception" required></label><label>Valid from<input name="validFrom" type="date" required></label>
+            <label>Valid until<input name="validUntil" type="date" required></label>
+          </div></form>
+          <form class="proof-rule" data-rule="right"><h2>Rule B</h2><div class="proof-fields">
+            <label>Source ID<input name="sourceId" required></label><label>Modality<select name="modality"><option>OBLIGATION</option><option>PROHIBITION</option><option>PERMISSION</option></select></label>
+            <label class="wide">Source passage<textarea name="sourceText" required></textarea></label><label class="wide">Exact evidence quote<textarea name="evidence" required></textarea></label>
+            <label>Actor<input name="actor" required></label><label>Action<input name="action" required></label>
+            <label>Object<input name="object" required></label><label>Scope<input name="scope" required></label>
+            <label>Jurisdiction<input name="jurisdiction" required></label><label>Condition<input name="condition" required></label>
+            <label>Exception<input name="exception" required></label><label>Valid from<input name="validFrom" type="date" required></label>
+            <label>Valid until<input name="validUntil" type="date" required></label>
+          </div></form>
+        </div>
+        <div id="proof-output" class="proof-output" aria-live="polite"><p>Review both rules, then run the solver.</p></div>
       </section>
 
       <section class="view" id="change-radar" data-title="Change Radar">

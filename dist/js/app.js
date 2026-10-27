@@ -33,6 +33,11 @@ Providers shall cooperate with the relevant competent authorities in relation to
 
 const POLICY_SAMPLE = `The Privacy Office immediately escalates every suspected personal data breach to the Data Protection Officer. The controller shall notify the competent supervisory authority no later than 96 hours after confirming that a breach is reportable. Notification is not required for incidents classified as low impact by the Privacy Office.`;
 
+const PROOF_SAMPLE = {
+  left: { sourceId: "fictional-policy-A", modality: "OBLIGATION", sourceText: "Section 1. The records team must delete the test record during the 2026 review period.", evidence: "The records team must delete the test record during the 2026 review period.", actor: "records team", action: "delete", object: "test record", scope: "review dataset", jurisdiction: "fictional jurisdiction", condition: "during review", exception: "none", validFrom: "2026-01-01", validUntil: "2026-12-31" },
+  right: { sourceId: "fictional-policy-B", modality: "PROHIBITION", sourceText: "Section 2. The records team must not delete the test record during the 2026 review period.", evidence: "The records team must not delete the test record during the 2026 review period.", actor: "records team", action: "delete", object: "test record", scope: "review dataset", jurisdiction: "fictional jurisdiction", condition: "during review", exception: "none", validFrom: "2026-01-01", validUntil: "2026-12-31" },
+};
+
 const OLD_VERSION = `The organization shall review privileged user accounts at least once every 90 days. The security owner shall retain review evidence for twelve months. Exceptions may be approved by the Chief Information Security Officer.`;
 const NEW_VERSION = `The organization shall review privileged user accounts at least once every 60 days. The security owner shall retain review evidence for twenty-four months. Exceptions may be approved by the Chief Information Security Officer and must be revalidated every six months. Dormant privileged accounts must be disabled immediately.`;
 
@@ -161,6 +166,42 @@ function toast(message, label = "Done") {
   item.innerHTML = `<b>${escapeHtml(label)}</b>${escapeHtml(message)}`;
   region.append(item);
   setTimeout(() => item.remove(), 3400);
+}
+
+function loadProofSample() {
+  for (const [side, values] of Object.entries(PROOF_SAMPLE)) {
+    const form = $(`[data-rule="${side}"]`);
+    for (const [name, value] of Object.entries(values)) form.elements.namedItem(name).value = value;
+  }
+  $("#proof-output").innerHTML = "<p>Fictional rules loaded. Review their fields, then run the solver.</p>";
+}
+
+function proofRule(side) {
+  const form = $(`[data-rule="${side}"]`);
+  if (!form.reportValidity()) throw new Error(`Complete all fields in Rule ${side === "left" ? "A" : "B"}.`);
+  const fields = Object.fromEntries(new FormData(form).entries());
+  const evidence = fields.evidence.trim();
+  if (!evidence) throw new Error("A source clause is required.");
+  const match = fields.sourceText.indexOf(evidence);
+  if (match < 0) throw new Error(`Rule ${side === "left" ? "A" : "B"}: the evidence quote must appear exactly in the source passage.`);
+  const start = [...fields.sourceText.slice(0, match)].length;
+  return { ...fields, id: side === "left" ? "rule_A" : "rule_B", evidence, sourceSpan: { start, end: start + [...evidence].length } };
+}
+
+async function runProof() {
+  const button = $("#proof-check");
+  button.disabled = true;
+  try {
+    const result = await requestApi("/api/contradictions/check", { left: proofRule("left"), right: proofRule("right") }, 6000);
+    const labels = { INFEASIBLE_TO_SATISFY: "Infeasible under these assumptions", SATISFIABLE_UNDER_ENCODING: "Satisfiable under this encoding", NOT_COMPARABLE: "Rules not comparable", REVIEW_REQUIRED: "Human review required" };
+    const alignment = Object.entries(result.alignment).map(([field, match]) => `<span class="proof-chip ${match ? "pass" : "fail"}">${escapeHtml(field)} ${match ? "✓" : "×"}</span>`).join("");
+    $("#proof-output").innerHTML = `<div class="proof-result ${escapeHtml(result.solverStatus)}"><span class="mono-kicker">Z3 ${escapeHtml(result.solverStatus.toUpperCase())}</span><h2>${escapeHtml(labels[result.verdict])}</h2><p>${escapeHtml(result.explanation)}</p></div><div class="proof-chips">${alignment}</div><p><b>Shared interval:</b> ${result.sharedInterval ? `${escapeHtml(result.sharedInterval.start)} to ${escapeHtml(result.sharedInterval.end)}` : "none"}</p><p><b>Proof core:</b> ${result.proofCore.length ? result.proofCore.map(escapeHtml).join(" + ") : "none"}</p><p><b>Action witness:</b> ${result.witness ? (result.witness.performAct ? "perform" : "do not perform") : "none"}</p><details><summary>Encoding assumptions</summary><ul>${result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>`;
+    setRuntimeStatus("backend", "Z3 feasibility check returned by FastAPI");
+  } catch (error) {
+    $("#proof-output").innerHTML = `<p class="proof-error">${escapeHtml(error.message)} The contradiction lab requires the FastAPI backend.</p>`;
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function showView(id, updateHash = true) {
@@ -685,6 +726,9 @@ function bindActions() {
     toast("Machine-readable obligation register downloaded.", "Exported");
   });
   $("#compare-button").addEventListener("click", () => runComparison(true));
+  $("#proof-sample").addEventListener("click", loadProofSample);
+  $("#proof-check").addEventListener("click", runProof);
+  $$(".proof-rule").forEach((form) => form.addEventListener("submit", (event) => { event.preventDefault(); runProof(); }));
   $("#diff-button").addEventListener("click", () => runDiff(true));
   $("#refresh-history").addEventListener("click", refreshHistory);
   $("#graph-zoom-in").addEventListener("click", () => { state.graphScale = Math.min(1.35, state.graphScale + .1); $("#graph-zoom-label").textContent = `${Math.round(state.graphScale * 100)}%`; renderGraph(); });
@@ -698,6 +742,7 @@ async function initialize() {
   setupPalette();
   setupDemo();
   setupPresentation();
+  loadProofSample();
   renderEvaluation();
   $("#requirement-input").value = SAMPLES.gdpr.text.split("\n")[0];
   $("#policy-input").value = POLICY_SAMPLE;
