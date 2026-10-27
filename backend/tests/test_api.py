@@ -249,5 +249,6 @@ def test_fastapi_serves_the_presentation_frontend() -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "RegulaTrace" in response.text
-    assert "Executive Brief" in response.text
+    assert "Presentation" in response.text
+    assert "Contradiction Lab" in response.text
 
