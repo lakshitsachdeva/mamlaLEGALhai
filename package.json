@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Presentation-ready evidence-first regulatory intelligence, policy comparison, change impact, and review platform.",
   "scripts": {
-    "start": "powershell -ExecutionPolicy Bypass -File ./start-mamlalegalhai.ps1",
-    "stop": "powershell -ExecutionPolicy Bypass -File ./stop-mamlalegalhai.ps1",
+    "start": "powershell -ExecutionPolicy Bypass -File ./start-mamlaLEGALhai.ps1",
+    "stop": "powershell -ExecutionPolicy Bypass -File ./stop-mamlaLEGALhai.ps1",
     "test": "node --test tests/*.test.js",
     "serve": "python -m http.server 4173 --directory dist",
     "backend": "python -m uvicorn backend.main:app --reload --port 8000",

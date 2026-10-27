@@ -252,3 +252,12 @@ def test_fastapi_serves_the_presentation_frontend() -> None:
     assert "Presentation" in response.text
     assert "Contradiction Lab" in response.text
 
+
+def test_old_document_bookmarks_open_current_views() -> None:
+    paper = client.get("/docs/RegulaTrace_Preprint.pdf", follow_redirects=False)
+    report = client.get("/docs/RegulaTrace_Project_Report.pdf", follow_redirects=False)
+    assert paper.status_code == 308
+    assert paper.headers["location"] == "/docs/mamlaLEGALhai_Preprint_view.html"
+    assert report.status_code == 308
+    assert report.headers["location"] == "/docs/mamlaLEGALhai_Project_Report_view.html"
+

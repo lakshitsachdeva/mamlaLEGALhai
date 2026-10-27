@@ -2,7 +2,7 @@
 
 **Main point:** mamlaLEGALhai suggests what a rule requires and shows the exact text behind that suggestion so a person can check it.
 
-Before presenting, run `sh ./start-mamlalegalhai.sh`, open `http://127.0.0.1:8000/#executive`, and click **Load demo data**. Version compare and Contradiction Lab use fictional examples.
+Before presenting, run `sh ./start-mamlaLEGALhai.sh`, open `http://127.0.0.1:8000/#executive`, and click **Load demo data**. Version compare and Contradiction Lab use fictional examples.
 
 1. **Presentation (30 seconds).** “Regulatory language is easy to summarize incorrectly. We want a proposed duty with its source text attached.”
 2. **Obligation Lab (60 seconds).** Open a record. “The app proposes who must act, what they must do, and when. Here are the exact words it used. A reviewer can correct a mistake, and that correction is saved.”

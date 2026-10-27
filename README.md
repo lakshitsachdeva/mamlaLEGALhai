@@ -30,20 +30,20 @@ The launcher creates or reuses `.venv`, installs the required packages when need
 
 Only one server is required—the FastAPI app serves both the API and the frontend. Interactive API documentation is available at <http://127.0.0.1:8000/api/docs>.
 
-To stop it, double-click `stop-mamlalegalhai.ps1` or run:
+To stop it, double-click `stop-mamlaLEGALhai.ps1` or run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\stop-mamlalegalhai.ps1
+powershell -ExecutionPolicy Bypass -File .\stop-mamlaLEGALhai.ps1
 ```
 
 ### macOS and Linux
 
-From the repository root, run `sh ./start-mamlalegalhai.sh`, then open <http://127.0.0.1:8000/#executive>. The script creates `.venv`, installs the pinned Python dependencies, and runs the local server. Stop it with Ctrl-C. Set `MAMLALEGALHAI_PORT` to use another local port.
+From the repository root, run `sh ./start-mamlaLEGALhai.sh`, then open <http://127.0.0.1:8000/#executive>. The script creates `.venv`, installs the pinned Python dependencies, and runs the local server. Stop it with Ctrl-C. Set `MAMLALEGALHAI_PORT` to use another local port.
 
 ### Manual start
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\start-mamlalegalhai.ps1
+powershell -ExecutionPolicy Bypass -File .\start-mamlaLEGALhai.ps1
 ```
 
 For development with reload enabled:
@@ -136,10 +136,10 @@ dist/
   js/app.js              API integration and interaction layer
 tests/engine.test.js     original JavaScript engine tests
 examples/mamlaLEGALhai_Demo_Regulation.docx  presentation upload document
-start-mamlalegalhai.sh     macOS/Linux launcher
+start-mamlaLEGALhai.sh     macOS/Linux launcher
 RUN_PRESENTATION.cmd     one-click Windows launcher
-start-mamlalegalhai.ps1    environment-aware startup and health check
-stop-mamlalegalhai.ps1     clean local shutdown
+start-mamlaLEGALhai.ps1    environment-aware startup and health check
+stop-mamlaLEGALhai.ps1     clean local shutdown
 PROJECT_STATUS.md        verified scope and known research boundaries
 ```
 

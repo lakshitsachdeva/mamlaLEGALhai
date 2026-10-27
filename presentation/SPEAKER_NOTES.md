@@ -4,7 +4,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 ## Before people arrive
 
-1. From the repository folder, run `sh ./start-mamlalegalhai.sh`.
+1. From the repository folder, run `sh ./start-mamlaLEGALhai.sh`.
 2. Open `http://127.0.0.1:8000/#executive` and check that the API is connected.
 3. Click **Load demo data** and wait for the success message. This prepares the example analysis, comparison, version changes, and synthetic checks.
 4. Open **Research notes** in the left menu and click **Read current paper**. Click **Jump to measured results** in the paper view; the charts start on page 8. Use **Download PDF** if you want an offline copy. Keep the [project report](../dist/docs/mamlaLEGALhai_Project_Report.pdf) as a backup handout.

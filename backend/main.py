@@ -10,7 +10,7 @@ from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.engine import ENGINE_VERSION, analyze_document, compare_policy, compare_versions
@@ -200,6 +200,18 @@ def dashboard_summary() -> dict[str, Any]:
 @app.get("/api/evaluate", response_model=BenchmarkResponse, tags=["Evaluation"])
 def evaluate() -> dict[str, Any]:
     return run_benchmark()
+
+
+@app.api_route("/docs/RegulaTrace_Preprint.pdf", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/docs/RegulaTrace_Preprint_view.html", methods=["GET", "HEAD"], include_in_schema=False)
+def legacy_paper_link() -> RedirectResponse:
+    return RedirectResponse("/docs/mamlaLEGALhai_Preprint_view.html", status_code=308)
+
+
+@app.api_route("/docs/RegulaTrace_Project_Report.pdf", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/docs/RegulaTrace_Project_Report_view.html", methods=["GET", "HEAD"], include_in_schema=False)
+def legacy_report_link() -> RedirectResponse:
+    return RedirectResponse("/docs/mamlaLEGALhai_Project_Report_view.html", status_code=308)
 
 
 DIST_DIRECTORY = Path(__file__).resolve().parents[1] / "dist"

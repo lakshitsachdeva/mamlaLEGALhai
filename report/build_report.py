@@ -229,7 +229,7 @@ def build(output: Path) -> None:
 
     # 7. How to use the current website.
     story += heading("06", "Presentation and website route")
-    story += [p("The local app starts at <b>http://127.0.0.1:8000/#executive</b>. Run <b>sh ./start-mamlalegalhai.sh</b>, then use the numbered route on the Presentation page. The left sidebar remains available when presentation mode is off."),
+    story += [p("The local app starts at <b>http://127.0.0.1:8000/#executive</b>. Run <b>sh ./start-mamlaLEGALhai.sh</b>, then use the numbered route on the Presentation page. The left sidebar remains available when presentation mode is off."),
               table(["Order", "Where to click", "What to tell the audience"], [
                   ["1", "Presentation -> Load demo data", "The example analysis, comparison, version changes, and authored checks are prepared."],
                   ["2", "Obligation Lab -> open a record", "Point to the proposed actor/action/timing and the exact source quote. A reviewer can correct fields."],
