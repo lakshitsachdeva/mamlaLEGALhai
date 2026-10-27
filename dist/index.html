@@ -176,8 +176,9 @@
         <div class="workspace-heading">
           <div><span class="mono-kicker">RULE FEASIBILITY / Z3</span><h1>Check two rules</h1></div>
         </div>
-        <p class="proof-intro">Compare two source passages after reviewing the rule fields below. The solver checks whether both normalized rules can be followed during the same period. It does not verify legal authority or resolve priority between laws.</p>
-        <div class="proof-actions"><button class="secondary-button" id="proof-sample">Load example</button><button class="primary-button" id="proof-check">Run check <span>→</span></button><span class="proof-example-note">Fictional example · edit any field</span></div>
+        <p class="proof-intro">Compare two source passages after reviewing the rule fields below. The optional InLegalBERT path gives an uncalibrated relatedness score for the evidence quotes; Z3 separately checks whether the reviewed rules can both be followed. Neither verifies legal authority or resolves priority between laws.</p>
+        <div class="proof-actions"><button class="secondary-button" id="proof-sample">Load example</button><button class="secondary-button" id="proof-check">Run Z3 only</button><button class="primary-button" id="proof-neural-check">Run InLegalBERT + Z3 <span>→</span></button><span class="proof-example-note">Fictional example · edit any field</span></div>
+        <label class="proof-review-confirm"><input id="proof-review-confirmed" type="checkbox"> I reviewed both source quotes and structured rule fields. <small>Required for the neural + symbolic path.</small></label>
         <div class="proof-grid">
           <form class="proof-rule" data-rule="left"><div class="proof-rule-head"><span>A</span><h2>First rule</h2></div><div class="proof-fields">
             <label>Source ID<input name="sourceId" required></label><label>Modality<select name="modality"><option>OBLIGATION</option><option>PROHIBITION</option><option>PERMISSION</option></select></label>
@@ -226,16 +227,22 @@
           <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><button class="secondary-button" id="print-brief">Print this page</button></div></div>
           <div class="readiness-orbit" aria-label="System readiness"><div class="orbit-core"><strong id="readiness-score">100</strong><span>DEMO READY</span></div><i></i><i></i><i></i></div>
         </div>
+        <div class="route-guide">
+          <div class="route-guide-head"><span class="mono-kicker">START HERE</span><h2>Use the app in this order</h2><p>Load the example above, then follow these screens. Each result is a suggestion to inspect, not a compliance verdict.</p></div>
+          <ol>
+            <li><span>01</span><div><h3>Load demo data</h3><p>Click the button above once. It prepares the example and the synthetic checks.</p></div></li>
+            <li><span>02</span><div><h3>Inspect a proposed duty</h3><p>Open one record. Compare the actor, action, and timing with its source quote.</p></div><button class="text-button" data-jump="obligation-lab">Obligation Lab →</button></li>
+            <li><span>03</span><div><h3>Read an old/new change</h3><p>The fictional account-review interval changes from 90 to 60 days.</p></div><button class="text-button" data-jump="change-radar">Version compare →</button></li>
+            <li><span>04</span><div><h3>Check two fictional rules</h3><p>Load the example. Review the fields. InLegalBERT gives a quote signal; Z3 checks the entered rules.</p></div><button class="text-button" data-jump="contradiction-lab">Contradiction Lab →</button></li>
+            <li><span>05</span><div><h3>Understand the evidence</h3><p>The paper's model scores come from separate sentence-label experiments. This app's suite uses authored examples.</p></div><button class="text-button" data-jump="research">Research notes →</button></li>
+          </ol>
+          <p class="route-guide-extra">Other tools: <button class="text-button" data-jump="comparator">Policy Comparator</button> checks candidate policy gaps; <button class="text-button" data-jump="evidence-graph">Evidence Graph</button> shows the source-to-review trail.</p>
+        </div>
         <div class="executive-kpis" id="executive-kpis">
           <article><span>Persisted analyses</span><strong id="kpi-analyses">0</strong><small>SQLite case workspace</small></article>
           <article><span>Atomic records</span><strong id="kpi-records">0</strong><small>source-linked obligations</small></article>
           <article><span>Review events</span><strong id="kpi-reviewed">0</strong><small>saved corrections and decisions</small></article>
           <article><span>Synthetic suite</span><strong id="kpi-benchmark">—</strong><small>known authored cases passed</small></article>
-        </div>
-        <div class="story-grid">
-          <article class="story-card"><span>01 / INPUT</span><h2>Load a document</h2><p>Upload text-based PDF, DOCX, TXT, or Markdown. The app extracts text locally before analysis.</p><button class="text-button" data-jump="obligation-lab">Open document lab →</button></article>
-          <article class="story-card"><span>02 / RECORD</span><h2>Inspect a duty</h2><p>Open its source span, proposed fields, unresolved items, and review history.</p><button class="text-button" data-jump="evidence-graph">Open evidence graph →</button></article>
-          <article class="story-card"><span>03 / CHECK</span><h2>Test a conflict</h2><p>Review two normalized rules, then inspect the solver assumptions and proof core.</p><button class="text-button" data-jump="contradiction-lab">Open rule check →</button></article>
         </div>
         <div class="assurance-board">
           <div><span class="mono-kicker">RESEARCH STATUS</span><h2>What these results support</h2></div>
@@ -306,7 +313,7 @@
   <div class="demo-overlay" id="demo-overlay" hidden>
     <div class="demo-card" role="dialog" aria-modal="true" aria-labelledby="demo-title">
       <div class="demo-progress"><span id="demo-progress-bar"></span></div>
-      <div class="demo-top"><span>GUIDED DEMO · <b id="demo-step-count">1 / 4</b></span><button id="demo-close" aria-label="Close guided demo">×</button></div>
+      <div class="demo-top"><span>SITE TOUR · <b id="demo-step-count">1 / 5</b></span><button id="demo-close" aria-label="Close guided demo">×</button></div>
       <div class="demo-body"><span class="demo-icon" id="demo-icon">⌁</span><div><h2 id="demo-title">Compile an obligation</h2><p id="demo-copy">Start with a source clause. RegulaTrace preserves the words, identifies the duty and creates a reviewable atomic record.</p></div></div>
       <div class="demo-controls"><button class="secondary-button small" id="demo-back">Back</button><button class="primary-button small" id="demo-next">Show me <span>→</span></button></div>
     </div>

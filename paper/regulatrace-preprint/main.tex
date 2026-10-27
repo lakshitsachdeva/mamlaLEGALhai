@@ -104,6 +104,9 @@ An optional prototype accepts \emph{two manually normalized rules}, each with an
 
 For otherwise aligned rules with a shared time interval, let $p$ mean that the specified actor performs the specified act on the specified object at an instant in that interval. The Z3 encoding adds $p$ for an obligation and $\neg p$ for a prohibition. If their conjunction is unsatisfiable, the response includes the tracked rule IDs as an unsatisfiable core. If satisfiable, it includes a Boolean witness. This proves a \emph{conditional compliance-feasibility statement about the supplied formalization}, not that two laws are legally contradictory: definitions, priority, exceptions, and source validity may change the conclusion. A fictional opposed-rule fixture exercises the proof path; no real Indian-law conflict or contradiction-detection accuracy is claimed. The extraction classifiers evaluated below do not generate or validate these formal fields.
 
+\subsection{Optional pretrained encoder signal}
+The application also has an optional, reviewer-guided neural--symbolic path. After a reviewer confirms the two evidence quotes and manually normalized rule fields, the pinned InLegalBERT checkpoint \cite{inlegalbert} encodes each quote. We mean-pool its last hidden states over non-padding tokens and return their cosine similarity beside the separate Z3 feasibility result. The encoder was pretrained on Indian legal case documents, not fine-tuned here for regulatory clause similarity, normalization, or contradiction detection. Its cosine is an uncalibrated relatedness signal; it does not alter solver constraints or establish legal compatibility. The checkpoint is downloaded on first use and is excluded from the base installation. No performance metric for this optional path is reported. An end-to-end neural text-to-logic model and a jointly evaluated contradiction corpus remain future work.
+
 \section{Evaluation Design}
 \subsection{Synthetic development checks}
 The repository contains a transparent challenge suite: 12 extraction cases, three policy-comparison cases, and one version-change case. Extraction checks include modality, actor, deadline when present, and evidence location. Nine cases are designated critical for the safety diagnostic. We define a \emph{critical miss} as a materially misread or missed duty in those extraction cases, a missed serious policy mismatch, or a missed material version change. This denominator differs from the overall pass rate. The examples were authored with the system and are not an independent sample from legal practice.
@@ -310,5 +313,11 @@ I. Chalkidis, M. Fergadiotis, P. Malakasiotis, N. Aletras, and I. Androutsopoulo
 LEGAL-BERT: The Muppets straight out of law school.
 In \emph{Findings of EMNLP}, pages 2898--2904, 2020.
 \href{https://doi.org/10.18653/v1/2020.findings-emnlp.261}{doi:10.18653/v1/2020.findings-emnlp.261}.
+
+\bibitem{inlegalbert}
+S. Paul, A. Mandal, P. Goyal, and S. Ghosh.
+Pre-trained language models for the legal domain: A case study on Indian law.
+In \emph{Proceedings of ICAIL}, 2023.
+\href{https://arxiv.org/abs/2209.06049}{arXiv:2209.06049}.
 \end{thebibliography}
 \end{document}

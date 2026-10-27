@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.engine import ENGINE_VERSION, analyze_document, compare_policy, compare_versions
 from backend.contradictions import check_contradiction
+from backend.neural import NeuralUnavailable, score_evidence_pair
 from backend.evaluation import run_benchmark
 from backend.ingestion import IngestionError, extract_document
 from backend.storage import audit_trail, dashboard, get_analysis, list_analyses, record_review, save_analysis
@@ -27,6 +28,8 @@ from backend.schemas import (
     CompareRequest,
     ContradictionRequest,
     ContradictionResponse,
+    NeuroSymbolicRequest,
+    NeuroSymbolicResponse,
     ComparisonResponse,
     DashboardResponse,
     ErrorResponse,
@@ -124,6 +127,15 @@ def compare(request: CompareRequest) -> dict[str, Any]:
 @app.post("/api/contradictions/check", response_model=ContradictionResponse, responses=ERROR_RESPONSES, tags=["Analysis"])
 def contradictions_check(request: ContradictionRequest) -> dict[str, Any]:
     return check_contradiction(request)
+
+
+@app.post("/api/contradictions/neuro-symbolic", response_model=NeuroSymbolicResponse, responses=ERROR_RESPONSES, tags=["Analysis"])
+def neuro_symbolic_check(request: NeuroSymbolicRequest) -> dict[str, Any]:
+    try:
+        neural = score_evidence_pair(request.left.evidence, request.right.evidence)
+    except NeuralUnavailable as exc:
+        raise HTTPException(status_code=503, detail={"code": "NEURAL_UNAVAILABLE", "message": str(exc)}) from exc
+    return {"neural": neural, "symbolic": check_contradiction(request)}
 
 
 @app.post("/api/versions/compare", response_model=VersionCompareResponse, responses=ERROR_RESPONSES, tags=["Analysis"])

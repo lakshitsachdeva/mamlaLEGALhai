@@ -9,6 +9,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 3. Click **Load demo data** and wait for the success message. This prepares the example analysis, comparison, version changes, and synthetic checks.
 4. Keep the [modality score figure](../paper/regulatrace-preprint/figures/deontic_proxy_scores.png) and [regulatory-function score figure](../paper/regulatrace-preprint/figures/regulatory_binary_scores.png) ready.
 5. You can click **Present** to make the app cleaner on a projector. Version compare and Contradiction Lab use fictional examples.
+6. If demonstrating InLegalBERT, install `requirements-neural.txt` and run the neural check once before presenting; the first use downloads model weights. Keep **Run Z3 only** as a reliable fallback.
 
 ## 0:00–1:00 — The problem
 
@@ -36,11 +37,11 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 ## 4:00–5:00 — A conditional conflict
 
-**Click:** **Contradiction Lab** → **Load example** → **Run check**. Point to the two entered rules and `UNSAT`.
+**Click:** **Contradiction Lab** → **Load example**. Review the quotes and fields, tick the confirmation box, then click **Run InLegalBERT + Z3**. Point first to the relatedness score, then to the separate `UNSAT` result. If the optional model is unavailable, click **Run Z3 only**.
 
-**Say:** “In this fictional example, the same records team is required to delete a test record and forbidden to delete it during the same period. We first put both statements into structured fields. Given those fields, the solver says the two requirements cannot both hold. A person must still check that the fields accurately represent the source text.”
+**Say:** “In this fictional example, the same records team is required to delete a test record and forbidden to delete it during the same period. InLegalBERT gives us a rough signal that the two passages are related. That score cannot tell us whether they contradict. After we check the structured fields, Z3 separately shows that these two entered requirements cannot both hold. A person must still check that the fields accurately represent the source text.”
 
-**Understand:** `UNSAT` is a mathematical result about these manually structured inputs. It is not a legal ruling and it is not measured contradiction-detection accuracy.
+**Understand:** InLegalBERT is a pretrained encoder, not a trained contradiction classifier. Its cosine score is uncalibrated. `UNSAT` is a mathematical result about manually structured inputs. Neither is a legal ruling or measured contradiction-detection accuracy.
 
 ## 5:00–7:30 — The research result
 
@@ -76,7 +77,7 @@ Stop there. Leave **Obligation Lab** or **Presentation** visible for questions.
 
 **Does Z3 prove real laws contradict?** No. It checks whether the two structured rules we entered can coexist under their stated assumptions.
 
-**Are InLegalBERT, DSPy, or Neo4j in this build?** No. The live build uses rules, a reviewable app, and an optional Z3 check. The paper separately tests simple text classifiers.
+**Are InLegalBERT, DSPy, or Neo4j in this build?** The optional InLegalBERT encoder now scores quote relatedness before the reviewer-guided Z3 check. DSPy and Neo4j are not implemented. The paper's classifier scores are separate experiments.
 
 **Does the app certify compliance?** No. It helps a qualified reviewer inspect possible duties and their evidence.
 

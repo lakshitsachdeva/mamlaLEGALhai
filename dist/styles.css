@@ -450,6 +450,12 @@ body { font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-ser
 .proof-intro { max-width: 780px; margin-top: 23px; font-size: 15px; line-height: 1.55; }
 .proof-actions { align-items: center; margin-top: 21px; margin-bottom: 24px; }
 .proof-example-note { margin-left: auto; color: var(--muted); font-size: 12px; }
+.proof-review-confirm { display: flex; align-items: center; gap: 9px; margin: -9px clamp(24px, 4vw, 62px) 22px; color: var(--slate); font-size: 13px; }
+.proof-review-confirm input { accent-color: var(--mint-dark); }
+.proof-review-confirm small { color: var(--muted); font-size: 11px; }
+.proof-neural { border-bottom: 1px solid var(--soft-line); padding-bottom: 18px; margin-bottom: 20px; }
+.proof-neural h2 { font-size: 18px; margin: 0 0 5px; }
+.proof-neural p { color: var(--slate); margin: 5px 0; }
 .proof-grid { gap: 13px; }
 .proof-rule, .proof-output { border-radius: 6px; padding: 0; }
 .proof-rule-head { display: flex; align-items: center; gap: 12px; padding: 17px 20px; border-bottom: 1px solid var(--line); }
@@ -483,7 +489,7 @@ body { font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-ser
 .proof-assumptions { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--soft-line); color: var(--slate); font-size: 12px; }
 .proof-assumptions summary { cursor: pointer; }
 .proof-assumptions li { margin-top: 6px; }
-.executive-hero { min-height: 370px; display: block; background: #e9eee7; color: var(--ink); border-bottom: 1px solid var(--line); }
+.executive-hero { min-height: 320px; padding: 42px clamp(24px, 4vw, 62px); display: block; background: #e9eee7; color: var(--ink); border-bottom: 1px solid var(--line); }
 .executive-hero h1 { font-size: clamp(45px, 5vw, 68px); line-height: 1; letter-spacing: -.04em; }
 .executive-hero em { color: var(--mint-dark); }
 .executive-hero p { color: var(--slate); font-size: 16px; }
@@ -494,6 +500,20 @@ body { font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-ser
 .story-card::after { display: none; }
 .story-card h2 { margin-top: 20px; }
 .story-card p, .assurance-board li span { font-size: 12px; line-height: 1.55; }
+.route-guide { margin: 36px clamp(24px, 4vw, 62px) 30px; border: 1px solid var(--line); background: #fff; }
+.route-guide-head { padding: 25px 28px 20px; border-bottom: 1px solid var(--line); }
+.route-guide-head h2 { margin: 5px 0 8px; font-size: 29px; letter-spacing: -.03em; }
+.route-guide-head p { margin: 0; color: var(--slate); font-size: 14px; }
+.route-guide ol { margin: 0; padding: 0; list-style: none; }
+.route-guide li { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 15px; padding: 18px 28px; border-bottom: 1px solid var(--soft-line); }
+.route-guide li > span { color: var(--mint-dark); font: 600 13px "DM Mono", monospace; }
+.route-guide li h3 { margin: 0 0 3px; font-size: 16px; }
+.route-guide li p { margin: 0; color: var(--slate); font-size: 13px; line-height: 1.45; }
+.route-guide li button, .route-guide-extra .text-button { color: var(--mint-dark); font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.route-guide li button { white-space: nowrap; }
+.route-guide-extra { margin: 0; padding: 16px 28px; color: var(--slate); font-size: 13px; }
+.route-guide-extra .text-button { margin: 0 2px; }
+@media (max-width: 760px) { .route-guide { margin-inline: 18px; } .route-guide li { grid-template-columns: 34px minmax(0, 1fr); padding: 17px; } .route-guide li button { grid-column: 2; justify-self: start; } .route-guide-head,.route-guide-extra { padding-inline: 17px; } }
 .assurance-board { padding: 30px; border-radius: 6px; background: #eef0e9; border-color: var(--line); }
 .assurance-board li { border-color: var(--line); border-radius: 4px; }
 .assurance-board li b { font-size: 13px; }

@@ -1,8 +1,10 @@
 """Adversarial checks for the bounded formal-feasibility claim."""
 
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 
 from backend.main import app
+from backend.neural import NeuralUnavailable
 
 
 client = TestClient(app)
@@ -73,3 +75,40 @@ def test_unicode_prefix_uses_codepoint_offsets() -> None:
     left["sourceText"] = "🧭 Section 1. " + left["evidence"]
     left["sourceSpan"] = {"start": len("🧭 Section 1. "), "end": len(left["sourceText"])}
     assert check(left, rule("B", "PROHIBITION"))["solverStatus"] == "unsat"
+
+
+def test_neural_signal_and_symbolic_proof_are_separate() -> None:
+    signal = {
+        "modelId": "law-ai/InLegalBERT", "modelRevision": "test-revision",
+        "cosineSimilarity": 0.91, "method": "test embedding cosine",
+        "truncated": {"left": False, "right": False},
+        "note": "Uncalibrated relatedness signal, not a contradiction probability.",
+    }
+    left, right = rule("A", "OBLIGATION"), rule("B", "PROHIBITION")
+    with patch("backend.main.score_evidence_pair", return_value=signal) as scorer:
+        response = client.post("/api/contradictions/neuro-symbolic", json={
+            "left": left, "right": right, "reviewConfirmed": True,
+        })
+    assert response.status_code == 200, response.json()
+    assert response.json()["neural"]["cosineSimilarity"] == 0.91
+    assert response.json()["symbolic"]["solverStatus"] == "unsat"
+    assert response.json()["symbolic"]["proofCore"] == ["A", "B"]
+    scorer.assert_called_once_with(left["evidence"], right["evidence"])
+
+
+def test_neural_path_requires_review_confirmation() -> None:
+    response = client.post("/api/contradictions/neuro-symbolic", json={
+        "left": rule("A", "OBLIGATION"), "right": rule("B", "PROHIBITION"),
+        "reviewConfirmed": False,
+    })
+    assert response.status_code == 422
+
+
+def test_neural_path_reports_missing_model_without_symbolic_fallback() -> None:
+    with patch("backend.main.score_evidence_pair", side_effect=NeuralUnavailable("Install optional model dependencies.")):
+        response = client.post("/api/contradictions/neuro-symbolic", json={
+            "left": rule("A", "OBLIGATION"), "right": rule("B", "PROHIBITION"),
+            "reviewConfirmed": True,
+        })
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "NEURAL_UNAVAILABLE"

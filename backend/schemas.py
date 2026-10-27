@@ -126,6 +126,24 @@ class ContradictionResponse(APIModel):
     assumptions: list[str]
 
 
+class NeuroSymbolicRequest(ContradictionRequest):
+    review_confirmed: Literal[True] = Field(alias="reviewConfirmed")
+
+
+class NeuralSignal(APIModel):
+    model_id: str = Field(alias="modelId")
+    model_revision: str = Field(alias="modelRevision")
+    cosine_similarity: float = Field(alias="cosineSimilarity", ge=-1, le=1)
+    method: str
+    truncated: dict[str, bool]
+    note: str
+
+
+class NeuroSymbolicResponse(APIModel):
+    neural: NeuralSignal
+    symbolic: ContradictionResponse
+
+
 class ObligationRecord(APIModel):
     id: str
     source_id: str = Field(alias="sourceId")

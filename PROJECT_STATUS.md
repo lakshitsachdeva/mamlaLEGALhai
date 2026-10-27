@@ -9,14 +9,15 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Backend integration tests and JavaScript engine tests cover extraction, comparison, version analysis, and change explanations.
 - The executable challenge suite passed 16 of 16 transparent synthetic-adversarial cases, with 0% critical misses on that suite.
 - Browser verification rendered three evidence-linked obligations, persisted a field correction, restored the reviewed case, and confirmed its before/after audit event.
-- Backend and research tests passed locally (27 tests); JavaScript engine tests passed (8 tests). The prior [CI run](https://github.com/lakshitsachdeva/regulatrace-compliance-intelligence/actions/runs/40361949647) passed before the conditional solver was added; new CI status must be checked after pushing.
+- Backend and research tests passed locally (30 tests after the optional neural API was added); JavaScript engine tests passed (8 tests). CI on the new commit must be checked after pushing.
+- The pinned InLegalBERT checkpoint loaded locally and produced a quote cosine; a live browser run returned the neural signal and a separate Z3 unsatisfiable core for the fictional opposed-rule example. This is a functional smoke test, not a model evaluation.
 
 ## Implemented
 
 ### Complete application experience
 
-- Executive Brief with live KPIs, research-readiness indicators, a presentation narrative, printable briefing, and one-click end-to-end demo.
-- Obligation Lab, Evidence Graph, Policy Comparator, Change Radar, Evaluation Console, guided examples, keyboard command palette, responsive navigation, and presentation mode.
+- Presentation page with a numbered route through the app, live workspace counts, a printable briefing, and a button that loads demo data.
+- Obligation Lab, Evidence Graph, Policy Comparator, Version compare, Contradiction Lab, Evaluation, guided examples, keyboard command palette, responsive navigation, and presentation mode.
 - Clear backend connection status and an explicitly labeled browser-engine fallback.
 
 ### Backend and data layer
@@ -40,6 +41,7 @@ Current milestone: Presentation Edition — integrated full-stack research demon
 - Exploratory external sentence-classification experiments now compare the rules with TF-IDF logistic regression and SVM baselines on two independently released EU datasets. The scripts, cleaning audit, fold metrics, and figures are in `research/experiments/`; these do not measure full obligation-span extraction.
 - Persistent human review decisions: confirmed, corrected, and rejected.
 - Conditional Z3 feasibility check for two manually normalized, evidence-offset-validated rules, with unsatisfiable core, witness, and explicit abstention paths.
+- Optional pinned InLegalBERT encoder returns an uncalibrated cosine relatedness signal for two reviewed evidence quotes alongside the independent Z3 result. It is installed separately from the base app.
 
 ### Delivery and quality
 
@@ -64,7 +66,7 @@ These boundaries do not prevent the presentation workflow from running; they def
 - The held-out evaluator and annotation protocol are implemented, but there is no annotated document corpus or inter-annotator agreement result yet.
 - The `citationIntegrity` field checks evidence, source-ID, and located source-span presence; source authority and PDF page coordinates are not verified.
 - The application supports decision review and evidence traceability but is not legal advice, a compliance certificate, or an autonomous release authority.
-- The contradiction check cannot establish that two real laws conflict: source authority, scope identity, legal priority, exceptions, and semantic normalization are not automatically verified. InLegalBERT, DSPy, and Neo4j from the supplied concept image are not implemented. No contradiction-detection accuracy is reported.
+- The contradiction check cannot establish that two real laws conflict: source authority, scope identity, legal priority, exceptions, and semantic normalization are not automatically verified. The optional InLegalBERT signal does not perform text-to-logic extraction or alter the Z3 proof; DSPy and Neo4j are not implemented. No contradiction-detection accuracy is reported.
 
 ## Paper-ready next study
 

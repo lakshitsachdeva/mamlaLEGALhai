@@ -11,7 +11,7 @@ It is designed as both a strong classroom demonstration and a transparent resear
 - **Obligation Lab** — compiles clauses into actor, action, modality, timing, conditions, exceptions, references, confidence, source metadata, and evidence clauses with source offsets.
 - **Evidence Graph** — visualizes the chain from authoritative source through normalized obligation to policy evidence and reviewer decision.
 - **Policy Comparator** — evaluates actor, action, polarity, timing, exception scope, and evidence sufficiency independently.
-- **Contradiction Lab** — checks whether two manually normalized, source-offset-validated rules can be jointly satisfied under explicit assumptions; Z3 returns an unsatisfiable core or witness.
+- **Contradiction Lab** — optionally scores two evidence quotes with the pretrained InLegalBERT encoder after reviewer confirmation, then separately checks the manually normalized rules with Z3. A Z3-only path remains available.
 - **Version compare** — aligns old and new provisions, flags additions, removals, and modifications, and separates observed edits from possible reasons and review actions.
 - **Persistent case workspace** — stores analyses, restores prior cases, records reviewer decisions and field corrections, and exposes before/after values in an SQLite audit trail.
 - **Evaluation Console** — executes a 16-case transparent challenge suite covering extraction, comparison, provenance, deadlines, and versioning.
@@ -85,6 +85,7 @@ The current [LaTeX preprint source](paper/regulatrace-preprint/main.tex) include
 | `POST` | `/api/analyze` | Evidence-linked obligation extraction |
 | `POST` | `/api/compare` | Regulatory-to-policy comparison |
 | `POST` | `/api/contradictions/check` | Conditional two-rule feasibility proof with Z3 |
+| `POST` | `/api/contradictions/neuro-symbolic` | Optional InLegalBERT quote relatedness and Z3 proof after field review |
 | `POST` | `/api/versions/compare` | Regulatory change analysis |
 | `POST` | `/api/documents/ingest` | PDF, DOCX, TXT, or Markdown text extraction |
 | `GET` | `/api/analyses` | Persistent case history |
@@ -145,11 +146,13 @@ The deterministic engine is a reproducible and inspectable lower bound. A paper-
 
 The UI, typed API contracts, stored provenance, audit model, and executable benchmark already provide the scaffolding for that study without hiding the baseline behind unverifiable claims.
 
-## Symbolic contradiction prototype
+## Reviewer-guided neural and symbolic prototype
 
 Open `#contradiction-lab` in the running app and load the **fictional example**. Every rule field is editable. The source quote and exact character interval are validated by the API, then the solver runs only when actor, action, object, scope, jurisdiction, condition, and time align. An obligation and prohibition on the same act produce `INFEASIBLE_TO_SATISFY` and an unsatisfiable core. Two obligations produce a satisfiable witness. Different actors or disjoint dates are marked `NOT_COMPARABLE`; exceptions and permissions require review.
 
-This is a proof about manually supplied normalized propositions. It does not automatically extract a legal knowledge graph, authenticate source authority, resolve synonyms or priority, or prove that real statutes conflict. The pictured InLegalBERT, DSPy, and Neo4j pipeline is not implemented or evaluated here. A research-grade extension requires a sourced and annotated contradiction corpus, adjudicated normalization, and end-to-end testing before reporting accuracy or making legal claims.
+For the optional neural path, run `.venv/bin/python -m pip install -r requirements-neural.txt` and restart the app. The first neural request downloads the pinned [law-ai/InLegalBERT](https://huggingface.co/law-ai/InLegalBERT) checkpoint to the local Hugging Face cache; the model weights are not stored in this repository. Review the source quotes and rule fields, tick the confirmation box, and choose **Run InLegalBERT + Z3**. The endpoint returns a mean-pooled encoder cosine for the two evidence quotes alongside the separate Z3 result. The cosine is an **uncalibrated relatedness signal**, not a contradiction probability or a validated similarity metric; it never changes the proof. Missing model dependencies or weights return an explicit error rather than silently using another model.
+
+This is a narrow reviewer-guided neuro-symbolic workflow, not automatic text-to-logic extraction. The proof is about manually supplied propositions. The system does not authenticate legal authority, resolve synonyms or priority, or prove that real statutes conflict. DSPy and Neo4j are not implemented. A research-grade extension requires a sourced and annotated contradiction corpus, adjudicated normalization, and end-to-end testing before reporting accuracy or making legal claims.
 
 ## Team
 

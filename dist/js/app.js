@@ -60,10 +60,11 @@ const roadmap = [
 ];
 
 const demoSteps = [
-  { view: "obligation-lab", icon: "⌁", title: "Compile an obligation", copy: "Start with a source clause. RegulaTrace preserves the words, identifies the duty and creates a reviewable atomic record." },
-  { view: "comparator", icon: "⇄", title: "Challenge the policy", copy: "Topic similarity is only the first layer. The comparator separately tests polarity, timing, actor, scope and exception compatibility." },
-  { view: "change-radar", icon: "◌", title: "Compare versions", copy: "The app aligns the supplied clauses and flags changed wording. Review the text before drawing an impact conclusion." },
-  { view: "evidence-graph", icon: "⌘", title: "Trace the record", copy: "Each record retains its evidence clause, source metadata, heuristic score, and review state. The graph shows that path." },
+  { view: "executive", icon: "◆", title: "Start with the example", copy: "Click Load demo data on the Presentation page. The list below that button shows the route through the app." },
+  { view: "obligation-lab", icon: "⌁", title: "Inspect a proposed duty", copy: "Open one record and compare its actor, action, and timing with the exact source quote. You can save a correction." },
+  { view: "change-radar", icon: "◌", title: "See what changed", copy: "The fictional old and new policies differ in review frequency and evidence retention. These edits are prompts for human review." },
+  { view: "contradiction-lab", icon: "⊥", title: "Check two rules", copy: "Load the fictional example. InLegalBERT can score quote relatedness; Z3 separately checks manually reviewed rule fields." },
+  { view: "research", icon: "§", title: "Understand the numbers", copy: "The paper's accuracy figures come from separate sentence-label experiments. The in-app Evaluation screen runs authored software checks." },
 ];
 
 const state = {
@@ -170,6 +171,7 @@ function loadProofSample() {
     const form = $(`[data-rule="${side}"]`);
     for (const [name, value] of Object.entries(values)) form.elements.namedItem(name).value = value;
   }
+  $("#proof-review-confirmed").checked = false;
   $("#proof-output").innerHTML = "<p>Example loaded. Review the two rules, then run the check.</p>";
 }
 
@@ -185,21 +187,28 @@ function proofRule(side) {
   return { ...fields, id: side === "left" ? "rule_A" : "rule_B", evidence, sourceSpan: { start, end: start + [...evidence].length } };
 }
 
-async function runProof() {
-  const button = $("#proof-check");
-  button.disabled = true;
+async function runProof(useNeural = false) {
+  const buttons = [$("#proof-check"), $("#proof-neural-check")];
+  buttons.forEach((button) => { button.disabled = true; });
   try {
-    const result = await requestApi("/api/contradictions/check", { left: proofRule("left"), right: proofRule("right") }, 6000);
+    if (useNeural && !$("#proof-review-confirmed").checked) throw new Error("Review the quotes and rule fields, then tick the confirmation box.");
+    const payload = { left: proofRule("left"), right: proofRule("right") };
+    if (useNeural) payload.reviewConfirmed = true;
+    $("#proof-output").innerHTML = useNeural ? "<p>Loading InLegalBERT and checking the rules. First use may download the model.</p>" : "<p>Checking the rules…</p>";
+    const response = await requestApi(useNeural ? "/api/contradictions/neuro-symbolic" : "/api/contradictions/check", payload, useNeural ? 300000 : 6000);
+    const result = useNeural ? response.symbolic : response;
+    const neural = useNeural ? response.neural : null;
     const labels = { INFEASIBLE_TO_SATISFY: "Cannot satisfy both rules", SATISFIABLE_UNDER_ENCODING: "A satisfying action exists", NOT_COMPARABLE: "Rules do not align", REVIEW_REQUIRED: "Review needed" };
     const alignment = Object.entries(result.alignment).map(([field, match]) => `<div><dt>${escapeHtml(field)}</dt><dd class="${match ? "pass" : "fail"}">${match ? "Aligned" : "Different"}</dd></div>`).join("");
-    $("#proof-output").innerHTML = `<div class="proof-result ${escapeHtml(result.solverStatus)}"><span class="proof-status">${escapeHtml(result.solverStatus.toUpperCase().replace("NOT_RUN", "NOT RUN"))}</span><div><h2>${escapeHtml(labels[result.verdict])}</h2><p>${escapeHtml(result.explanation)}</p></div></div><dl class="proof-facts"><div><dt>Shared dates</dt><dd>${result.sharedInterval ? `${escapeHtml(result.sharedInterval.start)} to ${escapeHtml(result.sharedInterval.end)}` : "No overlap"}</dd></div><div><dt>Proof core</dt><dd>${result.proofCore.length ? result.proofCore.map(escapeHtml).join(" + ") : "—"}</dd></div><div><dt>Action witness</dt><dd>${result.witness ? (result.witness.performAct ? "Perform the act" : "Do not perform the act") : "—"}</dd></div></dl><div class="proof-alignment"><h3>Field alignment</h3><dl>${alignment}</dl></div><details class="proof-assumptions"><summary>Assumptions used in this check</summary><ul>${result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>`;
-    setRuntimeStatus("backend", "Z3 feasibility check returned by FastAPI");
+    const neuralHtml = neural ? `<div class="proof-neural"><h2>InLegalBERT relatedness: ${escapeHtml(neural.cosineSimilarity.toFixed(4))}</h2><p>${escapeHtml(neural.note)}</p><p>Model: ${escapeHtml(neural.modelId)} · ${escapeHtml(neural.method)}${neural.truncated.left || neural.truncated.right ? " · At least one quote was truncated" : ""}</p></div>` : "";
+    $("#proof-output").innerHTML = `${neuralHtml}<div class="proof-result ${escapeHtml(result.solverStatus)}"><span class="proof-status">${escapeHtml(result.solverStatus.toUpperCase().replace("NOT_RUN", "NOT RUN"))}</span><div><h2>${escapeHtml(labels[result.verdict])}</h2><p>${escapeHtml(result.explanation)}</p></div></div><dl class="proof-facts"><div><dt>Shared dates</dt><dd>${result.sharedInterval ? `${escapeHtml(result.sharedInterval.start)} to ${escapeHtml(result.sharedInterval.end)}` : "No overlap"}</dd></div><div><dt>Proof core</dt><dd>${result.proofCore.length ? result.proofCore.map(escapeHtml).join(" + ") : "—"}</dd></div><div><dt>Action witness</dt><dd>${result.witness ? (result.witness.performAct ? "Perform the act" : "Do not perform the act") : "—"}</dd></div></dl><div class="proof-alignment"><h3>Field alignment</h3><dl>${alignment}</dl></div><details class="proof-assumptions"><summary>Assumptions used in this check</summary><ul>${result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>`;
+    setRuntimeStatus("backend", useNeural ? "InLegalBERT and Z3 returned by FastAPI" : "Z3 feasibility check returned by FastAPI");
     $("#proof-output").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    $("#proof-output").innerHTML = `<p class="proof-error">${escapeHtml(error.message)} The contradiction lab requires the FastAPI backend.</p>`;
+    $("#proof-output").innerHTML = `<p class="proof-error">${escapeHtml(error.message)}</p>`;
     $("#proof-output").scrollIntoView({ behavior: "smooth", block: "start" });
   } finally {
-    button.disabled = false;
+    buttons.forEach((button) => { button.disabled = false; });
   }
 }
 
@@ -701,7 +710,7 @@ function setupDemo() {
   $("#demo-back").addEventListener("click", () => { state.demoIndex = Math.max(0, state.demoIndex - 1); render(); showView(demoSteps[state.demoIndex].view); });
   $("#demo-next").addEventListener("click", () => {
     showView(demoSteps[state.demoIndex].view);
-    if (state.demoIndex === demoSteps.length - 1) { overlay.hidden = true; toast("You just followed one rule from source to evidence graph.", "Tour complete"); }
+    if (state.demoIndex === demoSteps.length - 1) { overlay.hidden = true; toast("Use the Presentation page to revisit any step.", "Tour complete"); }
     else { state.demoIndex += 1; render(); }
   });
 }
@@ -725,8 +734,17 @@ function bindActions() {
   });
   $("#compare-button").addEventListener("click", () => runComparison(true));
   $("#proof-sample").addEventListener("click", loadProofSample);
-  $("#proof-check").addEventListener("click", runProof);
-  $$(".proof-rule").forEach((form) => form.addEventListener("submit", (event) => { event.preventDefault(); runProof(); }));
+  $("#proof-check").addEventListener("click", () => runProof(false));
+  $("#proof-neural-check").addEventListener("click", () => runProof(true));
+  $$(".proof-rule input, .proof-rule textarea, .proof-rule select").forEach((field) => {
+    const invalidate = () => {
+      $("#proof-review-confirmed").checked = false;
+      $("#proof-output").innerHTML = "<p>A rule field changed. Review both rules and run the check again.</p>";
+    };
+    field.addEventListener("input", invalidate);
+    field.addEventListener("change", invalidate);
+  });
+  $$(".proof-rule").forEach((form) => form.addEventListener("submit", (event) => { event.preventDefault(); runProof(false); }));
   $("#diff-button").addEventListener("click", () => runDiff(true));
   $("#refresh-history").addEventListener("click", refreshHistory);
   $("#graph-zoom-in").addEventListener("click", () => { state.graphScale = Math.min(1.35, state.graphScale + .1); $("#graph-zoom-label").textContent = `${Math.round(state.graphScale * 100)}%`; renderGraph(); });
