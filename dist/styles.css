@@ -408,6 +408,7 @@ body { font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-ser
 .assurance-chip b { color: var(--ink); font-size: 12px; }
 .assurance-chip small { color: var(--muted); font-size: 10px; }
 .sidebar-footer > a { color: var(--slate); font-size: 11px; }
+.sidebar-footer > a.sidebar-paper-link { color: var(--ink); font-weight: 700; }
 .sidebar-footer > a:hover { color: var(--mint-dark); }
 .topbar { background: var(--paper); border-bottom: 1px solid var(--line); backdrop-filter: none; }
 .breadcrumb { color: var(--muted); font-size: 13px; }
