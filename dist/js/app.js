@@ -8,8 +8,9 @@ import {
 } from "./engine.js";
 
 const API_BASE_URL = (
-  window.REGULATRACE_API_BASE_URL
-  ?? document.querySelector('meta[name="regulatrace-api-base"]')?.content
+  window.MAMLALEGALHAI_API_BASE_URL
+  ?? window.REGULATRACE_API_BASE_URL
+  ?? document.querySelector('meta[name="mamlalegalhai-api-base"]')?.content
   ?? "http://127.0.0.1:8000"
 ).replace(/\/$/, "");
 
@@ -41,7 +42,7 @@ const PROOF_SAMPLE = {
 const OLD_VERSION = `The organization shall review privileged user accounts at least once every 90 days. The security owner shall retain review evidence for twelve months. Exceptions may be approved by the Chief Information Security Officer.`;
 const NEW_VERSION = `The organization shall review privileged user accounts at least once every 60 days. The security owner shall retain review evidence for twenty-four months. Exceptions may be approved by the Chief Information Security Officer and must be revalidated every six months. Dormant privileged accounts must be disabled immediately.`;
 
-const baselineData = ["Majority class", "Ordered lexical rules", "Character n-gram SVM", "Legal encoder", "Hybrid RegulaTrace"];
+const baselineData = ["Majority class", "Ordered lexical rules", "Character n-gram SVM", "Legal encoder", "Hybrid mamlaLEGALhai"];
 
 const challenges = [
   ["Scoped negation", "must not → PROHIBITION"],
@@ -217,7 +218,7 @@ function showView(id, updateHash = true) {
   $$(".view").forEach((view) => view.classList.toggle("active", view === target));
   $$("[data-nav]").forEach((link) => link.classList.toggle("active", link.dataset.nav === target.id));
   $("#view-title").textContent = target.dataset.title ?? "Overview";
-  document.title = `${target.dataset.title ?? "Overview"} · RegulaTrace`;
+  document.title = `${target.dataset.title ?? "Overview"} · mamlaLEGALhai`;
   $(".sidebar").classList.remove("open");
   if (updateHash && location.hash !== `#${target.id}`) history.replaceState(null, "", `#${target.id}`);
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -729,7 +730,7 @@ function bindActions() {
   $("#analyze-button").addEventListener("click", runAnalysis);
   $("#export-analysis").addEventListener("click", () => {
     if (!state.analysis) return toast("Run an analysis before exporting.", "Nothing to export");
-    downloadJson(state.analysis, "regulatrace-obligation-register.json");
+    downloadJson(state.analysis, "mamlalegalhai-obligation-register.json");
     toast("Machine-readable obligation register downloaded.", "Exported");
   });
   $("#compare-button").addEventListener("click", () => runComparison(true));

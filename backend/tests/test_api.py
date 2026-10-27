@@ -17,7 +17,7 @@ GDPR = (
 
 @pytest.fixture(autouse=True)
 def isolated_database(tmp_path, monkeypatch):
-    monkeypatch.setenv("REGULATRACE_DB_PATH", str(tmp_path / "regulatrace-test.db"))
+    monkeypatch.setenv("MAMLALEGALHAI_DB_PATH", str(tmp_path / "mamlalegalhai-test.db"))
 
 
 def test_health_exposes_engine_version() -> None:
@@ -25,7 +25,7 @@ def test_health_exposes_engine_version() -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ok",
-        "service": "regulatrace-api",
+        "service": "mamlalegalhai-api",
         "phase": "presentation-edition",
         "engineVersion": "0.5.0-research",
     }
@@ -248,7 +248,7 @@ def test_executable_evaluation_reports_transparent_case_results() -> None:
 def test_fastapi_serves_the_presentation_frontend() -> None:
     response = client.get("/")
     assert response.status_code == 200
-    assert "RegulaTrace" in response.text
+    assert "mamlaLEGALhai" in response.text
     assert "Presentation" in response.text
     assert "Contradiction Lab" in response.text
 

@@ -1,4 +1,4 @@
-"""Typed API contracts for the RegulaTrace deterministic backend."""
+"""Typed API contracts for the mamlaLEGALhai deterministic backend."""
 
 from __future__ import annotations
 

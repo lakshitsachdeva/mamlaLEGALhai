@@ -1,4 +1,4 @@
-# RegulaTrace held-out obligation study
+# mamlaLEGALhai held-out obligation study
 
 This protocol defines the first research evaluation. The bundled 16-case challenge suite is a development smoke test; its score is not a paper result. No held-out corpus or model comparison result is included in this repository.
 

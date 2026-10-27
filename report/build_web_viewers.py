@@ -18,8 +18,8 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "dist/docs"
 DOCUMENTS = [
-    ("RegulaTrace_Preprint", "Research preprint", "Measured results begin on page 8.", 8),
-    ("RegulaTrace_Project_Report", "Project report", "Measured results begin on page 5.", 5),
+    ("mamlaLEGALhai_Preprint", "Research preprint", "Measured results begin on page 8.", 8),
+    ("mamlaLEGALhai_Project_Report", "Project report", "Measured results begin on page 5.", 5),
 ]
 
 
@@ -28,7 +28,7 @@ def build(stem: str, title: str, detail: str, results_page: int) -> None:
     page_count = len(PdfReader(pdf).pages)
     images = DOCS / f"{stem}_pages"
     images.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="regulatrace-pdf-") as temp:
+    with tempfile.TemporaryDirectory(prefix="mamlalegalhai-pdf-") as temp:
         prefix = Path(temp) / "page"
         subprocess.run(["pdftoppm", "-r", "145", "-png", str(pdf), str(prefix)], check=True)
         rendered = sorted(Path(temp).glob("page-*.png"))
@@ -47,7 +47,7 @@ def build(stem: str, title: str, detail: str, results_page: int) -> None:
     )
     doc = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)} · RegulaTrace</title>
+<title>{html.escape(title)} · mamlaLEGALhai</title>
 <style>
 :root{{font-family:Inter,Arial,sans-serif;color:#1c2824;background:#f0f2ed}}
 *{{box-sizing:border-box}}body{{margin:0}}a{{color:inherit}}header{{position:sticky;top:0;z-index:2;background:#f9faf7;border-bottom:1px solid #d3dbd3;padding:12px clamp(16px,3vw,40px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}}
@@ -56,7 +56,7 @@ main{{max-width:1040px;margin:auto;padding:24px 18px 70px}}h1{{font-size:clamp(2
 figure{{margin:0 0 26px;scroll-margin-top:95px}}figure img{{display:block;width:100%;height:auto;background:white;box-shadow:0 8px 30px #1b312425;border:1px solid #d7ded7}}figcaption{{text-align:center;color:#52655a;font-size:13px;margin-top:8px}}.note{{font-size:13px;color:#52655a}}
 @media(max-width:650px){{header{{position:static}}figure{{scroll-margin-top:8px}}}}
 </style></head><body>
-<header><a class="brand" href="../index.html#research">← RegulaTrace research notes</a><div class="actions"><a href="./{stem}.pdf" download>Download PDF</a><a href="#page-{results_page}">Jump to measured results ↓</a></div></header>
+<header><a class="brand" href="../index.html#research">← mamlaLEGALhai research notes</a><div class="actions"><a href="./{stem}.pdf" download>Download PDF</a><a href="#page-{results_page}">Jump to measured results ↓</a></div></header>
 <main><h1>{html.escape(title)}</h1><p class="intro">{html.escape(detail)} This is a page-for-page browser view of the current PDF.</p>
 <nav aria-label="Paper pages"><span>Page</span>{page_nav}<a class="results" href="#page-{results_page}">Results</a></nav>
 {pages}

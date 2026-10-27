@@ -1,8 +1,8 @@
-# RegulaTrace Compliance Intelligence Lab
+# mamlaLEGALhai Compliance Intelligence Lab
 
-RegulaTrace turns regulatory language into traceable, reviewable compliance work. The Presentation Edition combines an evidence-first FastAPI backend, persistent case history, document ingestion, a deterministic obligation engine, policy-gap analysis, change impact analysis, human review decisions, and an executable evaluation suite in one polished interface.
+mamlaLEGALhai turns regulatory language into traceable, reviewable compliance work. The Presentation Edition combines an evidence-first FastAPI backend, persistent case history, document ingestion, a deterministic obligation engine, policy-gap analysis, change impact analysis, human review decisions, and an executable evaluation suite in one polished interface.
 
-It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its evidence clause, source metadata, and character offsets into the supplied or extracted text; uncertain findings stay visible; review decisions and field corrections are written to an audit trail. RegulaTrace is not legal advice and does not certify compliance.
+It is designed as both a strong classroom demonstration and a transparent research baseline. Every extracted record keeps its evidence clause, source metadata, and character offsets into the supplied or extracted text; uncertain findings stay visible; review decisions and field corrections are written to an audit trail. mamlaLEGALhai is not legal advice and does not certify compliance.
 
 ## Presentation Edition capabilities
 
@@ -30,20 +30,20 @@ The launcher creates or reuses `.venv`, installs the required packages when need
 
 Only one server is required—the FastAPI app serves both the API and the frontend. Interactive API documentation is available at <http://127.0.0.1:8000/api/docs>.
 
-To stop it, double-click `stop-regulatrace.ps1` or run:
+To stop it, double-click `stop-mamlalegalhai.ps1` or run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\stop-regulatrace.ps1
+powershell -ExecutionPolicy Bypass -File .\stop-mamlalegalhai.ps1
 ```
 
 ### macOS and Linux
 
-From the repository root, run `sh ./start-regulatrace.sh`, then open <http://127.0.0.1:8000/#executive>. The script creates `.venv`, installs the pinned Python dependencies, and runs the local server. Stop it with Ctrl-C. Set `REGULATRACE_PORT` to use another local port.
+From the repository root, run `sh ./start-mamlalegalhai.sh`, then open <http://127.0.0.1:8000/#executive>. The script creates `.venv`, installs the pinned Python dependencies, and runs the local server. Stop it with Ctrl-C. Set `MAMLALEGALHAI_PORT` to use another local port.
 
 ### Manual start
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\start-regulatrace.ps1
+powershell -ExecutionPolicy Bypass -File .\start-mamlalegalhai.ps1
 ```
 
 For development with reload enabled:
@@ -67,7 +67,7 @@ For a talk you can read aloud, use the [five-minute script](presentation/QUICK_P
 6. Show added, removed, and modified clauses in **Version compare**.
 7. Finish with the executable benchmark in **Evaluation Console** and export the Executive Brief to PDF from the browser print dialog.
 
-The sample upload document is in `examples/RegulaTrace_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Version compare's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
+The sample upload document is in `examples/mamlaLEGALhai_Demo_Regulation.docx`. Its issuing authority and jurisdiction are fictional; use it to demonstrate extraction, not as a real legal source. Version compare's possible rationale is an inference from old and new wording. Verify actual legislative intent with official notes or recitals. The homepage record is an illustration, not a measured output.
 
 The challenge suite's critical miss rate is the fraction of labeled critical cases with a missed or materially misread duty, missed serious policy mismatch, or missed material version change. It is distinct from the overall case failure rate. The suite is small and synthetic; its score is not an estimate of performance on real legal documents. The analysis field named `citationIntegrity` checks that an evidence clause, source ID, and located source span are present. Offsets use Unicode code points with an exclusive end and refer to the supplied text or extracted document text. They do not verify an official citation or PDF page coordinates.
 
@@ -75,7 +75,7 @@ For a separately annotated document set, use `python -m research.evaluate path/t
 
 ## Preprint draft
 
-The current [preprint PDF](dist/docs/RegulaTrace_Preprint.pdf) and [LaTeX source](paper/regulatrace-preprint/main.tex) include two external classification experiments, measured model comparisons, and result figures. The [current project report](dist/docs/RegulaTrace_Project_Report.pdf) summarizes the implementation and limits. The [experiment scripts and exact result JSON](research/experiments/README.md) document dataset provenance, cleaning, grouped folds, and limitations. These are sentence-level proxy tasks, not end-to-end obligation-span results. The website links to browser-readable views of the paper and report under **Research notes**, each with a PDF download. To rebuild the report and web views, install `requirements-report.txt`, run `python report/build_report.py`, then `python report/build_web_viewers.py` (the latter also requires `pdftoppm` on PATH). The paper is a named working draft and has not been submitted to arXiv.
+The current [preprint PDF](dist/docs/mamlaLEGALhai_Preprint.pdf) and [LaTeX source](paper/regulatrace-preprint/main.tex) include two external classification experiments, measured model comparisons, and result figures. The [current project report](dist/docs/mamlaLEGALhai_Project_Report.pdf) summarizes the implementation and limits. The [experiment scripts and exact result JSON](research/experiments/README.md) document dataset provenance, cleaning, grouped folds, and limitations. These are sentence-level proxy tasks, not end-to-end obligation-span results. The website links to browser-readable views of the paper and report under **Research notes**, each with a PDF download. To rebuild the report and web views, install `requirements-report.txt`, run `python report/build_report.py`, then `python report/build_web_viewers.py` (the latter also requires `pdftoppm` on PATH). The paper is a named working draft and has not been submitted to arXiv.
 
 ## API surface
 
@@ -125,8 +125,8 @@ research/
   tests/                 evaluator validation tests
 paper/regulatrace-preprint/main.tex  named working preprint source
 paper/regulatrace-preprint/figures/  measured result figures
-dist/docs/RegulaTrace_Preprint.pdf  current preprint PDF linked from the website
-dist/docs/RegulaTrace_Project_Report.pdf  current implementation and research report
+dist/docs/mamlaLEGALhai_Preprint.pdf  current preprint PDF linked from the website
+dist/docs/mamlaLEGALhai_Project_Report.pdf  current implementation and research report
 report/build_report.py  reproducible report source
 report/build_web_viewers.py  browser-readable PDF page-view generator
 dist/
@@ -135,11 +135,11 @@ dist/
   js/engine.js           transparent browser fallback
   js/app.js              API integration and interaction layer
 tests/engine.test.js     original JavaScript engine tests
-examples/RegulaTrace_Demo_Regulation.docx  presentation upload document
-start-regulatrace.sh     macOS/Linux launcher
+examples/mamlaLEGALhai_Demo_Regulation.docx  presentation upload document
+start-mamlalegalhai.sh     macOS/Linux launcher
 RUN_PRESENTATION.cmd     one-click Windows launcher
-start-regulatrace.ps1    environment-aware startup and health check
-stop-regulatrace.ps1     clean local shutdown
+start-mamlalegalhai.ps1    environment-aware startup and health check
+stop-mamlalegalhai.ps1     clean local shutdown
 PROJECT_STATUS.md        verified scope and known research boundaries
 ```
 

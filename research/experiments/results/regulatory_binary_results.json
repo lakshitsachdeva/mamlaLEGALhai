@@ -1,7 +1,7 @@
 {
   "dataset": "https://doi.org/10.5281/zenodo.8200001",
   "dataset_sha256": "510468c8eb682a4b6f98984a7221a0a157e9a323c4893a0d49723acfa2b16238",
-  "task_scope": "sentence-level regulatory versus constitutive statement; any RegulaTrace normative output mapped to regulatory",
+  "task_scope": "sentence-level regulatory versus constitutive statement; any mamlaLEGALhai normative output mapped to regulatory",
   "cleaning": "normalize whitespace, deduplicate exact text, exclude text with discordant labels, group folds by CELEX",
   "audit": {
     "raw_rows": 7240,
@@ -21,10 +21,10 @@
     "numpy": "2.5.4",
     "scipy": "1.18.1",
     "matplotlib": "3.9.4",
-    "regulatrace_engine": "0.5.0-research"
+    "mamlalegalhai_engine": "0.5.0-research"
   },
   "models": {
-    "RegulaTrace rules": {
+    "mamlaLEGALhai rules": {
       "folds": [
         {
           "n": 1952,

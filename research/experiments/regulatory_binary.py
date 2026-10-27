@@ -37,7 +37,7 @@ from backend.engine import ENGINE_VERSION, analyze_document
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CACHE = ROOT / ".regulatrace" / "experiments" / "complete_training_data.csv"
+CACHE = ROOT / ".mamlalegalhai" / "experiments" / "complete_training_data.csv"
 RESULTS = ROOT / "research" / "experiments" / "results" / "regulatory_binary_results.json"
 FIGURES = ROOT / "paper" / "regulatrace-preprint" / "figures"
 SOURCE_DOI = "https://doi.org/10.5281/zenodo.8200001"
@@ -128,7 +128,7 @@ def plot_results(report: dict) -> None:
     plt.close(fig)
 
     best = report["best_learned_by_regulatory_f1"]
-    choices = ["RegulaTrace rules", best]
+    choices = ["mamlaLEGALhai rules", best]
     fig, axes = plt.subplots(1, 2, figsize=(8.8, 4.1), layout="constrained")
     for ax, name in zip(axes, choices):
         matrix = np.array(report["models"][name]["confusion_matrix"])
@@ -154,16 +154,16 @@ def main() -> None:
     report: dict = {
         "dataset": SOURCE_DOI,
         "dataset_sha256": SOURCE_SHA256,
-        "task_scope": "sentence-level regulatory versus constitutive statement; any RegulaTrace normative output mapped to regulatory",
+        "task_scope": "sentence-level regulatory versus constitutive statement; any mamlaLEGALhai normative output mapped to regulatory",
         "cleaning": "normalize whitespace, deduplicate exact text, exclude text with discordant labels, group folds by CELEX",
         "audit": audit,
         "split": f"{N_SPLITS}-fold StratifiedGroupKFold by CELEX, seed {SEED}",
         "versions": {"python": platform.python_version(), "scikit_learn": sklearn.__version__,
                      "numpy": np.__version__, "scipy": scipy.__version__,
-                     "matplotlib": matplotlib.__version__, "regulatrace_engine": ENGINE_VERSION},
+                     "matplotlib": matplotlib.__version__, "mamlalegalhai_engine": ENGINE_VERSION},
         "models": {},
     }
-    for name, model in {"RegulaTrace rules": None, **models()}.items():
+    for name, model in {"mamlaLEGALhai rules": None, **models()}.items():
         out_of_fold = np.full(len(gold), -1, dtype=int)
         fold_scores = []
         for train_index, test_index in folds:
@@ -198,7 +198,7 @@ def main() -> None:
             "regulatory_f1_oof": float(f1_score(gold, out_of_fold, zero_division=0)),
             "confusion_matrix": confusion_matrix(gold, out_of_fold, labels=[0, 1]).tolist(),
         }
-    report["best_learned_by_regulatory_f1"] = max((name for name in report["models"] if name not in {"RegulaTrace rules", "Majority"}),
+    report["best_learned_by_regulatory_f1"] = max((name for name in report["models"] if name not in {"mamlaLEGALhai rules", "Majority"}),
                                                    key=lambda name: report["models"][name]["regulatory_f1_mean"])
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)

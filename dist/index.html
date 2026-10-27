@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07111f">
-  <meta name="description" content="RegulaTrace is a local research workbench for reviewing extracted obligations, policy comparisons, revisions, and conditional rule checks.">
-  <meta name="regulatrace-api-base" content="http://127.0.0.1:8000">
-  <title>RegulaTrace — Regulatory Research Workbench</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307111f'/%3E%3Cpath d='M17 17h21c8 0 12 5 12 12 0 6-3 10-9 12l10 12H39L30 42h-2v11H17V17zm11 9v8h9c2 0 4-1 4-4s-2-4-4-4h-9z' fill='%235be7c4'/%3E%3C/svg%3E">
+  <meta name="description" content="mamlaLEGALhai is a local research workbench for reviewing extracted obligations, policy comparisons, revisions, and conditional rule checks.">
+  <meta name="mamlalegalhai-api-base" content="http://127.0.0.1:8000">
+  <title>mamlaLEGALhai — Regulatory Research Workbench</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,9 +18,9 @@
 
   <div class="app-shell">
     <aside class="sidebar" aria-label="Primary navigation">
-      <a class="brand" href="#overview" data-nav="overview" aria-label="RegulaTrace home">
-        <span class="brand-mark" aria-hidden="true">R</span>
-        <span><strong>RegulaTrace</strong><small>Regulatory research</small></span>
+      <a class="brand" href="#overview" data-nav="overview" aria-label="mamlaLEGALhai home">
+        <span class="brand-mark" aria-hidden="true">m</span>
+        <span><strong>mamlaLEGALhai</strong><small>Regulatory research</small></span>
       </a>
 
       <div class="environment-pill"><span></span> Local research build</div>
@@ -41,15 +41,15 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="assurance-chip"><span class="shield">R</span><span><b>Research prototype</b><small>Source text · review · audit</small></span></div>
-        <a href="./docs/RegulaTrace_Project_Report_view.html">Read full project report <span>↗</span></a>
+        <div class="assurance-chip"><span class="shield">m</span><span><b>Research prototype</b><small>Source text · review · audit</small></span></div>
+        <a href="./docs/mamlaLEGALhai_Project_Report_view.html">Read full project report <span>↗</span></a>
       </div>
     </aside>
 
     <main id="main-content" class="main-panel">
       <header class="topbar">
         <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
-        <div class="breadcrumb"><span>RegulaTrace</span><b>/</b><strong id="view-title">Overview</strong></div>
+        <div class="breadcrumb"><span>mamlaLEGALhai</span><b>/</b><strong id="view-title">Overview</strong></div>
         <div class="top-actions">
           <span class="runtime-status checking" id="runtime-status" role="status" aria-live="polite"><i></i><span>Checking API…</span></span>
           <button class="ghost-button" id="presentation-mode"><span>▣</span> Present</button>
@@ -118,7 +118,7 @@
 
         <div class="architecture-panel">
           <div class="architecture-copy"><span class="mono-kicker">METHOD</span><h2>From clause to<br>reviewable record</h2><p>The local engine proposes fields and keeps source offsets. A reviewer can correct the record; comparison and solver results remain conditional on those fields.</p><button class="text-button" data-jump="research">Read the research notes →</button></div>
-          <div class="pipeline" aria-label="RegulaTrace processing stages">
+          <div class="pipeline" aria-label="mamlaLEGALhai processing stages">
             <div class="pipeline-stage"><span>01</span><b>Load</b><small>Supplied text + metadata</small></div><i>→</i>
             <div class="pipeline-stage"><span>02</span><b>Segment</b><small>Candidate clauses</small></div><i>→</i>
             <div class="pipeline-stage"><span>03</span><b>Extract</b><small>Proposed rule fields</small></div><i>→</i>
@@ -224,7 +224,7 @@
 
       <section class="view" id="executive" data-title="Presentation">
         <div class="executive-hero">
-        <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><a class="secondary-button" href="./docs/RegulaTrace_Preprint_view.html">Read current paper ↗</a><button class="secondary-button" id="print-brief">Print this page</button></div></div>
+        <div><span class="mono-kicker">PRESENTATION</span><h1>Show the source.<br><em>Show the decision.</em></h1><p>Run the local workflow, then inspect an extracted duty, its source passage, a reviewer correction, and the conditional rule check.</p><div class="hero-actions"><button class="primary-button" id="run-stage-demo">Load demo data <span>→</span></button><a class="secondary-button" href="./docs/mamlaLEGALhai_Preprint_view.html">Read current paper ↗</a><button class="secondary-button" id="print-brief">Print this page</button></div></div>
           <div class="readiness-orbit" aria-label="System readiness"><div class="orbit-core"><strong id="readiness-score">100</strong><span>DEMO READY</span></div><i></i><i></i><i></i></div>
         </div>
         <div class="route-guide">
@@ -273,7 +273,7 @@
           <span class="mono-kicker">RESEARCH RECORD</span>
           <h1>What we tested<br><em>and what remains</em></h1>
           <p>The current preprint reports two external sentence-classification probes of the rule baseline. The optional InLegalBERT quote signal and conditional Z3 check are separate prototypes; neither has end-to-end contradiction accuracy.</p>
-          <div class="hero-actions"><a class="primary-button" href="./docs/RegulaTrace_Preprint_view.html">Read current paper ↗</a><a class="secondary-button" href="./docs/RegulaTrace_Project_Report_view.html">Read project report ↗</a></div>
+          <div class="hero-actions"><a class="primary-button" href="./docs/mamlaLEGALhai_Preprint_view.html">Read current paper ↗</a><a class="secondary-button" href="./docs/mamlaLEGALhai_Project_Report_view.html">Read project report ↗</a></div>
         </div>
         <div class="paper-grid">
           <article class="paper-card featured"><span class="paper-label">CURRENT QUESTION</span><h2>How far can explicit modality cues take us before legal function and context break the rule baseline?</h2><div class="hypothesis-row"><span>Five-class deontic proxy</span><span>Regulatory-function proxy</span><span>Failure audit</span></div></article>
@@ -293,7 +293,7 @@
 }</code></pre></div>
       </section>
 
-      <footer class="site-footer"><div><b>RegulaTrace</b><span>Local research prototype · results require human review.</span></div><div>NMIMS MPSTME · 2026–27</div></footer>
+      <footer class="site-footer"><div><b>mamlaLEGALhai</b><span>Local research prototype · results require human review.</span></div><div>NMIMS MPSTME · 2026–27</div></footer>
     </main>
   </div>
 
@@ -315,7 +315,7 @@
     <div class="demo-card" role="dialog" aria-modal="true" aria-labelledby="demo-title">
       <div class="demo-progress"><span id="demo-progress-bar"></span></div>
       <div class="demo-top"><span>SITE TOUR · <b id="demo-step-count">1 / 5</b></span><button id="demo-close" aria-label="Close guided demo">×</button></div>
-      <div class="demo-body"><span class="demo-icon" id="demo-icon">⌁</span><div><h2 id="demo-title">Compile an obligation</h2><p id="demo-copy">Start with a source clause. RegulaTrace preserves the words, identifies the duty and creates a reviewable atomic record.</p></div></div>
+      <div class="demo-body"><span class="demo-icon" id="demo-icon">⌁</span><div><h2 id="demo-title">Compile an obligation</h2><p id="demo-copy">Start with a source clause. mamlaLEGALhai preserves the words, identifies the duty and creates a reviewable atomic record.</p></div></div>
       <div class="demo-controls"><button class="secondary-button small" id="demo-back">Back</button><button class="primary-button small" id="demo-next">Show me <span>→</span></button></div>
     </div>
   </div>

@@ -95,7 +95,7 @@ def run_benchmark() -> dict[str, Any]:
     critical_cases = [*extraction_results, *comparison_results, {"critical": True, "criticalMiss": not version_passed}]
     critical_cases = [item for item in critical_cases if item["critical"]]
     return {
-        "benchmark": "RegulaTrace transparent challenge suite v1",
+        "benchmark": "mamlaLEGALhai transparent challenge suite v1",
         "datasetType": "synthetic-adversarial",
         "executedCases": total,
         "passedCases": passed,

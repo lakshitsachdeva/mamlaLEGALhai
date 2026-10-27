@@ -1,2 +1,2 @@
-"""RegulaTrace Phase 1 FastAPI backend."""
+"""mamlaLEGALhai Phase 1 FastAPI backend."""
 

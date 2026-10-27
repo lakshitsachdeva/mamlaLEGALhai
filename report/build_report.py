@@ -1,7 +1,7 @@
-"""Build the current RegulaTrace project report PDF.
+"""Build the current mamlaLEGALhai project report PDF.
 
 Run with the Codex bundled Python or any Python with reportlab installed:
-    python report/build_report.py --output dist/docs/RegulaTrace_Project_Report.pdf
+    python report/build_report.py --output dist/docs/mamlaLEGALhai_Project_Report.pdf
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ def p(text: str, style: str = "body") -> Paragraph:
 
 
 def heading(number: str, title: str):
-    return [p("REGULATRACE / CURRENT BUILD", "kicker"), p(f"{number}  {title}", "h1"), HRFlowable(width="100%", thickness=1, color=LINE, spaceAfter=15)]
+    return [p("mamlaLEGALhai / CURRENT BUILD", "kicker"), p(f"{number}  {title}", "h1"), HRFlowable(width="100%", thickness=1, color=LINE, spaceAfter=15)]
 
 
 def box(text: str, width: float = 505):
@@ -107,7 +107,7 @@ def footer(canvas, doc):
     canvas.line(44, 48, PAGE_W - 44, 48)
     canvas.setFont("Helvetica", 7.4)
     canvas.setFillColor(MUTED)
-    canvas.drawString(44, 36, "REGULATRACE  /  IMPLEMENTATION AND RESEARCH REPORT  /  27 OCT 2026")
+    canvas.drawString(44, 36, "mamlaLEGALhai  /  IMPLEMENTATION AND RESEARCH REPORT  /  27 OCT 2026")
     canvas.drawRightString(PAGE_W - 44, 36, str(doc.page))
     canvas.restoreState()
 
@@ -116,7 +116,7 @@ def build(output: Path) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     doc = SimpleDocTemplate(
         str(output), pagesize=A4, leftMargin=44, rightMargin=44,
-        topMargin=54, bottomMargin=66, title="RegulaTrace: Implementation and Research Report",
+        topMargin=54, bottomMargin=66, title="mamlaLEGALhai: Implementation and Research Report",
         author="Lakshit Sachdeva; Anannya Samudra; Trayee Nayampalli; Riddhi Ranjan",
         subject="Verified prototype, exploratory NLP evaluation, and reviewer-guided neural-symbolic workflow",
     )
@@ -125,13 +125,13 @@ def build(output: Path) -> None:
 
     # 1. Cover and executive claim.
     story += [Spacer(1, 50), p("NMIMS MPSTME  /  LEGAL NLP RESEARCH", "kicker"),
-              p("RegulaTrace", "title"),
+              p("mamlaLEGALhai", "title"),
               p("Implementation and research report<br/>Evidence-linked obligation records, external classification probes, and a reviewer-guided InLegalBERT + Z3 check", "subtitle"),
               HRFlowable(width="100%", thickness=2, color=GREEN, spaceAfter=22),
               p("Lakshit Sachdeva  /  Anannya Samudra  /  Trayee Nayampalli  /  Riddhi Ranjan", "body"),
               p("Current code and manuscript state: 27 October 2026. Named research draft; not submitted to arXiv.", "small"),
               Spacer(1, 29),
-              box("RegulaTrace proposes source-linked duty records for human review. It does not decide whether an organization complies with law.", W),
+              box("mamlaLEGALhai proposes source-linked duty records for human review. It does not decide whether an organization complies with law.", W),
               Spacer(1, 22),
               p("What is actually implemented", "h2"),
               p("A local FastAPI and browser application ingests text-based documents, segments clauses, proposes rule fields with source offsets, keeps reviewer corrections and audit history, compares policy wording and versions, and checks two manually normalized rules with Z3. An optional pinned InLegalBERT encoder scores relatedness between their evidence quotes."),
@@ -205,7 +205,7 @@ def build(output: Path) -> None:
     story += [p("Question: can the rules label explicit obligation, permission, prohibition, power, and right language in an independently released EU sample? After cleaning, 566 distinct texts remain. The release has one annotator's labels and no source-act IDs; three folds group highly similar texts but cannot guarantee source-disjoint evaluation."),
               *figure(ROOT / "paper/regulatrace-preprint/figures/deontic_proxy_scores.png", W, "Figure 1. Three-fold mean scores; whiskers show one fold standard deviation. These are provision-level labels, not complete duty records."),
               table(["Model", "Accuracy", "Macro F1"], [
-                  ["RegulaTrace cue rules", "0.922 +/- 0.007", "0.543 +/- 0.036"],
+                  ["mamlaLEGALhai cue rules", "0.922 +/- 0.007", "0.543 +/- 0.036"],
                   ["Word TF-IDF logistic regression", "0.866 +/- 0.038", "0.499 +/- 0.060"],
                   ["Majority class", "0.784", "0.176"],
               ], [230, 130, 145]),
@@ -219,7 +219,7 @@ def build(output: Path) -> None:
     story += [p("Question: does a sentence impose a regulatory duty on an agent, or is it constitutive text about how a legal system operates? The cleaned set contains 5,831 distinct sentences from 379 CELEX acts. All sentences from an act stay in one of three folds."),
               *figure(ROOT / "paper/regulatrace-preprint/figures/regulatory_binary_scores.png", W, "Figure 2. The same cue rules fail when modal words occur in both regulatory and constitutive sentences."),
               table(["Model", "Mean accuracy", "Regulatory F1"], [
-                  ["RegulaTrace cue rules", "0.419 +/- 0.070", "0.588 +/- 0.072"],
+                  ["mamlaLEGALhai cue rules", "0.419 +/- 0.070", "0.588 +/- 0.072"],
                   ["Word TF-IDF linear SVM", "0.852 +/- 0.026", "0.810 +/- 0.046"],
               ], [230, 130, 145]),
               Spacer(1, 10),
@@ -229,7 +229,7 @@ def build(output: Path) -> None:
 
     # 7. How to use the current website.
     story += heading("06", "Presentation and website route")
-    story += [p("The local app starts at <b>http://127.0.0.1:8000/#executive</b>. Run <b>sh ./start-regulatrace.sh</b>, then use the numbered route on the Presentation page. The left sidebar remains available when presentation mode is off."),
+    story += [p("The local app starts at <b>http://127.0.0.1:8000/#executive</b>. Run <b>sh ./start-mamlalegalhai.sh</b>, then use the numbered route on the Presentation page. The left sidebar remains available when presentation mode is off."),
               table(["Order", "Where to click", "What to tell the audience"], [
                   ["1", "Presentation -> Load demo data", "The example analysis, comparison, version changes, and authored checks are prepared."],
                   ["2", "Obligation Lab -> open a record", "Point to the proposed actor/action/timing and the exact source quote. A reviewer can correct fields."],
@@ -239,9 +239,9 @@ def build(output: Path) -> None:
               ], [45, 213, 247]),
               Spacer(1, 17),
               p("Explain the boundaries in one sentence", "h2"),
-              p("<i>RegulaTrace makes proposed rules and their evidence inspectable; the current models and solver do not certify legal compliance.</i>"),
+              p("<i>mamlaLEGALhai makes proposed rules and their evidence inspectable; the current models and solver do not certify legal compliance.</i>"),
               p("Presentation materials", "h2"),
-              p("The repository includes a five-minute script and a ten-minute Click / Say / Understand script in <b>presentation/</b>. The current manuscript is <b>paper/regulatrace-preprint/main.tex</b>. The website offers a page-by-page browser view and a PDF download."),
+              p("The repository includes a five-minute script and a ten-minute Click / Say / Understand script in <b>presentation/</b>. The manuscript source is in the repository's <b>paper/</b> directory. The website offers a page-by-page browser view and a PDF download."),
               PageBreak()]
 
     # 8. Limitations and reproducibility.
@@ -260,7 +260,7 @@ def build(output: Path) -> None:
               p("[1] Paul et al. <i>Pre-trained Language Models for the Legal Domain: A Case Study on Indian Law</i>. ICAIL 2023. <link href='https://arxiv.org/abs/2209.06049'>arXiv:2209.06049</link>.", "small"),
               p("[2] Minkova et al. EU deontic-modality data. <link href='https://doi.org/10.34894/HQ8LIH'>doi:10.34894/HQ8LIH</link>.", "small"),
               p("[3] Moodley et al. Regulatory-statement reproducibility data. <link href='https://doi.org/10.5281/zenodo.8200001'>doi:10.5281/zenodo.8200001</link>.", "small"),
-              p("[4] RegulaTrace research branch and draft PR. <link href='https://github.com/trayee05/regulatrace-compliance-intelligence/pull/1'>github.com/trayee05/regulatrace-compliance-intelligence/pull/1</link>.", "small"),
+              p("[4] mamlaLEGALhai research branch and <link href='https://github.com/trayee05/regulatrace-compliance-intelligence/pull/1'>draft pull request 1</link>.", "small"),
               Spacer(1, 10),
               box("Research status: a working prototype with exploratory external proxies and a conditional neural + symbolic demo. No end-to-end obligation or contradiction accuracy is claimed.", W)]
 
@@ -269,7 +269,7 @@ def build(output: Path) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", type=Path, default=ROOT / "dist/docs/RegulaTrace_Project_Report.pdf")
+    parser.add_argument("--output", type=Path, default=ROOT / "dist/docs/mamlaLEGALhai_Project_Report.pdf")
     args = parser.parse_args()
     build(args.output)
     print(args.output)

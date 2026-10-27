@@ -37,7 +37,7 @@ from backend.engine import ENGINE_VERSION, analyze_document
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CACHE = ROOT / ".regulatrace" / "experiments" / "original_df.csv"
+CACHE = ROOT / ".mamlalegalhai" / "experiments" / "original_df.csv"
 RESULTS = ROOT / "research" / "experiments" / "results" / "deontic_proxy_results.json"
 FIGURES = ROOT / "paper" / "regulatrace-preprint" / "figures"
 SOURCE_DOI = "https://doi.org/10.34894/HQ8LIH"
@@ -159,10 +159,10 @@ def plot_scores(report: dict) -> None:
 
     comparator = "Word TF-IDF + LR"
     index = np.arange(len(LABELS))
-    rule_f1 = [report["models"]["RegulaTrace rules"]["per_class_f1_oof"][label] for label in LABELS]
+    rule_f1 = [report["models"]["mamlaLEGALhai rules"]["per_class_f1_oof"][label] for label in LABELS]
     learned_f1 = [report["models"][comparator]["per_class_f1_oof"][label] for label in LABELS]
     fig, ax = plt.subplots(figsize=(8.2, 3.8), layout="constrained")
-    ax.bar(index - 0.19, rule_f1, 0.36, label="RegulaTrace rules", color="#167d91")
+    ax.bar(index - 0.19, rule_f1, 0.36, label="mamlaLEGALhai rules", color="#167d91")
     ax.bar(index + 0.19, learned_f1, 0.36, label=comparator, color="#ef8b4d")
     ax.set_xticks(index, [f"{label}\n(n={report['class_support'][label]})" for label in LABELS])
     ax.set_ylim(0, 1.02)
@@ -178,7 +178,7 @@ def main() -> None:
     groups = similarity_groups(texts)
     folds = list(StratifiedGroupKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED).split(texts, gold, groups))
     rule = np.array([rule_prediction(text) for text in texts])
-    all_models = {"RegulaTrace rules": None, **models()}
+    all_models = {"mamlaLEGALhai rules": None, **models()}
     result: dict = {
         "dataset": SOURCE_DOI,
         "dataset_sha256": SOURCE_SHA256,
@@ -190,7 +190,7 @@ def main() -> None:
         "task_scope": "provision-level modality only; not span or field extraction",
         "versions": {"python": platform.python_version(), "scikit_learn": sklearn.__version__,
                      "numpy": np.__version__, "scipy": scipy.__version__,
-                     "matplotlib": matplotlib.__version__, "regulatrace_engine": ENGINE_VERSION},
+                     "matplotlib": matplotlib.__version__, "mamlalegalhai_engine": ENGINE_VERSION},
         "models": {},
     }
     for name, model in all_models.items():

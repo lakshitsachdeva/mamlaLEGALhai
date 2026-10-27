@@ -1,4 +1,4 @@
-"""FastAPI application for the RegulaTrace Presentation Edition."""
+"""FastAPI application for the mamlaLEGALhai Presentation Edition."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ from backend.schemas import (
 
 
 def _cors_origins() -> list[str]:
-    configured = os.getenv("REGULATRACE_CORS_ORIGINS")
+    configured = os.getenv("MAMLALEGALHAI_CORS_ORIGINS") or os.getenv("REGULATRACE_CORS_ORIGINS")
     if configured:
         return [origin.strip() for origin in configured.split(",") if origin.strip()]
     return [
@@ -53,7 +53,7 @@ def _cors_origins() -> list[str]:
 
 
 app = FastAPI(
-    title="RegulaTrace Compliance Intelligence API",
+    title="mamlaLEGALhai Compliance Intelligence API",
     description=(
         "Presentation-ready evidence-linked regulatory obligation extraction, "
         "document ingestion, policy comparison, version change analysis, persistent "
@@ -95,7 +95,7 @@ async def http_exception_handler(_request: Request, exc: HTTPException) -> JSONR
 async def unhandled_exception_handler(_request: Request, _exc: Exception) -> JSONResponse:
     return JSONResponse(
         status_code=500,
-        content={"error": {"code": "INTERNAL_ERROR", "message": "RegulaTrace could not complete the deterministic analysis.", "details": None}},
+        content={"error": {"code": "INTERNAL_ERROR", "message": "mamlaLEGALhai could not complete the deterministic analysis.", "details": None}},
     )
 
 
@@ -107,7 +107,7 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
 
 @app.get("/api/health", response_model=HealthResponse, tags=["System"])
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "regulatrace-api", "phase": "presentation-edition", "engineVersion": ENGINE_VERSION}
+    return {"status": "ok", "service": "mamlalegalhai-api", "phase": "presentation-edition", "engineVersion": ENGINE_VERSION}
 
 
 @app.post("/api/analyze", response_model=AnalysisResponse, responses=ERROR_RESPONSES, tags=["Analysis"])

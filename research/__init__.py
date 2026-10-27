@@ -1,1 +1,1 @@
-"""Held-out evaluation tools for RegulaTrace."""
+"""Held-out evaluation tools for mamlaLEGALhai."""

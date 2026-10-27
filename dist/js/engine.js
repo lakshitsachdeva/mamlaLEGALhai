@@ -1,5 +1,5 @@
 /**
- * RegulaTrace research prototype engine.
+ * mamlaLEGALhai research prototype engine.
  *
  * The engine intentionally keeps every prediction traceable. It is a transparent
  * lexical baseline, not a legal decision-maker. The UI exposes its evidence,
@@ -438,7 +438,7 @@ export function evidenceGraph(record) {
   };
 }
 
-export function downloadJson(data, filename = "regulatrace-export.json") {
+export function downloadJson(data, filename = "mamlalegalhai-export.json") {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");

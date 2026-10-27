@@ -1,13 +1,13 @@
-# RegulaTrace: what to say and what to click
+# mamlaLEGALhai: what to say and what to click
 
 This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understand** lines are for you; you do not need to read them to the audience. For a shorter talk, use [the five-minute script](QUICK_PRESENTATION_GUIDE.md).
 
 ## Before people arrive
 
-1. From the repository folder, run `sh ./start-regulatrace.sh`.
+1. From the repository folder, run `sh ./start-mamlalegalhai.sh`.
 2. Open `http://127.0.0.1:8000/#executive` and check that the API is connected.
 3. Click **Load demo data** and wait for the success message. This prepares the example analysis, comparison, version changes, and synthetic checks.
-4. Open **Research notes** in the left menu and click **Read current paper**. Click **Jump to measured results** in the paper view; the charts start on page 8. Use **Download PDF** if you want an offline copy. Keep the [project report](../dist/docs/RegulaTrace_Project_Report.pdf) as a backup handout.
+4. Open **Research notes** in the left menu and click **Read current paper**. Click **Jump to measured results** in the paper view; the charts start on page 8. Use **Download PDF** if you want an offline copy. Keep the [project report](../dist/docs/mamlaLEGALhai_Project_Report.pdf) as a backup handout.
 5. You can click **Present** to make the app cleaner on a projector. Version compare and Contradiction Lab use fictional examples.
 6. If demonstrating InLegalBERT, install `requirements-neural.txt` and run the neural check once before presenting; the first use downloads model weights. Keep **Run Z3 only** as a reliable fallback.
 
@@ -15,7 +15,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 **Show:** The **Presentation** screen.
 
-**Say:** “Regulations often specify who must do something, what they must do, and when. If software gives us only a confident summary, we cannot easily check whether it got those details right. RegulaTrace starts with a simpler goal: propose a duty, then keep the exact source text beside it so a person can verify it.”
+**Say:** “Regulations often specify who must do something, what they must do, and when. If software gives us only a confident summary, we cannot easily check whether it got those details right. mamlaLEGALhai starts with a simpler goal: propose a duty, then keep the exact source text beside it so a person can verify it.”
 
 **Understand:** A duty record is a small form with fields such as actor, action, deadline, and source quote. The quote can be found in the supplied document. That does not prove that the document is official or that every proposed field is correct.
 
@@ -45,7 +45,7 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 ## 5:00–7:30 — The research result
 
-**Click:** **Research notes** in the left menu → **Read current paper** → **Jump to measured results**. In the paper, show the five-class modality chart, then the regulatory-function chart. Click **← RegulaTrace research notes** at the top to return. You can also open the paper from the Presentation screen.
+**Click:** **Research notes** in the left menu → **Read current paper** → **Jump to measured results**. In the paper, show the five-class modality chart, then the regulatory-function chart. Click **← mamlaLEGALhai research notes** at the top to return. You can also open the paper from the Presentation screen.
 
 **Say:** “We tested the rules on two different published sentence-label datasets. The first asks whether wording expresses an obligation, permission, prohibition, right, or power. Our rules scored 92.2% accuracy. But the dataset contains many obligations, and the macro F1 was only 0.543. Macro F1 checks performance across the different labels instead of letting the largest class dominate.”
 
@@ -57,13 +57,13 @@ This is a **10-minute talk**. Read the **Say** paragraphs aloud. The **Understan
 
 **Say:** “The clear failure is useful. Rules based on words like ‘shall’ can find candidate duties, but they also flag statements that do not assign an actionable duty. The current app can merge two actions from one clause, and it can miss meaning that depends on another section. Showing the source text makes those mistakes easier to inspect.”
 
-**Say:** “The next study needs experts to mark the exact duty passages and fields in documents we have not used for development. Then we can test whether reviewers using RegulaTrace are faster or more accurate than reviewers without it. We have not measured that yet.”
+**Say:** “The next study needs experts to mark the exact duty passages and fields in documents we have not used for development. Then we can test whether reviewers using mamlaLEGALhai are faster or more accurate than reviewers without it. We have not measured that yet.”
 
 **Understand:** The in-app **16/16** challenge suite contains examples we wrote. It checks that those cases run; it does not estimate performance on unseen laws. The external datasets label sentences, not every duty field or reviewer outcome.
 
 ## 9:00–10:00 — Finish
 
-**Say:** “RegulaTrace is a research prototype for reviewable regulatory analysis. It proposes duties, preserves their source text, records corrections, and can check a carefully stated rule conflict. Our experiments show where simple rules work and where they fail. The aim is to make each result easy to question and the next research claim measurable.”
+**Say:** “mamlaLEGALhai is a research prototype for reviewable regulatory analysis. It proposes duties, preserves their source text, records corrections, and can check a carefully stated rule conflict. Our experiments show where simple rules work and where they fail. The aim is to make each result easy to question and the next research claim measurable.”
 
 Stop there. Leave **Obligation Lab** or **Presentation** visible for questions.
 
@@ -88,4 +88,4 @@ Stop there. Leave **Obligation Lab** or **Presentation** visible for questions.
 | Five-class modality | 566 distinct texts; 3 similarity-grouped folds | 92.2% accuracy; 0.543 macro F1 | Word TF-IDF logistic regression: 0.499 macro F1 |
 | Regulatory versus constitutive | 5,831 distinct sentences from 379 acts; 3 act-grouped folds | 41.9% mean accuracy; 0.588 regulatory F1 | Word TF-IDF linear SVM: 85.2% mean accuracy; 0.810 regulatory F1 |
 
-The 41.9% is the mean of three fold accuracies; pooling predictions gives 42.8%. The [current paper PDF](../dist/docs/RegulaTrace_Preprint.pdf), [paper source](../paper/regulatrace-preprint/main.tex), and [experiment README](../research/experiments/README.md) give the full method.
+The 41.9% is the mean of three fold accuracies; pooling predictions gives 42.8%. The [current paper PDF](../dist/docs/mamlaLEGALhai_Preprint.pdf), [paper source](../paper/regulatrace-preprint/main.tex), and [experiment README](../research/experiments/README.md) give the full method.

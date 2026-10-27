@@ -11,6 +11,6 @@ if [ ! -x .venv/bin/python ]; then
 fi
 
 .venv/bin/python -m pip install -r requirements.txt
-port="${REGULATRACE_PORT:-8000}"
-printf 'RegulaTrace: http://127.0.0.1:%s/#executive\n' "$port"
+port="${MAMLALEGALHAI_PORT:-${REGULATRACE_PORT:-8000}}"
+printf 'mamlaLEGALhai: http://127.0.0.1:%s/#executive\n' "$port"
 exec .venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port "$port"

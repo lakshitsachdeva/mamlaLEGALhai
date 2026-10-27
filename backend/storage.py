@@ -16,10 +16,13 @@ def _utc_now() -> str:
 
 
 def _database_path() -> Path:
-    configured = os.getenv("REGULATRACE_DB_PATH")
+    configured = os.getenv("MAMLALEGALHAI_DB_PATH") or os.getenv("REGULATRACE_DB_PATH")
     if configured:
         return Path(configured).expanduser().resolve()
-    return Path(__file__).resolve().parents[1] / ".regulatrace" / "regulatrace.db"
+    root = Path(__file__).resolve().parents[1]
+    current = root / ".mamlalegalhai" / "mamlalegalhai.db"
+    legacy = root / ".regulatrace" / "regulatrace.db"
+    return legacy if legacy.exists() and not current.exists() else current
 
 
 def _connect() -> sqlite3.Connection:

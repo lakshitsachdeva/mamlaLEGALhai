@@ -2,7 +2,7 @@ param([switch]$NoBrowser)
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$stateDirectory = Join-Path $projectRoot ".regulatrace"
+$stateDirectory = Join-Path $projectRoot ".mamlalegalhai"
 $venvPython = Join-Path $projectRoot ".venv\Scripts\python.exe"
 $requirements = Join-Path $projectRoot "requirements.txt"
 $requirementsMarker = Join-Path $projectRoot ".venv\.requirements.sha256"
@@ -14,7 +14,7 @@ New-Item -ItemType Directory -Force -Path $stateDirectory | Out-Null
 if (Test-Path $pidFile) {
     $existingPid = Get-Content $pidFile -ErrorAction SilentlyContinue
     if ($existingPid -and (Get-Process -Id $existingPid -ErrorAction SilentlyContinue)) {
-        Write-Host "RegulaTrace is already running at $url" -ForegroundColor Green
+        Write-Host "mamlaLEGALhai is already running at $url" -ForegroundColor Green
         if (-not $NoBrowser) { Start-Process $url }
         exit 0
     }
@@ -40,7 +40,7 @@ $installedHash = if (Test-Path $requirementsMarker) { Get-Content $requirementsM
 if ($requirementsHash -ne $installedHash) {
     & $venvPython -c "import fastapi, uvicorn, pydantic, pytest, httpx, pypdf, multipart" 2>$null
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "Preparing the RegulaTrace runtime (first launch only)..." -ForegroundColor Cyan
+        Write-Host "Preparing the mamlaLEGALhai runtime (first launch only)..." -ForegroundColor Cyan
         & $venvPython -m pip install --disable-pip-version-check -r $requirements
         if ($LASTEXITCODE -ne 0) { throw "Dependency installation failed." }
     }
@@ -56,7 +56,7 @@ for ($attempt = 0; $attempt -lt 40; $attempt++) {
     try {
         $health = Invoke-RestMethod "$url/api/health" -TimeoutSec 1
         if ($health.status -eq "ok") {
-            Write-Host "RegulaTrace Presentation Edition is live at $url" -ForegroundColor Green
+            Write-Host "mamlaLEGALhai Presentation Edition is live at $url" -ForegroundColor Green
             Write-Host "API documentation: $url/api/docs" -ForegroundColor DarkGray
             if (-not $NoBrowser) { Start-Process $url }
             exit 0

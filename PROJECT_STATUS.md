@@ -1,4 +1,4 @@
-# RegulaTrace Project Status
+# mamlaLEGALhai Project Status
 
 Status date: 2026-10-27
 Current milestone: Presentation Edition — integrated full-stack research demonstrator
